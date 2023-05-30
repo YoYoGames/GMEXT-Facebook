@@ -1,15 +1,15 @@
-# GMEXT-FacebookSignIn
-Repository for GameMaker's FacebookSignIn Extension
+# GMEXT-FacebookAPI
+Repository for GameMaker's Facebook API Extension
 
 This repository was created with the intent of presenting users with the latest version available of the extension (even previous to marketplace updates) and also provide a way for the community to contribute with bug fixes and feature implementation.
 
 This extension is compatible with Android, iOS and HTML5 exports.
 
-ANDROID SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
+ANDROID SOURCE: `source/Facebook_gml/extensions/FacebookExtension2/AndroidSource/Java/`
 
-IOS SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
+IOS SOURCE: `source/Facebook_gml/extensions/FacebookExtension2/iOSSource/`
 
-HTML5 SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
+HTML5 SOURCE: `source/Facebook_gml/extensions/FacebookExtension2/FacebookExtJS.js`
 
 ---
 
