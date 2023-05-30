@@ -6,7 +6,9 @@ This repository was created with the intent of presenting users with the latest 
 This extension is compatible with Android, iOS and HTML5 exports.
 
 ANDROID SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
+
 IOS SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
+
 HTML5 SOURCE: `source/GooglePlayServices_gml/extensions/googleplayservices/AndroidSource/Java/`
 
 ---
