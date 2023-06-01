@@ -103,7 +103,7 @@
   "hasConvertedCodeInjection": true,
   "helpfile": "",
   "HTML5CodeInjection": "",
-  "html5Props": false,
+  "html5Props": true,
   "IncludedResources": [],
   "installdir": "",
   "iosCocoaPodDependencies": "",
