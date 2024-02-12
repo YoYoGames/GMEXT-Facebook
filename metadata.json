@@ -1,0 +1,18 @@
+{
+    "gitHubUrl": "https://github.com/YoYoGames/GMEXT-Facebook",
+    "projectFile": "source/Facebook_gml/Facebook.yyp",
+    "projectVersion": "LTS22",
+    "releaseTemplate": "templates/release_body.md",
+    "extensionMetaData": [
+        {
+            "extensionFile": "source/Facebook_gml/extensions/FacebookExtension2/FacebookExtension2.yy",
+            "packageId": "com.yoyogames.facebookasextension",
+            "packageName": "Facebook",
+            "packageVersion": "2.1.0",
+            "packageFormat": "LTS22",
+            "includeFolders": null,
+            "includeResources": null,
+            "excludeResources": null
+        }
+    ]
+}
