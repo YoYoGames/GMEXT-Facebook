@@ -137,13 +137,13 @@ class YYFacebookShareDialog: SharingDelegate
         mIsReady = 1;
         
         //NSLog("fb_init: Access token %@", AccessToken.current ?? "");
-        if (AccessToken.current == nil)        {
-            NSLog("fb_init: session already open");
+        if (AccessToken.current != nil)        {
+            // NSLog("fb_init: session already open");
             fb_set_status(_status: "AUTHORISED");
         }
         else
         {
-            NSLog("fb_init: no session open");
+            // NSLog("fb_init: no session open");
             fb_set_status(_status:"IDLE");
         }
     }
