@@ -10,3 +10,5 @@ when deploying your final live website!
 For more info, see https://developers.facebook.com/blog/post/2018/06/08/enforce-https-facebook-login/
 */
 
+fb_init()
+
