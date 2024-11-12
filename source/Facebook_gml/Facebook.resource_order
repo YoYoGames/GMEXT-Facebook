@@ -12,6 +12,7 @@
     {"name":"Obj_Facebook_FeedDialog","order":4,"path":"objects/Obj_Facebook_FeedDialog/Obj_Facebook_FeedDialog.yy",},
     {"name":"Obj_Facebook_GraphFriendsRequest","order":5,"path":"objects/Obj_Facebook_GraphFriendsRequest/Obj_Facebook_GraphFriendsRequest.yy",},
     {"name":"Obj_Facebook_GraphMeRequest","order":6,"path":"objects/Obj_Facebook_GraphMeRequest/Obj_Facebook_GraphMeRequest.yy",},
+    {"name":"Obj_Facebook_Local_Web_Connection","order":12,"path":"objects/Obj_Facebook_Local_Web_Connection/Obj_Facebook_Local_Web_Connection.yy",},
     {"name":"Obj_Facebook_Login","order":1,"path":"objects/Obj_Facebook_Login/Obj_Facebook_Login.yy",},
     {"name":"Obj_Facebook_Logout","order":2,"path":"objects/Obj_Facebook_Logout/Obj_Facebook_Logout.yy",},
     {"name":"Obj_Facebook_RefreshAccessToken","order":3,"path":"objects/Obj_Facebook_RefreshAccessToken/Obj_Facebook_RefreshAccessToken.yy",},

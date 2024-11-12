@@ -40,6 +40,7 @@
     {"id":{"name":"Obj_Facebook_FeedDialog","path":"objects/Obj_Facebook_FeedDialog/Obj_Facebook_FeedDialog.yy",},},
     {"id":{"name":"Obj_Facebook_GraphFriendsRequest","path":"objects/Obj_Facebook_GraphFriendsRequest/Obj_Facebook_GraphFriendsRequest.yy",},},
     {"id":{"name":"Obj_Facebook_GraphMeRequest","path":"objects/Obj_Facebook_GraphMeRequest/Obj_Facebook_GraphMeRequest.yy",},},
+    {"id":{"name":"Obj_Facebook_Local_Web_Connection","path":"objects/Obj_Facebook_Local_Web_Connection/Obj_Facebook_Local_Web_Connection.yy",},},
     {"id":{"name":"Obj_Facebook_Login","path":"objects/Obj_Facebook_Login/Obj_Facebook_Login.yy",},},
     {"id":{"name":"Obj_Facebook_Logout","path":"objects/Obj_Facebook_Logout/Obj_Facebook_Logout.yy",},},
     {"id":{"name":"Obj_Facebook_RefreshAccessToken","path":"objects/Obj_Facebook_RefreshAccessToken/Obj_Facebook_RefreshAccessToken.yy",},},
