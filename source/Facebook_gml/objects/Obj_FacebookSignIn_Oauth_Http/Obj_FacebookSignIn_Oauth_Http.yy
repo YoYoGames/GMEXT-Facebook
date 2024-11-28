@@ -8,8 +8,8 @@
   "name":"Obj_FacebookSignIn_Oauth_Http",
   "overriddenProperties":[],
   "parent":{
-    "name":"FacebookAPI Demo",
-    "path":"folders/FacebookAPI Demo.yy",
+    "name":"Extensions",
+    "path":"folders/FacebookAPI/Extensions.yy",
   },
   "parentObjectId":null,
   "persistent":false,

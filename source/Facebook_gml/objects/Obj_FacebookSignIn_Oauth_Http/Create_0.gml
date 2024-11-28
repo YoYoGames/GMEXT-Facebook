@@ -2,7 +2,6 @@
 #macro FACEBOOK_OAUTH_ENDPOINT "https://www.facebook.com/v21.0/dialog/oauth"
 
 client_id = extension_get_option_value("FacebookExtension2", "redirectClientID");
-client_secret = extension_get_option_value("FacebookExtension2", "redirectClientSecret");
 redirect_url = extension_get_option_value("FacebookExtension2", "redirectURI");
 
 auth_url = FACEBOOK_OAUTH_ENDPOINT +

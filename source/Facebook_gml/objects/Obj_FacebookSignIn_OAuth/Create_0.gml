@@ -18,8 +18,9 @@ state = create_code()
 var oauth_ins = instance_create_depth(0,0,0,Obj_FacebookSignIn_Oauth_Http,{state: state})
 
 client_id = oauth_ins.client_id
-client_secret = oauth_ins.client_secret
 redirect_url = oauth_ins.redirect_url
+
+show_debug_message("_redirect_url: 1" + __facebook_signin_url_encode(redirect_url))
 
 // You have all you need we can destroy the OAuth url starter
 instance_destroy(oauth_ins);

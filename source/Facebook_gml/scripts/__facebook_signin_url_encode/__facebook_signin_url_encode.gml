@@ -34,3 +34,22 @@ function __facebook_signin_url_encode(_orig) {
 	
     return buffer_peek(_output_buffer, 0, buffer_string);
 }
+
+/// @ignore
+function __facebook_signin_exchange_code(_client_id, _redirect_url, _client_secret, _code) {
+    static _FACEBOOK_TOKEN_ENDPOINT = "https://graph.facebook.com/v21.0/oauth/access_token";
+	
+	show_debug_message("_redirect_url: 2 " + __facebook_signin_url_encode(_redirect_url))
+    var post_data = 
+                    "?code=" + _code +
+                    "&redirect_uri=" + __facebook_signin_url_encode(_redirect_url) +
+					"&client_secret=" + __facebook_signin_url_encode(_client_secret) + 
+                    "&client_id=" + __facebook_signin_url_encode(_client_id)
+    
+	var _url = _FACEBOOK_TOKEN_ENDPOINT + post_data
+	
+    var headers = ds_map_create();
+    //ds_map_add(headers, "Content-Type", "application/x-www-form-urlencoded");
+    
+    return http_request(_url, "GET", headers, ""/*post_data*/);
+}
