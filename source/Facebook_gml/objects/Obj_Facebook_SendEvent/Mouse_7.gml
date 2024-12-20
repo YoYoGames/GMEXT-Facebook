@@ -8,7 +8,7 @@ ds_list_add(paramList,
 			FacebookExtension2_PARAM_NUM_ITEMS, 3);
 
 // Send our event
-fb_log_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 123, paramList);
+fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 123, paramList);
 
 // Destroy parameters list
 ds_list_destroy(paramList);

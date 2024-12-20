@@ -215,18 +215,6 @@ public class FacebookExtension2  extends RunnerSocial
 		}
 	}
 	
-	private static boolean isSubsetOf(Collection<String> subset, Collection<String> superset) 
-	{
-		for (String string : subset) 
-		{
-			if (!superset.contains(string)) 
-			{
-				return false;
-			}
-		}
-		return true;
-    }
-	
 	private String getFacebookSDKVersion()
     {
 		String sdkVersion = null;
@@ -459,17 +447,20 @@ public class FacebookExtension2  extends RunnerSocial
 		return false;
     }
 	
-	public double fb_request_read_permissions(double _permissions)
+	private final int PERMISSION_TYPE_READ = 1;
+	private final int PERMISSION_TYPE_PUBLISH = 2;
+
+	public double fb_request_read_permissions(double permissions_list)
 	{
-		return fb_request_permissions(_permissions, false);
+		return fb_request_permissions(permissions_list, PERMISSION_TYPE_READ);
 	}
 	
-	public double fb_request_publish_permissions(double _permissions)
+	public double fb_request_publish_permissions(double permissions_list)
 	{
-		return fb_request_permissions(_permissions, true);
+		return fb_request_permissions(permissions_list, PERMISSION_TYPE_PUBLISH);
 	}
     
-    public double fb_request_permissions(double _permissions, boolean _bPublishPermission)
+    public double fb_request_permissions(double _permissions, boolean permission_type)
     {
 		ArrayList<String> requestedPermissions = new ArrayList<String>();
 		dsListToStringArray((int)_permissions, requestedPermissions);
@@ -479,13 +470,14 @@ public class FacebookExtension2  extends RunnerSocial
 		{
 		LoginManager.getInstance().registerCallback(callbackManager, new FacebookLoginCallback(currentRequestId));
 
-		if(_bPublishPermission)
-		{
-			LoginManager.getInstance().logInWithPublishPermissions(RunnerActivity.CurrentActivity, requestedPermissions);
-		}
-		else
-		{
-			LoginManager.getInstance().logInWithReadPermissions(RunnerActivity.CurrentActivity, requestedPermissions);
+		switch (permission_type) {
+			case PERMISSION_TYPE_PUBLISH:
+				LoginManager.getInstance().logInWithPublishPermissions(RunnerActivity.CurrentActivity, requestedPermissions);
+				break;
+			case PERMISSION_TYPE_READ:
+				LoginManager.getInstance().logInWithReadPermissions(RunnerActivity.CurrentActivity, requestedPermissions);
+				break;
+
 		}
 		}
 		
@@ -688,19 +680,20 @@ public class FacebookExtension2  extends RunnerSocial
 		{
 			public void run() 
 			{   
-				if ((keyValuePairs.size() & 0x1) != 0) 
-				{
-					throw new IllegalArgumentException("There must be an even number of strings forming key-value pairs");
-				}
-				
-				if (!httpMethod.equals("GET") && !httpMethod.equals("POST")  && !httpMethod.equals("DELETE")) 
-				{
-					throw new IllegalArgumentException("The httpMethod for a Facebook graph request must be one of 'GET', 'POST' or 'DELETE', value supplied was: " + httpMethod);
-				}
-
-				Log.i("yoyo", "Making graph API request for path: " + graphPath + " with httpMethod: " + httpMethod);
 				try 
 				{
+					if ((keyValuePairs.size() & 0x1) != 0) 
+					{
+						throw new IllegalArgumentException("There must be an even number of strings forming key-value pairs");
+					}
+					
+					if (!httpMethod.equals("GET") && !httpMethod.equals("POST")  && !httpMethod.equals("DELETE")) 
+					{
+						throw new IllegalArgumentException("The httpMethod for a Facebook graph request must be one of 'GET', 'POST' or 'DELETE', value supplied was: " + httpMethod);
+					}
+
+					Log.i("yoyo", "Making graph API request for path: " + graphPath + " with httpMethod: " + httpMethod);
+
 					Bundle parameters = new Bundle();    	        
 
 					// Populate the Bundle parameters with the key-value pairs			

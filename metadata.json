@@ -12,7 +12,10 @@
             "packageFormat": "LTS22",
             "includeFolders": null,
             "includeResources": null,
-            "excludeResources": null
+            "excludeResources": null,
+            "postRemovals": [
+                "**/.env"
+            ]
         }
     ]
 }

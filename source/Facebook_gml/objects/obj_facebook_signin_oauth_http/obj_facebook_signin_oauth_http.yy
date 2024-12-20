@@ -1,17 +1,15 @@
 {
   "$GMObject":"",
-  "%Name":"Obj_FacebookSignIn_OAuth",
+  "%Name":"obj_facebook_signin_oauth_http",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":62,"eventType":7,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":2,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"Obj_FacebookSignIn_OAuth",
+  "name":"obj_facebook_signin_oauth_http",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objects",
-    "path":"folders/FacebookAPI Demo/Objects.yy",
+    "name":"Extensions",
+    "path":"folders/FacebookAPI/Extensions.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -27,7 +25,9 @@
   "physicsShape":1,
   "physicsShapePoints":[],
   "physicsStartAwake":true,
-  "properties":[],
+  "properties":[
+    {"$GMObjectProperty":"v1","%Name":"state","filters":[],"listItems":[],"multiselect":false,"name":"state","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"","varType":2,},
+  ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,

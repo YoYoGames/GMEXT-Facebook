@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"__facebook_signin_url_encode",
+  "%Name":"__facebook_internal__",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__facebook_signin_url_encode",
+  "name":"__facebook_internal__",
   "parent":{
     "name":"Extensions",
     "path":"folders/FacebookAPI/Extensions.yy",
