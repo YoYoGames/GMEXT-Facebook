@@ -20,9 +20,7 @@
     {"$GMFolder":"","%Name":"Objects","folderPath":"folders/Yoyo Extensions Assets/Objects.yy","name":"Objects","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Sprites","folderPath":"folders/Yoyo Extensions Assets/Sprites.yy","name":"Sprites","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
-  "IncludedFiles":[
-    {"$GMIncludedFile":"","%Name":".env","CopyToMask":-1,"filePath":"datafiles","name":".env","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
-  ],
+  "IncludedFiles":[],
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
@@ -46,7 +44,6 @@
     {"id":{"name":"Obj_Facebook_RequestPublishPermissions","path":"objects/Obj_Facebook_RequestPublishPermissions/Obj_Facebook_RequestPublishPermissions.yy",},},
     {"id":{"name":"Obj_Facebook_RequestReadPermissions","path":"objects/Obj_Facebook_RequestReadPermissions/Obj_Facebook_RequestReadPermissions.yy",},},
     {"id":{"name":"Obj_Facebook_SendEvent","path":"objects/Obj_Facebook_SendEvent/Obj_Facebook_SendEvent.yy",},},
-    {"id":{"name":"obj_facebook_signin_oauth_http","path":"objects/obj_facebook_signin_oauth_http/obj_facebook_signin_oauth_http.yy",},},
     {"id":{"name":"Obj_YoYo_Button_toRoom","path":"objects/Obj_YoYo_Button_toRoom/Obj_YoYo_Button_toRoom.yy",},},
     {"id":{"name":"Obj_YoYo_button","path":"objects/Obj_YoYo_button/Obj_YoYo_button.yy",},},
     {"id":{"name":"Obj_YoYo_text","path":"objects/Obj_YoYo_text/Obj_YoYo_text.yy",},},
