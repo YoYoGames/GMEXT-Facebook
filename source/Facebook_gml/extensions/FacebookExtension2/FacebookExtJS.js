@@ -77,7 +77,7 @@ function fb_init()
 		
 		// FBExt_FBInit( appId );
 		
-		FBExt_FBInit(GMS_API.extension_get_option_value("FacebookExtension2","AppId"));
+		FBExt_FBInit(GMS_API.extension_get_option_value("FacebookExtension2","appId"));
 		g_fbExtInitCalled = true;
 	}
 }

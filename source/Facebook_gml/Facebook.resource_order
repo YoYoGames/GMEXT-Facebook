@@ -20,7 +20,6 @@
     {"name":"Obj_Facebook_RequestPublishPermissions","order":9,"path":"objects/Obj_Facebook_RequestPublishPermissions/Obj_Facebook_RequestPublishPermissions.yy",},
     {"name":"Obj_Facebook_RequestReadPermissions","order":10,"path":"objects/Obj_Facebook_RequestReadPermissions/Obj_Facebook_RequestReadPermissions.yy",},
     {"name":"Obj_Facebook_SendEvent","order":7,"path":"objects/Obj_Facebook_SendEvent/Obj_Facebook_SendEvent.yy",},
-    {"name":"obj_facebook_signin_oauth_http","order":2,"path":"objects/obj_facebook_signin_oauth_http/obj_facebook_signin_oauth_http.yy",},
     {"name":"Obj_YoYo_Button_toRoom","order":1,"path":"objects/Obj_YoYo_Button_toRoom/Obj_YoYo_Button_toRoom.yy",},
     {"name":"Obj_YoYo_button","order":2,"path":"objects/Obj_YoYo_button/Obj_YoYo_button.yy",},
     {"name":"Obj_YoYo_text","order":3,"path":"objects/Obj_YoYo_text/Obj_YoYo_text.yy",},

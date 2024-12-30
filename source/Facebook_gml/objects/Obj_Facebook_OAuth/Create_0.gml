@@ -14,13 +14,13 @@ search_url = _data.oauth_search_url;
 
 // The following call will initialize the oauth process with the facebook oauth endpoint
 // The oauth code will then be sent to the redirect url provided in the extensions options
-// this token needs to then be exchanged into a token using GET method on the exchange endpoint:
+// this code needs to then be exchanged into a token using GET method on the exchange endpoint:
 // 
 // - https://graph.facebook.com/v21.0/oauth/access_token
 // 
 // passing the following query parameters:
 //
-// - code: <the code that provided by the Facebook API>
+// - code: <the code that was provided by the Facebook API>
 // - redirect_uri: <the same url used in the extension options>
 // - client_secret: <the client secret can be obtained from the Facebook dashboard>
 // - client_id: <the app id from the extension options>
@@ -43,4 +43,4 @@ state = __facebook_signin_state_create(32, "123456789");
 fb_login_oauth(state);
 
 search_request = undefined;
-search_tries = 10;
+search_tries = 20;
