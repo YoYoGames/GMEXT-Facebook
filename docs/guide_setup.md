@@ -1,12 +1,14 @@
 @title Setup Guide
 
-This guide takes you through the steps required to integrate Facebook with your Android, iOS and/or HTML5 game using the Facebook extension.
+This guide takes you through the steps required to integrate Facebook with your Android, iOS and/or HTML5 game using the [Facebook extension](https://marketplace.gamemaker.io/assets/2011/facebook/). Note that the login functionality is supported on all platforms through [OAuth](https://oauth.net/2/).
 
 Before continuing, you will need to have a Facebook Developer account, which can be set up from the following link:
 
 > [Facebook for Developers](https://developers.facebook.com/)
 
-## Create The App ID
+## Creating An App
+
+> See: [Create an App](https://developers.facebook.com/docs/development/create-an-app)
 
 Once you have created your developer account, the first thing you'll need to do is add your game to it and get an **App ID** for it. For that, simply hover over the **My Apps** menu link and then select **Add New App**:
 
@@ -18,7 +20,7 @@ You will then be presented with a screen asking you to supply a **Display Name*
 
 Once completed, you need to click the **Create App ID** button to continue.
 
-After you create an app ID, you will be taken to your app **Dashboard**. In the left-side navigation panel of the Dashboard, you should now click **Settings** > **Basic** to view the **App Details** Panel with your **App ID**, your **App Secret**, and other details about your app:
+After you create an app ID, you will be taken to your [**App Dashboard**](https://developers.facebook.com/docs/development/create-an-app/app-dashboard). In the left-side navigation panel of the Dashboard, you should now click **Settings** > **Basic** to view the **App Details** Panel with your **App ID**, your **App Secret**, and other details about your app:
 
 ![FB_AppBasicDetails.png](assets/FB_AppBasicDetails.png)
 
@@ -32,6 +34,8 @@ You should take note of the **App ID** and **App Secret** as you'll need them la
 * **Terms of Service URL** - You can provide a [Terms of Service](https://en.wikipedia.org/wiki/Terms_of_service) URL here.
 * **App Icon** - Artwork or image used to identify your app (1024x1024 png or jpg).
 * **Category** - Choose the category type for your app.
+
+> See: [Basic Settings](https://developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings)
 
 Next, you will be presented with the **Data Protection Officer's Contact Information**. This is a requirement under GDPR by European Law and you should fill in the required details. When finished you can then click the **Add Platform** button at the bottom:
 
@@ -87,7 +91,7 @@ With that done, you can now click **Save Changes** and move on to setting up Gam
 
 ## GameMaker
 
-Now in GameMaker, the first thing you need to do is add the Facebook extension to your project. For that, you need to add the extension to your account [on the Marketplace](https://marketplace.yoyogames.com/assets/2011/facebook/). Once added, go to **Marketplace** -> **My Library** in GameMaker and then download and install the Facebook asset (you can find it easily using the search function):
+Now in GameMaker, the first thing you need to do is add the Facebook extension to your project. For that, you need to add the extension to your account [on the Marketplace](https://marketplace.gamemaker.io/assets/2011/facebook/). Once added, go to **Marketplace** -> **My Library** in GameMaker and then download and install the Facebook asset (you can find it easily using the search function):
 
 ![FB_Library.png](assets/FB_Library.png)
 
@@ -99,25 +103,15 @@ First of all, make sure that it's going to be exported *only* to those platforms
 
 ![extension_targets.png](assets/extension_targets.png)
 
-Now open the menu for your target platform under "**Extra Platforms**" (Android/iOS) and add your Facebook app details in the **Code Injection** window. You can find any relevant app details under **Settings** -> **Basic** on your Facebook dashboard.
+Now open the menu for your target platform under "**Extra Platforms**" (Android/iOS) and add your Facebook app details in the Extension Options. You can find any relevant app details under **Settings** -> **Basic** on your Facebook dashboard.
+
+### Common
+
+In the Extension Options, set the **App ID** to your Facebook App ID.
 
 ### Android
 
-![add_info_for_android.png](assets/add_info_for_android.png)
-
-Add your Facebook App ID as the **facebook_app_id** string and as the **fb_login_protocol_scheme** string as well (but with an "**fb**" prefix).
-
-For example, if your **facebook_app_id** is **12345**, your **fb_login_protocol_scheme** should be **fb12345**.
-
-### iOS
-
-![add_info_for_ios.png](assets/add_info_for_ios.png)
-
-Here, add your **FacebookAppID**, your **FacebookClientToken** (which you can get from your Facebook dashboard under **Settings** -> **Advanced** -> **Client Token**) and **FacebookDisplayName** (which is the name of your application).
-
-In the last box, add your Facebook App ID but with an "**fb**" prefix (for example, if your **FacebookAppID** is **12345**, enter **fb12345**).
-
-Once you've done that, if you are building for *iOS* or *HTML5* then you can close the extension now and continue. However, if you are building for *Android* then you should go to the **General** section of the [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm) now and set up the API levels to use. The Facebook extension requires the following API settings as a *minimum* to work:
+In the **General** section of the [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm), set up the API levels to use. The Facebook extension requires the following API settings as a *minimum* to work:
 
 * Build Tools: **26.0.2**
 * Support Library: **26.0.0**
@@ -127,7 +121,9 @@ Once you've done that, if you are building for *iOS* or *HTML5* then you can clo
 
 Once you've filled that in (and made sure you have the relevant APIs installed in Android Studio), you can continue on to add the code that will access the Facebook API.
 
-[[IMPORTANT: The extension comes with a manual in PDF format as part of the "Included Files". If you require more in-depth details of the functions outlined in this article, then please see that document.]]
+### iOS
+
+On iOS, set your **Client Token** (which you can get from your Facebook dashboard under **Settings** -> **Advanced** -> **Client Token**) and **Display Name** (which is the name of your application) in the Extension Options.
 
 ## Adding Facebook Functions
 
@@ -135,7 +131,7 @@ When adding Facebook integration to your game, we recommend that you create *a 
 
 ### Logging In
 
-To start adding Facebook functionality to your game you will first need to ensure that the extension is installed correctly and set to export to the supported platforms. The extension contains the function ${function.fb_init} which you should call first in the **Create Event** of the controller: 
+To start adding Facebook functionality to your game you will first need to ensure that the extension is installed correctly and set to export to the supported platforms. The extension contains the function ${function.fb_init} which you should call first in the **Create Event** of the controller object: 
 
 ```gml
 fb_init();
