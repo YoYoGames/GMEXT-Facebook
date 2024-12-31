@@ -4,6 +4,8 @@
  * @function fb_login
  * @desc This function starts a login, requesting the given list of permissions.
  * 
+ * For every requested permission, a key is added to ${var.async_load} with the value being either `"granted"` or `"declined"`.
+ * 
  * See: [Facebook Login](https://developers.facebook.com/docs/facebook-login)
  * 
  * [[Note: This function is only supported on Android, iOS and HTML5.]]
@@ -20,38 +22,43 @@
  * @member {real} requestId The async request ID
  * @member {string} status The status of the request, as a string (one of `"success"`, `"cancelled"` or `"error"`)
  * @member {string} [exception] The exception message, in case of an error
+ * @member {string} [permission_status] A key-value pair added to ${var.async_load} with the key the permission name and the value either `"granted"` or `"declined"`
  * @event_end
  * 
  * @example
  * ```gml
- * var _perms = ds_list_create();
- * ds_list_add(_perms, "public_profile");
- * fb_login(_perms, FacebookExtension2_LOGIN_TYPE_SYSTEM_ACCOUNT);
- * ds_list_destroy(_perms);
+ * permissions = ["public_profile"];
+ * fb_login(permissions);
  * ```
- * The code above logs in using ${function.fb_login}. A ${type.ds_list} is first created to store the permissions to request.
- * A single permission is added to the list: `"public_profile"`. Finally, the list is destroyed.
+ * The code above logs in using ${function.fb_login}, requesting the default `"public_profile"` permission (passed in an array).
  * 
  * If the login succeeds, a ${event.social} will be triggered: 
  * ```gml
  * if(async_load[?"type"] == "facebook_login_result")
  * {
- *     var status = async_load[?"status"];
- *     if(status == "success")
+ *     var _status = async_load[?"status"];
+ *     if(_status == "success")
  *     {
  *         show_debug_message("Facebook Token: " + fb_accesstoken());
+ *         
+ *         show_debug_message("Permissions:");
+ *         array_foreach(permissions, method({grants: async_load}, function(_permission, _index)
+ *         {
+ *             show_debug_message($"{_permission}: {grants[? _permission]}");
+ *         }));
  *     }
- *     else if(status == "cancelled")
+ *     else if(_status == "cancelled")
  *     {
  *         
  *     }
- *     else if(status == "error")
+ *     else if(_status == "error")
  *     {
  *         var _exception = ds_map_find_value(async_load, "exception");
  *         show_message_async(_exception);
  *     }
  * }
  * ```
+ * If the status equals `"success"`, the access token as well as the permissions are shown in a debug message.
  * @func_end
  */
 
@@ -59,7 +66,7 @@
  * @function fb_login_oauth
  * @desc This function starts a login using OAuth.
  * 
- * The function sends a request to the Facebook API's OAuth endpoint
+ * The function sends a request to the Facebook API's OAuth endpoint.
  * 
  * OAuth authentication is supported on all platforms and can be used as an alternative login method on platforms that use the SDK (using ${function.fb_login}).
  * 
