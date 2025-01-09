@@ -1,9 +1,11 @@
 
 /// Prevents the execution of this script as function and throws an error.
 /// @ignore
-function __facebook_internal__() {
+function facebook_api() {
 	throw _GMFUNCTION_ + " :: script cannnot be call as a function";
 }
+
+#region Internal
 
 /// Encodes a string for use in a URL by replacing reserved characters with their percent-encoded equivalents.
 ///
@@ -119,6 +121,8 @@ function __facebook_signin_state_create(_digits = 32, _allowed_chars = "01234567
 	return _code;
 }
 
+#endregion
+
 /// @desc Triggers the OAuth process for logging in with a Facebook account.
 /// 
 /// This function constructs the Facebook OAuth URL with the provided state parameter,
@@ -133,7 +137,7 @@ function __facebook_signin_state_create(_digits = 32, _allowed_chars = "01234567
 /// 
 /// 4. Creates an asynchronous event payload with OAuth initialization details and triggers the event.
 /// 
-/// @param {String} _state - A unique state string used for security and validation during the OAuth process.
+/// @param {String} _state A unique state string used for security and validation during the OAuth process.
 function fb_login_oauth(_state) {
 	#macro FACEBOOK_OAUTH_ENDPOINT "https://www.facebook.com/v21.0/dialog/oauth"
 
@@ -157,4 +161,6 @@ function fb_login_oauth(_state) {
 	
 	event_perform_async(ev_async_social, _async_load);
 }
+
+
 
