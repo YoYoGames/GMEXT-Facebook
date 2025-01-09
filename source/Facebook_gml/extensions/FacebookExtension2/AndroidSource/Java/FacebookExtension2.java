@@ -252,6 +252,8 @@ public class FacebookExtension2 extends RunnerSocial {
 							// Optionally, activate App Events
 							// AppEventsLogger.activateApp(activity);
 							callbackManager = CallbackManager.Factory.create();
+							// This is required to mark the SDK as fully initialized
+							FacebookSdk.fullyInitialize();
 							msInitialized = 1;
 							Log.i("yoyo", "Facebook SDK initialized successfully.");
 						}
