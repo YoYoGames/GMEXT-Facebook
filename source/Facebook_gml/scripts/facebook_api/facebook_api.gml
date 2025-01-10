@@ -144,10 +144,10 @@ function fb_login_oauth(_state) {
 	static _client_id = extension_get_option_value("FacebookExtension2", "oauthAppId");
 	static _redirect_uri = extension_get_option_value("FacebookExtension2", "oauthRedirectUrl");
 
-	var _auth_url = FACEBOOK_OAUTH_ENDPOINT +
-	           "?redirect_uri=" + __facebook_signin_url_encode(_redirect_uri) +
-	           "&client_id=" + __facebook_signin_url_encode(_client_id) +
-			   "&state=" + _state;
+	var _auth_url = FACEBOOK_OAUTH_ENDPOINT
+			+ "&client_id=" + __facebook_signin_url_encode(_client_id)
+			+ "?redirect_uri=" + __facebook_signin_url_encode(_redirect_uri)
+			+ "&state=" + _state
 
 	// This will be the OAuth initialization
 	url_open(_auth_url);
