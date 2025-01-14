@@ -1,5 +1,4 @@
-/// @description Insert description here
-// You can write your code in this editor
+
 
 if (async_load[? "type"] == "fb_login_oauth") {
 	// At this point the OAuth happened within the server

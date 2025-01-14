@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"__facebook_internal__",
+  "%Name":"facebook_api",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__facebook_internal__",
+  "name":"facebook_api",
   "parent":{
     "name":"Extensions",
     "path":"folders/FacebookAPI/Extensions.yy",

@@ -10,7 +10,7 @@ buffer_delete(_buff);
 
 var _data = json_parse(_data_str);
 
-search_url = _data.oauth_search_url;
+search_url = _data.facebook_oauth_search_url;
 
 // The following call will initialize the oauth process with the facebook oauth endpoint
 // The oauth code will then be sent to the redirect url provided in the extensions options
@@ -43,4 +43,4 @@ state = __facebook_signin_state_create(32, "123456789");
 fb_login_oauth(state);
 
 search_request = undefined;
-search_tries = 20;
+search_tries = 50;
