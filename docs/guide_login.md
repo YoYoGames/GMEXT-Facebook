@@ -1,30 +1,98 @@
 @title Login Guide
 
-This guide contains information on how to use Facebook sign-in.
+This guide contains information on how to use [Facebook Login](https://developers.facebook.com/docs/facebook-login/).
 
-The sign-in functionality of the Facebook extension is supported on all platforms. On Android, iOS and HTML5 it makes use of the SDK, on other platforms OAuth is used.
+The Login functionality of the Facebook extension is supported on all platforms by the extension. On [Android](https://developers.facebook.com/docs/facebook-login/android), [iOS](https://developers.facebook.com/docs/facebook-login/ios) and [HTML5](https://developers.facebook.com/docs/facebook-login/web) it makes use of the SDK, on other platforms OAuth can be used.
 
-## Android, iOS and HTML5
+## Login Flow
 
+### Android, iOS and HTML5
+
+> https://developers.facebook.com/docs/development/create-an-app/facebook-login-for-games-use-case
+
+### OAuth
+
+For browser-based login for a web or desktop app without using the SDKs, or a login flow using entirely server-side code, Facebook has the option to build a login flow for yourself by using browser redirects. An overview of how to do this is provided on the following page:
+
+> [Manually Build a Login Flow](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow)
+
+[[Note: Before you can start using this login method, you need to set the **App ID** and the **OAuth Redirect URL** in the [Extension Options](https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Extensions.htm#extension_options).]]
+
+The Facebook extension provides the ${function.fb_login_oauth} function which starts this OAuth login flow by invoking the login dialog in a browser window:
 ```gml
-/// 
-fb_login();
+/// Create Event
+search_request = undefined;
+search_tries = 50;
+
+state = __facebook_signin_state_create(32, "123456789");
+
+fb_login_oauth(state);
 ```
 
+In the browser window the user can grant permissions to the scopes requested in the function call.
+If the user grants the app permission for the requested scopes on their behalf, the Facebook server sends a code to the **OAuth Redirect URL** on your own server, which then exchanges it for the actual access token.
+
+The ${function.fb_login_oauth} triggers a ${event.social} when it finishes:
 ```gml
 /// Async Social Event
-
+if (async_load[? "type"] == "fb_login_oauth") {
+	// Start polling our own server at regular intervals for the token
+	alarm[0] = game_get_speed(gamespeed_fps);
+}
 ```
 
-## OAuth
-
-https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow
-
-```gml 
-fb_login_oauth();
-```
-
+The ${event.social} indicates that the dialog has been invoked. From here on, you can check with your own server periodically to see if it has the token.
+This can be done by, e.g., triggering a ${var.alarm} after a second. In the alarm an HTTP `"POST"` request is made using ${http_request}. The state number from the original call ${function.fb_login_oauth} so the server knows which login request this request is for. The code for this may look as follows: 
 ```gml
-/// Async Social Event
+/// Alarm 0 Event
+var _headers = ds_map_create();
+ds_map_add(_headers, "Content-Type", "application/json");
 
+var _body = json_stringify({ state: state });
+
+search_request = http_request(search_url, "POST", _headers, _body);
+ds_map_destroy(_headers);
 ```
+
+The HTTP request will trigger a ${event.http} in which you can check if the token is present: 
+```gml
+/// Async HTTP Event
+if(async_load[?"status"] != 0) { exit; }
+if(async_load[? "id"] != search_request) { exit; }
+
+var _data;
+try {
+    // This should always be a JSON encoded string unless the
+    // server couldn't be reached for some reason.
+    _data = json_parse(async_load[? "result"]);
+}
+catch (_error) {
+    _data = { errorCode: 503, errorMessage: "Server couldn't be reached." };
+    show_debug_message(_data);
+}
+
+if (struct_exists(_data, "errorCode"))
+{
+    if (--search_tries > 0) {
+        alarm[0] = game_get_speed(gamespeed_fps);
+    }
+    else {
+        var _map = ds_map_create();
+        _map[? "type"] = "fb_login_oauth_token";
+        _map[? "success"] = false;
+        event_perform_async(ev_async_social, _map);
+        instance_destroy();
+    }
+    return;
+}
+
+var _map = ds_map_create();
+_map[? "token"] = _data.access_token;
+_map[? "type"] = "fb_login_oauth_token";
+_map[? "success"] = true;
+event_perform_async(ev_async_social, _map);
+instance_destroy();
+```
+
+In this event the result is parsed into a struct using ${function.json_parse}. If an error occurred, a new HTTP request is sent after a 1 second wait. The number of tries is limited.
+If no error occurred, the token is read from the struct and a ${event.social} is triggered.

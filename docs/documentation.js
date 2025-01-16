@@ -12,7 +12,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review]](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {array} permissions The permissions to request
+ * @param {list} permissions The permissions to request
  * 
  * @returns {real}
  * 
@@ -27,10 +27,11 @@
  * 
  * @example
  * ```gml
- * permissions = ["public_profile"];
- * fb_login(permissions);
+ * permissions = ds_list_create();
+ * ds_list_add(permissions, "public_profile");
+ * fb_login(real(permissions));
  * ```
- * The code above logs in using ${function.fb_login}, requesting the default `"public_profile"` permission (passed in an array).
+ * The code above logs in using ${function.fb_login}, requesting the default `"public_profile"` permission.
  * 
  * If the login succeeds, a ${event.social} will be triggered: 
  * ```gml
@@ -42,10 +43,13 @@
  *         show_debug_message("Facebook Token: " + fb_accesstoken());
  *         
  *         show_debug_message("Permissions:");
- *         array_foreach(permissions, method({grants: async_load}, function(_permission, _index)
+ *         for(var i = 0;i < ds_list_size(permissions);i++)
  *         {
- *             show_debug_message($"{_permission}: {grants[? _permission]}");
- *         }));
+ *             var _permission = permissions[|i];
+ *             show_debug_message($"{_permission}: {async_load[? _permission]}");
+ *         };
+ *         
+ *         ds_list_destroy(permissions);
  *     }
  *     else if(_status == "cancelled")
  *     {
@@ -73,9 +77,7 @@
  * @param {string} state A unique state value that's sent with the login request
  * 
  * @example
- * ```gml
- * fb_login_oauth(state);
- * ```
+ * See the OAuth section of the ${page.guide_login} page for a detailed code example.
  * @function_end
  */
 
@@ -98,6 +100,12 @@
  * 
  * @returns {string}
  * 
+ * @example
+ * ```gml
+ * var _status = fb_status();
+ * show_debug_message(_status);
+ * ```
+ * The above code requests the login status and outputs it in a debug message.
  * @func_end
  */
 
@@ -107,9 +115,11 @@
  * 
  * See the [User reference](https://developers.facebook.com/docs/graph-api/reference/user#posts) for the possible key-value pairs.
  * 
+ * See: [Graph API](https://developers.facebook.com/docs/graph-api/)
+ * 
  * @param {string} graph_path the path to the endpoint in the graph to access
  * @param {string} http_method the HTTP method to use. Can be one of the following: `"GET"`, `"POST"`, `"DELETE"`
- * @param {struct} params The parameters to use, provided as key-value pairs
+ * @param {list} params The parameters to use, provided as key-value pairs
  * 
  * @returns {real}
  * 
@@ -192,7 +202,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review]](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {array} permissions The permissions to request
+ * @param {list} permissions The permissions to request
  * 
  * @event social
  * @desc 
@@ -204,8 +214,16 @@
  * 
  * @example
  * ```gml
- * fb_request_read_permissions(["user_age_range", "user_birthday", "user_location"]);
+ * var _permissions = ds_list_create();
+ * ds_list_add(_permissions,
+ *     "user_age_range",
+ *     "user_birthday",
+ *     "user_location"
+ * );
+ * fb_request_read_permissions(real(_permissions));
+ * ds_list_destroy(_permissions);
  * ```
+ * The code above creates a ${type.list} and adds a few permissions (scopes) to it. It then requests read permissions on this list of items. Finally, the list is destroyed.
  * @func_end
  */
 
@@ -215,7 +233,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {array} permissions The permissions to request
+ * @param {list} permissions The permissions to request
  * 
  * @event social
  * @desc 
@@ -227,8 +245,12 @@
  * 
  * @example
  * ```gml
- * fb_request_publish_permissions(["publish_actions"]);
+ * var _permissions = ds_list_create();
+ * ds_list_add(_permissions, "publish_actions");
+ * fb_request_publish_permissions(real(_permissions));
+ * ds_list_destroy(_permissions);
  * ```
+ * The code above creates a ${type.list} and adds a permission (scope) to it. It then requests publish permissions on this list of items. Finally, the list is destroyed.
  * @func_end
  */
 
@@ -289,6 +311,10 @@
  * @member {string} [exception] The exception message in case of an error
  * @event_end
  * 
+ * @example
+ * ```gml
+ * fb_refresh_accesstoken();
+ * ```
  * @func_end
  */
 
@@ -302,21 +328,22 @@
  * 
  * @param {constant.FacebookExtension2_EVENT} event_name The name of the event to log
  * @param {real} [value_to_sum] The value to add to the sum for this event
- * @param {struct} [event_params] The event parameters (one or more of ${constant.FacebookExtension2_PARAM}) as key-value pairs
+ * @param {list} [event_params] The event parameters (one or more of ${constant.FacebookExtension2_PARAM}) as key-value pairs
  * 
  * @returns {boolean}
  * 
  * @example
  * ```gml
- * var _params = {
- *     FacebookExtension2_PARAM_CONTENT_ID: "ContentIdTest",
- *     FacebookExtension2_PARAM_CURRENCY: "GBP",
- *     FacebookExtension2_PARAM_NUM_ITEMS: 3
- * };
- * 
- * fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 10, _params);
+ * var _params = ds_list_create();
+ * ds_list_add(_params,
+ *     FacebookExtension2_PARAM_CONTENT_ID, "ContentIdTest",
+ *     FacebookExtension2_PARAM_CURRENCY, "GBP",
+ *     FacebookExtension2_PARAM_NUM_ITEMS, 3
+ * );
+ * fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 10, real(_params));
+ * ds_list_destroy(_params);
  * ```
- * The code above first creates a struct that defines the key-value pairs to be used as the parameters. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.
+ * The code above first creates a ${type.list} and adds the key-value pairs to be used as the parameters to it. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.
  * @func_end
  */
 
@@ -373,11 +400,12 @@
  * 
  * The sign-in functionality is supported on all platforms. Other functionality may not be available on all platforms.
  * 
- * [[Note: Functions that take an array or a struct can also take a DS list or DS map instead. When a parameter expects key-value pairs, these can also be provided in an array (as key, value, key, value, etc.).]]
+ * [[Important: Some functions of this extension take a parameter of type ${type.list}. However, extension functions currently cannot accept DS list references. To fix this you can wrap the list in a function call to ${function.real}.]]
  * 
  * @section Guides
  * @desc These are the guides for the Facebook extension:
  * @ref page.guide_setup
+ * @ref page.guide_login
  * @section_end
  * 
  * @section_func
