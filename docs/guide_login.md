@@ -42,7 +42,7 @@ if (async_load[? "type"] == "fb_login_oauth") {
 ```
 
 The ${event.social} indicates that the dialog has been invoked. From here on, you can check with your own server periodically to see if it has the token.
-This can be done by, e.g., triggering a ${var.alarm} after a second. In the alarm an HTTP `"POST"` request is made using ${http_request}. The state number from the original call ${function.fb_login_oauth} so the server knows which login request this request is for. The code for this may look as follows: 
+This can be done by, e.g., triggering a ${var.alarm} after a second. In the alarm an HTTP `"POST"` request is made using ${function.http_request}. The state number from the original call ${function.fb_login_oauth} so the server knows which login request this request is for. The code for this may look as follows: 
 ```gml
 /// Alarm 0 Event
 var _headers = ds_map_create();

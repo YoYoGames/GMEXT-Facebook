@@ -12,7 +12,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review]](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {list} permissions The permissions to request
+ * @param {ds_list} permissions The permissions to request
  * 
  * @returns {real}
  * 
@@ -119,7 +119,7 @@
  * 
  * @param {string} graph_path the path to the endpoint in the graph to access
  * @param {string} http_method the HTTP method to use. Can be one of the following: `"GET"`, `"POST"`, `"DELETE"`
- * @param {list} params The parameters to use, provided as key-value pairs
+ * @param {ds_list} params The parameters to use, provided as key-value pairs
  * 
  * @returns {real}
  * 
@@ -202,7 +202,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review]](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {list} permissions The permissions to request
+ * @param {ds_list} permissions The permissions to request
  * 
  * @event social
  * @desc 
@@ -223,7 +223,7 @@
  * fb_request_read_permissions(real(_permissions));
  * ds_list_destroy(_permissions);
  * ```
- * The code above creates a ${type.list} and adds a few permissions (scopes) to it. It then requests read permissions on this list of items. Finally, the list is destroyed.
+ * The code above creates a ${type.ds_list} and adds a few permissions (scopes) to it. It then requests read permissions on this list of items. Finally, the list is destroyed.
  * @func_end
  */
 
@@ -233,7 +233,7 @@
  * 
  * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
- * @param {list} permissions The permissions to request
+ * @param {ds_list} permissions The permissions to request
  * 
  * @event social
  * @desc 
@@ -250,7 +250,7 @@
  * fb_request_publish_permissions(real(_permissions));
  * ds_list_destroy(_permissions);
  * ```
- * The code above creates a ${type.list} and adds a permission (scope) to it. It then requests publish permissions on this list of items. Finally, the list is destroyed.
+ * The code above creates a ${type.ds_list} and adds a permission (scope) to it. It then requests publish permissions on this list of items. Finally, the list is destroyed.
  * @func_end
  */
 
@@ -328,7 +328,7 @@
  * 
  * @param {constant.FacebookExtension2_EVENT} event_name The name of the event to log
  * @param {real} [value_to_sum] The value to add to the sum for this event
- * @param {list} [event_params] The event parameters (one or more of ${constant.FacebookExtension2_PARAM}) as key-value pairs
+ * @param {ds_list} [event_params] The event parameters (one or more of ${constant.FacebookExtension2_PARAM}) as key-value pairs
  * 
  * @returns {boolean}
  * 
@@ -343,7 +343,7 @@
  * fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 10, real(_params));
  * ds_list_destroy(_params);
  * ```
- * The code above first creates a ${type.list} and adds the key-value pairs to be used as the parameters to it. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.
+ * The code above first creates a ${type.ds_list} and adds the key-value pairs to be used as the parameters to it. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.
  * @func_end
  */
 
@@ -400,7 +400,7 @@
  * 
  * The sign-in functionality is supported on all platforms. Other functionality may not be available on all platforms.
  * 
- * [[Important: Some functions of this extension take a parameter of type ${type.list}. However, extension functions currently cannot accept DS list references. To fix this you can wrap the list in a function call to ${function.real}.]]
+ * [[Important: Some functions of this extension take a parameter of type ${type.ds_list}. However, extension functions currently cannot accept DS list references. To fix this you can wrap the list in a function call to ${function.real}.]]
  * 
  * @section Guides
  * @desc These are the guides for the Facebook extension:
