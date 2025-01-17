@@ -8,7 +8,20 @@ The Login functionality of the Facebook extension is supported on all platforms 
 
 ### Android, iOS and HTML5
 
-> https://developers.facebook.com/docs/development/create-an-app/facebook-login-for-games-use-case
+The following page of the Facebook developer documentation describes how to create a Facebook app and set it up to use the login functionality:
+
+> [Facebook Login Use Case](https://developers.facebook.com/docs/development/create-an-app/facebook-login-for-games-use-case)
+
+Once you've set up the app in the App Dashboard you can add code to your project for the login functionality. On the platforms supported by the SDK, you can use the function ${function.fb_login}:
+
+```gml
+var _permissions = ds_list_create();
+ds_list_add(perms, "public_profile", "user_friends");
+fb_login(real(_permissions));
+ds_list_destroy(_permissions);
+```
+
+This function will bring up a login dialog. A ${event.social} is then triggered which provides information about the result.
 
 ### OAuth
 
@@ -42,7 +55,7 @@ if (async_load[? "type"] == "fb_login_oauth") {
 ```
 
 The ${event.social} indicates that the dialog has been invoked. From here on, you can check with your own server periodically to see if it has the token.
-This can be done by, e.g., triggering a ${var.alarm} after a second. In the alarm an HTTP `"POST"` request is made using ${function.http_request}. The state number from the original call ${function.fb_login_oauth} so the server knows which login request this request is for. The code for this may look as follows: 
+This can be done by, e.g., triggering a ${var.alarm} after a second. In the alarm an HTTP `"POST"` request is made using ${function.http_request}. The state number from the original call to ${function.fb_login_oauth} can be used to let the server know which login request this request is for. The code for this may look as follows: 
 ```gml
 /// Alarm 0 Event
 var _headers = ds_map_create();

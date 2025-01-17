@@ -14,7 +14,7 @@ The first step is to Create an App on Facebook:
 
 After your new app has been created, you'll find more info on the App Dashboard on the steps to take to publish your app. You should take note of the **App ID** and **App Secret** as you'll need them later in GameMaker.
 
-For every platform that you want to use your app on, you'll need to provide additional information.
+For every platform that you want to use your app on you need to add that platform in the App Dashboard and provide additional information.
 
 > See: [Platform Settings](https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings)
 
