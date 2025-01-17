@@ -116,7 +116,7 @@ fb_init();
 
 [[Note: This is a change from previous versions of the extension to be able to guarantee a correct initialisation order of the different extensions that you might use in a project.]]
 
-In the ${event.create} we'll also initialise some variables that we'll need later as well as an ${type.dslist} with the basic permissions required (more on this later) and some variables to control the different permission requests:
+In the ${event.create} we'll also initialise some variables that we'll need later as well as an ${type.ds_list} with the basic permissions required (more on this later) and some variables to control the different permission requests:
 
 ```gml
 fb_init();
