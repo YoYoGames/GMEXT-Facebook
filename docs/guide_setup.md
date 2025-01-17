@@ -8,39 +8,27 @@ The Facebook extension can be used to communicate with the various Facebook APIs
 
 ## Creating An App
 
-The first step is Creating An App on Facebook: 
+The first step is to Create an App on Facebook: 
 
 > See: [Create an App](https://developers.facebook.com/docs/development/create-an-app)
 
-You should take note of the **App ID** and **App Secret** as you'll need them later in GameMaker. Now, take a moment to update or change the name, email, and other details of your app:
+After your new app has been created, you'll find more info on the App Dashboard on the steps to take to publish your app. You should take note of the **App ID** and **App Secret** as you'll need them later in GameMaker.
 
-Next, you will be presented with the **Data Protection Officer's Contact Information**. This is a requirement under GDPR by European Law and you should fill in the required details. When finished you can then click the **Add Platform** button at the bottom:
+For every platform that you want to use your app on, you'll need to provide additional information.
 
-![FB_AddPlatform.png](assets/FB_AddPlatform.png)
-
-Here you should choose either iOS, Android or Website if you are publishing an HTML5 game.
+> See: [Platform Settings](https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings)
 
 ### iOS
 
-Selecting iOS will open the setup window for iOS devices to use your app. You will need to have set up an iTunes listing for your game and have a **Bundle ID** and an **App ID** (see the [Apple documentation](https://help.apple.com/app-store-connect/#/dev219b53a88) for more information) which you will need to add in here (make sure that the Bundle ID matches that of the [iOS Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/iOS.htm) for your game):
-
-![FB_AddiOS.png](assets/FB_AddiOS.png)
-
-You can ignore the rest of the options in this window and continue on to add details for the Android version of your game. If you aren't adding Android or HTML5 for now, scroll to the bottom of the page and click **Save Changes**.
+For iOS you will need to have a **Bundle ID** and an **App ID** (see the [Apple documentation](https://help.apple.com/app-store-connect/#/dev219b53a88) for more information) which you will need to add in here (make sure that the Bundle ID matches that of the [iOS Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/iOS.htm) for your game).
 
 ### Android
 
-Selecting Android will open up the setup window for Android devices. You will need to have set up a Google Play store listing for your game and will need your **Package Name** and **Key Hash**. The package name is the reverse URL identifier used for your game on the Play Store (and it should match that used in the [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm) for your game). You can get the hash key from the [Android Preferences](https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm)' **Keystore** section. Use them to fill in the Android options:
+For Android you will need to have set up a Google Play Store listing for your game and will need your **Package Name** and **Key Hash**. The package name is the reverse URL identifier used for your game on the Play Store (and it should match that used in the [Android Game Options](https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm) for your game). You can get the hash key from the [Android Preferences](https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm)' **Keystore** section.
 
-![FB_AddAndroid.png](assets/FB_AddAndroid.png)
-
-Note that you also need to add a **Class Name** which should be formatted as:
+Note that you need to add a **Class Name** here which should be formatted as:
 
 > <Your_Package_Name>.RunnerActivity
-
-As shown in the screenshot above.
-
-You can ignore the rest of the options in this window and scroll to the bottom of the page where you should click the button labelled **Save Changes**, unless you want to set up a website with an HTML5 game.
 
 ### Website (HTML5)
 
@@ -108,13 +96,15 @@ On iOS, set your **Client Token** (which you can get from your Facebook dashboar
 
 ### OAuth
 
-OAuth uses the **App ID** set above and additionally requires an **OAuth Redirect URL**. This is the URL to which Facebook will send the code it generates after you make the initial request using either ${function.fb_login} (SDK platforms) or ${function.fb_login_oauth} (other platforms or as an alternative login method on SDK platforms).
+OAuth uses the **App ID** set above and additionally requires an **OAuth Redirect URL**. This is the URL to which Facebook will send the code it generates after you make the initial request using ${function.fb_login_oauth} (on non-SDK platforms or as an alternative login method on SDK platforms).
 
-You can, for example, add the Firebase extension to your project and make use of the [Firebase Cloud Functions](https://github.com/YoYoGames/GMEXT-Firebase/wiki/cloud_functions) to make the request for the token.
+One example of how you could handle the server code needed to exchange the authorisation code for the access token is by making use of the [Firebase Cloud Functions](https://github.com/YoYoGames/GMEXT-Firebase/wiki/cloud_functions).
+
+See: ${page.guide_login}
 
 ## Adding Facebook Functions
 
-When adding Facebook integration to your game, we recommend that you create *a persistent* controller object that will be added to the very first room of your game and persist throughout. This is because a lot of the Facebook functionality *is asynchronous* and so it's better to have a single object that is dedicated to dealing with the different callbacks, although your buttons and things themselves don't have to be persistent. The rest of this tutorial assumes you have such an object in your game.
+When adding Facebook integration to your game, we recommend that you create a *persistent* controller object that will be added to the very first room of your game and persist throughout. This is because a lot of the Facebook functionality is *asynchronous* and so it's better to have a single object that is dedicated to dealing with the different callbacks, although your buttons and things themselves don't have to be persistent. The rest of this tutorial assumes you have such an object in your game.
 
 ### Logging In
 
@@ -124,9 +114,9 @@ To start adding Facebook functionality to your game you will first need to ensur
 fb_init();
 ```
 
-[[Note: this is a change from previous versions of the extension to guarantee a correct initialisation order of the different extensions that you might use in a project.]]
+[[Note: this is a change from previous versions of the extension to be able to guarantee a correct initialisation order of the different extensions that you might use in a project.]]
 
-In the Create event we'll also initialise some variables that we'll need later as well as an ${type.array} with the basic permissions required (more on this later) and some variables to control the different permission requests:
+In the ${event.create} we'll also initialise some variables that we'll need later as well as an ${type.array} with the basic permissions required (more on this later) and some variables to control the different permission requests:
 
 ```gml
 fb_init();
@@ -136,7 +126,11 @@ fb_publish_permissions = false;
 fb_userid = "";
 fb_username = "";
 fb_picture = -1;
-fb_permissions = ["public_profile", "user_friends"];
+fb_permissions = ds_list_create();
+ds_list_add(fb_permissions,
+    "public_profile",
+    "user_friends"
+);
 ```
 
 Once you've called that, you can then check that the Facebook Graph API has initialised correctly using the extension function ${function.fb_ready} (in an alarm or the Step event). This will return `true` or `false`, depending on whether the Graph API is initialised or not, and can be checked before changing the room or starting the game proper. Once it returns `true`, you can then call the function to log the user in.
@@ -150,7 +144,7 @@ The actual login code will look something like this:
 ```gml
 if (fb_status() != "AUTHORISED")
 {
-    fb_login(["public_profile", "user_friends"]);
+    fb_login(real(fb_permissions));
 }
 ```
 
@@ -175,9 +169,9 @@ switch (async_load[? "type"])
             {
                 fb_logged_in = true;
                 show_debug_message("User successfully logged in!");
-                for (var i = 0; i < array_length(fb_permissions); ++i;)
+                for (var i = 0; i < ds_list_size(fb_permissions); ++i;)
                 {
-                        var _key = fb_permissions[i];
+                        var _key = fb_permissions[|i];
                         if (ds_map_exists(async_load, _key))
                         {
                             if (async_load[? _key] == "granted")
@@ -204,37 +198,36 @@ switch (async_load[? "type"])
 }
 ```
 
-The above code looks complex, but all it's doing is checking to see if the event was triggered by a login, and if it was then it parses the ${var.async_load} map and outputs the permission, whether it was granted or not. In general, you don't really *need* all that code, but we've added debug messages in to cover every eventuality so that you can see whether the code is working (or not!) in the console output. Note that there are further keys returned in the ${var.async_load} map, which are explained more fully in the PDF manual.
+The above code looks complex, but all it's doing is checking to see if the event was triggered by a login, and if it was then it parses the ${var.async_load} map and outputs the permission, whether it was granted or not. In general, you don't really *need* all that code, but we've added debug messages in to cover every eventuality so that you can see whether the code is working (or not!) in the console output. Note that there are further keys returned in the ${var.async_load} map, which you can find in the function reference for ${function.fb_login}.
 
 ### Getting User Data
 
 Once the user has logged in you can start to do **graph requests** to get more information about them, which you can then incorporate into your game. To formulate a graph request you'd use the ${function.fb_graph_request}, something like this in the controller's ${event.social}, when the login has been confirmed (you could also add it to a Key Press or Mouse Press event):
 
 ```gml
-params =
-{
-    "fields": "id,name,picture"
-};
+params = ds_list_create();
+ds_list_add(params, "fields", "id,name,picture");
 
-fb_graph_request("me", "GET", params);
+fb_graph_request("me", "GET", real(params));
+ds_list_destroy(params);
 ```
 
-Here we first create the struct with the requested parameters. A more complex example could be:
+Here we first create the DS list with the requested parameters. A more complex example could be:
 
 ```gml
-params = 
-{
-    "id": "123",
-    "name": "John Doe",
-    "picture", "http://url-to-picture.jpg")
-};
+params = ds_list_create();
+ds_list_add(params,
+    "id", "123",
+    "name", "John Doe",
+    "picture", "http://url-to-picture.jpg"
+);
 ```
 
 In the case of our test code, we're targeting the `"/me/"` node, which means that all data you retrieve comes from the logged-in user.
 
 [[Note: A node is an individual Facebook object with a unique ID. For example, a single user, the logged-in user or a business would all be considered nodes. Returned data for the different nodes will be limited by the permissions requested and set on the account targeted.]]
 
-So, we create a struct with the data we want to request then call the ${function.fb_graph_request} function as a `"GET"` call, supplying the data.
+So, we create a DS list with the data we want to request then call the ${function.fb_graph_request} function as a `"GET"` call, supplying the data.
 
 [[IMPORTANT: With the basic permissions, you can only request very specific data from the open graph. You can find a [list of available default requests here](https://developers.facebook.com/docs/facebook-login/permissions/v3.0#reference-default_fields).]]
 
@@ -305,9 +298,13 @@ case "facebook_login_result":
         }
         if (fb_logged_in)
         {
+            var _permissions;
             if (!fb_check_permission("user_birthday"))
             {
-                fb_request_read_permissions(["user_birthday"]);
+                _permissions = ds_list_create();
+                ds_list_add(_permissions, "user_birthday");
+                fb_request_read_permissions(real(_permissions));
+                ds_list_destroy(_permissions);
                 show_debug_message("Requesting READ permissions - user_birthday");
             }
             else
@@ -316,7 +313,10 @@ case "facebook_login_result":
                 fb_read_permissions = true;
                 if (!fb_check_permission("publish_to_groups"))
                 {
-                    fb_request_publish_permissions(["publish_to_groups"]);
+                    _permissions = ds_list_create();
+                    ds_list_add(_permissions, "publish_to_groups");
+                    fb_request_publish_permissions(real(_permissions));
+                    ds_list_destroy(_permissions);
                     show_debug_message("Requesting PUBLISH permissions - publish_to_groups");
                 }
                 else
