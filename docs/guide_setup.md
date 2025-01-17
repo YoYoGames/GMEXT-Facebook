@@ -114,9 +114,9 @@ To start adding Facebook functionality to your game you will first need to ensur
 fb_init();
 ```
 
-[[Note: this is a change from previous versions of the extension to be able to guarantee a correct initialisation order of the different extensions that you might use in a project.]]
+[[Note: This is a change from previous versions of the extension to be able to guarantee a correct initialisation order of the different extensions that you might use in a project.]]
 
-In the ${event.create} we'll also initialise some variables that we'll need later as well as an ${type.array} with the basic permissions required (more on this later) and some variables to control the different permission requests:
+In the ${event.create} we'll also initialise some variables that we'll need later as well as an ${type.dslist} with the basic permissions required (more on this later) and some variables to control the different permission requests:
 
 ```gml
 fb_init();
@@ -135,7 +135,7 @@ ds_list_add(fb_permissions,
 
 Once you've called that, you can then check that the Facebook Graph API has initialised correctly using the extension function ${function.fb_ready} (in an alarm or the Step event). This will return `true` or `false`, depending on whether the Graph API is initialised or not, and can be checked before changing the room or starting the game proper. Once it returns `true`, you can then call the function to log the user in.
 
-Normally you wouldn't log the user in automatically on game start - although you *can* -  but instead have a button in the game that the user can press to log in and use Facebook. However you do it though, you'll need to call the extension function ${function.fb_login}. This function requires you to supply an array with the permissions that you want to have for the user logging in.
+Normally you wouldn't log the user in automatically on game start - although you *can* -  but instead have a button in the game that the user can press to log in and use Facebook. However you do it though, you'll need to call the extension function ${function.fb_login}. This function requires you to supply a DS list with the permissions that you want to have for the user logging in.
 
 [[IMPORTANT: You can only request the default **read** permissions with this function. If you require additional read or write permissions after logging in you will need to specifically request them (see the **Additional Permissions** section, below). Also note that if your game requires more than the `"public_profile"`, `"email"` and/or `"user_friends"` it will [require review by Facebook](https://developers.facebook.com/docs/facebook-login/review/what-is-login-review) before it can be used by people other than the game's developers.]]
 
@@ -361,10 +361,10 @@ A few things to note when using this function:
 * The URL you supply should link to a page related to the content being shared.
 * The dialog message will be populated using the Open Graph meta tags embedded in the header of the URL you give. An example of this would be:
 ```
-<meta property=”og:title” content=”Mesh - Fast Finger Fun!” />
-<meta property=”og:url” content=”http://www.nocturnegames.com” />
-<meta property=”og:description” content=”Mesh is a frenzied neon arcade game where quick fingers are needed to score points and combos as you try to beat your previous high scores!” />
-<meta property=”og:image” content=”https://m.gjcdn.net/screenshot-thumbnail/900x2000/334601-v3.jpg” />
+<meta property="og:title" content="Mesh - Fast Finger Fun!" />
+<meta property="og:url" content="http://www.nocturnegames.com" />
+<meta property="og:description" content="Mesh is a frenzied neon arcade game where quick fingers are needed to score points and combos as you try to beat your previous high scores!" />
+<meta property="og:image" content="https://m.gjcdn.net/screenshot-thumbnail/900x2000/334601-v3.jpg" />
 ```
 
 For more information on Open Graph meta tags, please see:

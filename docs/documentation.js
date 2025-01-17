@@ -200,7 +200,7 @@
  * @function fb_request_read_permissions
  * @desc This function reauthenticates the currently logged in user with read permissions.
  * 
- * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review]](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
+ * [[Note: If your app asks for more than the default public profile fields and email, Facebook must review it before you release it. See [App Review](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review).]]
  * 
  * @param {ds_list} permissions The permissions to request
  * 
