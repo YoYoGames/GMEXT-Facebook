@@ -2,3 +2,5 @@
 source/Facebook_gml/options/extensions/
 
 .env
+
+output/

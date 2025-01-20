@@ -14,7 +14,7 @@
   "copyToTargets":3035426170322551022,
   "description":"",
   "exportToGame":true,
-  "extensionVersion":"2.1.0",
+  "extensionVersion":"2.1.1",
   "files":[
     {"$GMExtensionFile":"","%Name":"","constants":[
         {"$GMExtensionConstant":"","%Name":"FacebookExtension2_EVENT_ACHIEVED_LEVEL","hidden":false,"name":"FacebookExtension2_EVENT_ACHIEVED_LEVEL","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"101",},

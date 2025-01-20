@@ -22,6 +22,7 @@
   ],
   "IncludedFiles":[
     {"$GMIncludedFile":"","%Name":".env","CopyToMask":-1,"filePath":"datafiles","name":".env","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"GMEXT-Facebook.html","CopyToMask":0,"filePath":"datafiles","name":"GMEXT-Facebook.html","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
   ],
   "isEcma":false,
   "LibraryEmitters":[],

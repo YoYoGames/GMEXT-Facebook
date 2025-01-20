@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Setup Guide - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Setup Guide";
+        var mkdocs_page_input_path = "guide_setup.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="home.html">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Setup Guide</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#ios">iOS</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#android">Android</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#website-html5">Website (HTML5)</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="guide_login.html">Login Guide</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Setup Guide</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/guide_setup.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p>This guide provides you with the information required to integrate Facebook with your Android, iOS and/or HTML5 game using the <a href="https://marketplace.gamemaker.io/assets/2011/facebook/">Facebook extension</a>.</p>
+<p>The Facebook extension can be used to communicate with the various Facebook APIs made available by the platform.</p>
+<blockquote>
+<p>See: <a href="https://developers.facebook.com/docs/">Meta Developer Documentation</a> for more information</p>
+</blockquote>
+<h2 id="creating-an-app">Creating An App</h2>
+<p>The first step is to Create an App on Facebook:</p>
+<blockquote>
+<p>See: <a href="https://developers.facebook.com/docs/development/create-an-app">Create an App</a></p>
+</blockquote>
+<p>After your new app has been created, you'll find more info on the App Dashboard on the steps to take to publish your app. You should take note of the <strong>App ID</strong> and <strong>App Secret</strong> as you'll need them later in GameMaker.</p>
+<p>For every platform that you want to use your app on you need to add that platform in the App Dashboard and provide additional information.</p>
+<blockquote>
+<p>See: <a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings">Platform Settings</a></p>
+</blockquote>
+<h3 id="ios">iOS</h3>
+<p>For iOS you will need to have a <strong>Bundle ID</strong> and an <strong>App ID</strong> (see the <a href="https://help.apple.com/app-store-connect/#/dev219b53a88">Apple documentation</a> for more information) which you will need to add in here (make sure that the Bundle ID matches that of the <a href="https://manual.gamemaker.io/monthly/en/Settings/Game_Options/iOS.htm">iOS Game Options</a> for your game).</p>
+<h3 id="android">Android</h3>
+<p>For Android you will need to have set up a Google Play Store listing for your game and will need your <strong>Package Name</strong> and <strong>Key Hash</strong>. The package name is the reverse URL identifier used for your game on the Play Store (and it should match that used in the <a href="https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm">Android Game Options</a> for your game). You can get the hash key from the <a href="https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm">Android Preferences</a>' <strong>Keystore</strong> section.</p>
+<p>Note that you need to add a <strong>Class Name</strong> here which should be formatted as:</p>
+<blockquote>
+<p><Your_Package_Name>.RunnerActivity</p>
+</blockquote>
+<h3 id="website-html5">Website (HTML5)</h3>
+<p>If you choose <strong>Website</strong>, then you have two options, depending on whether you want to test your game running it from GameMaker, or whether you want to have the game hosted "live" on a server.</p>
+<p>For testing the game from GameMaker, you need to set the <strong>Site URL</strong> to:</p>
+<pre class="highlight"><code>http://localhost:51264/</code></pre>
+<p><img alt="FB_LocalHost.png" src="assets/FB_LocalHost.png" /></p>
+<p>Then go to the Basic game settings and set the App Domain to <code>localhost</code>:</p>
+<p><img alt="FB_HTML5Testing.png" src="assets/FB_HTML5Testing.png" /></p>
+<p>This will permit you test your game when running it from within GameMaker.</p>
+<p>If you want to host it on a server as a published game, then you'll be required to fill in the <strong>Site URL</strong> so it points to the location of your game. Note that Facebook will require your game to be hosted on a site with a valid SSL certificate and the link should be HTTPS.</p>
+<p><img alt="FacebookHtml5Link.png" src="assets/FacebookHtml5Link.png" /></p>
+<p>With that done, you can now click <strong>Save Changes</strong> and move on to setting up GameMaker.</p>
+<h2 id="gamemaker">GameMaker</h2>
+<p>Now in GameMaker, the first thing you need to do is add the Facebook extension to your project. For that, you need to add the extension to your account <a href="https://marketplace.gamemaker.io/assets/2011/facebook/">on the Marketplace</a>. Once added, go to <strong>Marketplace</strong> -&gt; <strong>My Library</strong> in GameMaker and then download and install the Facebook asset (you can find it easily using the search function):</p>
+<p><img alt="FB_Library.png" src="assets/FB_Library.png" /></p>
+<blockquote>
+<p>IMPORTANT</p>
+<p>You should make sure to add all of the extensions' files.</p>
+</blockquote>
+<p>You should now open the Facebook extension asset from the Asset Browser (<strong>FacebookExtension2</strong>):</p>
+<p><img alt="fb_ext_asset.png" src="assets/fb_ext_asset.png" /></p>
+<p>First of all, make sure that it's going to be exported <em>only</em> to those platforms where you are going to use it:</p>
+<p><img alt="extension_targets.png" src="assets/extension_targets.png" /></p>
+<p>Now open the menu for your target platform under "<strong>Extra Platforms</strong>" (Android/iOS) and add your Facebook app details in the Extension Options. You can find any relevant app details under <strong>Settings</strong> -&gt; <strong>Basic</strong> on your Facebook dashboard.</p>
+<blockquote>
+<p>See: <a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings">Basic Settings</a></p>
+</blockquote>
+<h3 id="common">Common</h3>
+<p>In the Extension Options, set the <strong>App ID</strong> to your Facebook App ID.</p>
+<h3 id="android_1">Android</h3>
+<p>In the <strong>General</strong> section of the <a href="https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm">Android Game Options</a>, set up the API levels to use. The Facebook extension requires the following API settings as a <em>minimum</em> to work:</p>
+<ul>
+<li>Build Tools: <strong>26.0.2</strong></li>
+<li>Support Library: <strong>26.0.0</strong></li>
+<li>Target SDK: <strong>26</strong></li>
+<li>Minimum SDK: <strong>19</strong></li>
+<li>Compile SDK: <strong>26</strong></li>
+</ul>
+<p>Once you've filled that in (and made sure you have the relevant APIs installed in Android Studio), you can continue on to add the code that will access the Facebook API.</p>
+<h3 id="ios_1">iOS</h3>
+<p>On iOS, set your <strong>Client Token</strong> (which you can get from your Facebook dashboard under <strong>Settings</strong> -&gt; <strong>Advanced</strong> -&gt; <strong>Client Token</strong>) and <strong>Display Name</strong> (which is the name of your application) in the Extension Options.</p>
+<h3 id="oauth">OAuth</h3>
+<p>OAuth uses the <strong>App ID</strong> set above and additionally requires an <strong>OAuth Redirect URL</strong>. This is the URL to which Facebook will send the code it generates after you make the initial request using <a href="home.html#fb_login_oauth">fb_login_oauth</a> (on non-SDK platforms or as an alternative login method on SDK platforms).</p>
+<p>One example of how you could handle the server code needed to exchange the authorisation code for the access token is by making use of the <a href="https://github.com/YoYoGames/GMEXT-Firebase/wiki/cloud_functions">Firebase Cloud Functions</a>.</p>
+<p>See: <a href="guide_login.html">Login Guide</a></p>
+<h2 id="adding-facebook-functions">Adding Facebook Functions</h2>
+<p>When adding Facebook integration to your game, we recommend that you create a <em>persistent</em> controller object that will be added to the very first room of your game and persist throughout. This is because a lot of the Facebook functionality is <em>asynchronous</em> and so it's better to have a single object that is dedicated to dealing with the different callbacks, although your buttons and things themselves don't have to be persistent. The rest of this tutorial assumes you have such an object in your game.</p>
+<h3 id="logging-in">Logging In</h3>
+<p>To start adding Facebook functionality to your game you will first need to ensure that the extension is installed correctly and set to export to the supported platforms. The extension contains the function <a href="home.html#fb_init">fb_init</a> which you should call first in the <strong>Create Event</strong> of the controller object:</p>
+<pre class="highlight"><code class="language-gml">fb_init();</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a change from previous versions of the extension to be able to guarantee a correct initialisation order of the different extensions that you might use in a project.</p>
+</div>
+<p>In the <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Object_Events.htm">Create Event</a> we'll also initialise some variables that we'll need later as well as an <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a> with the basic permissions required (more on this later) and some variables to control the different permission requests:</p>
+<pre class="highlight"><code class="language-gml">fb_init();
+fb_logged_in = false;
+fb_read_permissions = false;
+fb_publish_permissions = false;
+fb_userid = "";
+fb_username = "";
+fb_picture = -1;
+fb_permissions = ds_list_create();
+ds_list_add(fb_permissions,
+    "public_profile",
+    "user_friends"
+);</code></pre>
+<p>Once you've called that, you can then check that the Facebook Graph API has initialised correctly using the extension function <a href="home.html#fb_ready">fb_ready</a> (in an alarm or the Step event). This will return <code>true</code> or <code>false</code>, depending on whether the Graph API is initialised or not, and can be checked before changing the room or starting the game proper. Once it returns <code>true</code>, you can then call the function to log the user in.</p>
+<p>Normally you wouldn't log the user in automatically on game start - although you <em>can</em> -  but instead have a button in the game that the user can press to log in and use Facebook. However you do it though, you'll need to call the extension function <a href="home.html#fb_login">fb_login</a>. This function requires you to supply a DS list with the permissions that you want to have for the user logging in.</p>
+<blockquote>
+<p>IMPORTANT</p>
+<p>You can only request the default <strong>read</strong> permissions with this function. If you require additional read or write permissions after logging in you will need to specifically request them (see the <strong>Additional Permissions</strong> section, below). Also note that if your game requires more than the <code>"public_profile"</code>, <code>"email"</code> and/or <code>"user_friends"</code> it will <a href="https://developers.facebook.com/docs/facebook-login/review/what-is-login-review">require review by Facebook</a> before it can be used by people other than the game's developers.</p>
+</blockquote>
+<p>The actual login code will look something like this:</p>
+<pre class="highlight"><code class="language-gml">if (fb_status() != "AUTHORISED")
+{
+    fb_login(real(fb_permissions));
+}</code></pre>
+<p>Note that we first check to see if the game has already been authorised since the login state can be persisted over various runs of the game, and if not then we log the user in.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can check the different status results and react in different ways depending on what is returned. This isn't covered in this article to keep things simple.</p>
+</div>
+<p>When you call this function, it will generate a <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> with the results of the login attempt. In this event, the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Builtin_Global_Variables/async_load.htm">async_load</a> DS map will contain a <code>"type"</code> key, which will hold the string <code>"facebook_login_result"</code> when the event is triggered by logging in. There will also be a <code>"status"</code> key which returns whether the login was a <code>"success"</code>, was <code>"cancelled"</code> or if it failed with an <code>"error"</code>.</p>
+<p>If the login status key is <code>"success"</code>, then the user has logged in and you can go ahead and check each of the permissions you have requested to see if they have been "granted" or not.</p>
+<p>You can check this with the following code:</p>
+<pre class="highlight"><code class="language-gml">switch (async_load[? "type"])
+{
+    case "facebook_login_result":
+        show_debug_message("facebook_login_result async event triggered");
+        if (async_load[? "status"] == "success")
+        {
+            if (!fb_logged_in)
+            {
+                fb_logged_in = true;
+                show_debug_message("User successfully logged in!");
+                for (var i = 0; i &lt; ds_list_size(fb_permissions); ++i;)
+                {
+                        var _key = fb_permissions[|i];
+                        if (ds_map_exists(async_load, _key))
+                        {
+                            if (async_load[? _key] == "granted")
+                            {
+                                show_debug_message("Permission "+ _key + ": " + async_load[? _key]);
+                            }
+                            else
+                            {
+                                show_debug_message("Permission "+ _key + ": "+ async_load[? _key]);
+                            }
+                        }
+                        else
+                        {
+                            show_debug_message("Permission " + _key + ": Does Not Exist");
+                        }
+                }
+            }
+        }
+        else
+        {
+            show_debug_message("Login failed: " + string(async_load[? "status"]));
+        }
+        break;
+}</code></pre>
+<p>The above code looks complex, but all it's doing is checking to see if the event was triggered by a login, and if it was then it parses the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Builtin_Global_Variables/async_load.htm">async_load</a> map and outputs the permission, whether it was granted or not. In general, you don't really <em>need</em> all that code, but we've added debug messages in to cover every eventuality so that you can see whether the code is working (or not!) in the console output. Note that there are further keys returned in the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables/Builtin_Global_Variables/async_load.htm">async_load</a> map, which you can find in the function reference for <a href="home.html#fb_login">fb_login</a>.</p>
+<h3 id="getting-user-data">Getting User Data</h3>
+<p>Once the user has logged in you can start to do <strong>graph requests</strong> to get more information about them, which you can then incorporate into your game. To formulate a graph request you'd use the <a href="home.html#fb_graph_request">fb_graph_request</a>, something like this in the controller's <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a>, when the login has been confirmed (you could also add it to a Key Press or Mouse Press event):</p>
+<pre class="highlight"><code class="language-gml">params = ds_list_create();
+ds_list_add(params, "fields", "id,name,picture");
+
+fb_graph_request("me", "GET", real(params));
+ds_list_destroy(params);</code></pre>
+<p>Here we first create the DS list with the requested parameters. A more complex example could be:</p>
+<pre class="highlight"><code class="language-gml">params = ds_list_create();
+ds_list_add(params,
+    "id", "123",
+    "name", "John Doe",
+    "picture", "http://url-to-picture.jpg"
+);</code></pre>
+<p>In the case of our test code, we're targeting the <code>"/me/"</code> node, which means that all data you retrieve comes from the logged-in user.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A node is an individual Facebook object with a unique ID. For example, a single user, the logged-in user or a business would all be considered nodes. Returned data for the different nodes will be limited by the permissions requested and set on the account targeted.</p>
+</div>
+<p>So, we create a DS list with the data we want to request then call the <a href="home.html#fb_graph_request">fb_graph_request</a> function as a <code>"GET"</code> call, supplying the data.</p>
+<blockquote>
+<p>IMPORTANT</p>
+<p>With the basic permissions, you can only request very specific data from the open graph. You can find a <a href="https://developers.facebook.com/docs/facebook-login/permissions/v3.0#reference-default_fields">list of available default requests here</a>.</p>
+</blockquote>
+<p>In the <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> again, we need to retrieve the data from the DS map and use it to set some variables. For this, we'll simply add a new <code>case</code> into the <code>switch</code> that checks for <code>"type"</code>:</p>
+<pre class="highlight"><code class="language-gml">case "fb_graph_request":
+    show_debug_message("fb_graph_request async event triggered");
+    if (async_load[? "status"] == "success")
+    {
+        show_debug_message("Graph Request Successful!");
+        var _text = async_load[? "response_text"];
+        var _response = json_parse(_text);
+        show_debug_message("Response = " + string(_response));
+        fb_username = _response.name;
+        fb_userid = _response.id;
+        var _pic = _response.picture;
+        var _data = _pic.data;
+        fb_picture = sprite_add(_data.url, 0, false, false, 0, 0);
+    }
+    else
+    {
+        if (async_load[? "status"] == "error")
+        {
+            show_debug_message("Graph Request Error!");
+            show_debug_message("Exception = " + string(async_load[? "exception"]));
+        }
+        else
+        {
+            show_debug_message("Graph request Cancelled!");
+        }
+    }
+    break;</code></pre>
+<p>Here we use the returned data to set the variables that hold the user name and user ID. These can then be used to display personalised messages and content in your game. Note that we also extract the <code>"data"</code> struct from the <code>"picture"</code> key and then use that to create a new sprite for the user avatar. In this case, the variable only holds the request ID as loading the picture will be handled by the <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Image_Loaded.htm">Image Loaded Event</a>, which you would deal with as follows:</p>
+<pre class="highlight"><code class="language-gml">if (async_load[? "id"] != fb_picture) { exit; }
+if (async_load[? "status"] &lt; 0) { exit; }
+
+sprite_index = fb_picture;</code></pre>
+<p>All that does is take the returned avatar sprite and set the user profile to use it. Don't forget that this sprite will need to be deleted when no longer required (using <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Asset_Management/Sprites/Sprite_Manipulation/sprite_delete.htm">sprite_delete</a>).</p>
+<p>Graph requests are a very powerful tool and this is just one example of how to use them to get data. However, we can't go into all the details of each and every node here, so we recommend that you check the extensive documentation on the Facebook developer pages, as well as the <strong>Graph API Explorer</strong>, which lets you test nodes and see what data is returned, etc.:</p>
+<ul>
+<li><a href="https://developers.facebook.com/docs/graph-api/reference">Graph API Reference</a></li>
+<li><a href="https://developers.facebook.com/docs/graph-api/explorer">Graph API Explorer Guide</a></li>
+</ul>
+<p>Also, note that the Facebook Extension Demo project also shows different uses of the graph request function to get friend's data and delete permissions among other things.</p>
+<h3 id="additional-permissions">Additional Permissions</h3>
+<p>It may be that your game requires additional read or publish permissions, so you'll need to request these and have the user agree to grant them. For this, we use the functions <a href="home.html#fb_request_read_permissions">fb_request_read_permissions</a> and <a href="home.html#fb_request_publish_permissions">fb_request_publish_permissions</a>. Now, before continuing, it's very important to note that these functions <em>will log the user into Facebook again</em>, and so if any of the permissions are not granted or there is an error, the function <a href="home.html#fb_status">fb_status</a> will return <code>"FAILED"</code>, but <strong>the user will still be logged in</strong>, they just won't have the requested permissions.</p>
+<p>In general, you'd want to request additional permissions directly after getting a successful user login callback in the <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a>, so that's where we'll be adding the following code, after the initial <code>fb_logged_in</code> check, in the same async type, <code>"facebook_login_result"</code>:</p>
+<pre class="highlight"><code class="language-gml">case "facebook_login_result":
+    show_debug_message("facebook_login_result async event triggered");
+    if (async_load[? "status"] == "success")
+    {
+        if (!fb_logged_in)
+        {
+            // Login code shown above here
+        }
+        if (fb_logged_in)
+        {
+            var _permissions;
+            if (!fb_check_permission("user_birthday"))
+            {
+                _permissions = ds_list_create();
+                ds_list_add(_permissions, "user_birthday");
+                fb_request_read_permissions(real(_permissions));
+                ds_list_destroy(_permissions);
+                show_debug_message("Requesting READ permissions - user_birthday");
+            }
+            else
+            {
+                show_debug_message("READ Permission Granted");
+                fb_read_permissions = true;
+                if (!fb_check_permission("publish_to_groups"))
+                {
+                    _permissions = ds_list_create();
+                    ds_list_add(_permissions, "publish_to_groups");
+                    fb_request_publish_permissions(real(_permissions));
+                    ds_list_destroy(_permissions);
+                    show_debug_message("Requesting PUBLISH permissions - publish_to_groups");
+                }
+                else
+                {
+                    fb_publish_permissions = true;
+                    show_debug_message("PUBLISH Permission Granted");
+                }
+            }
+        }
+    }
+    else
+    {
+        show_debug_message("Login failed: " + string(async_load[? "status"]));
+    }
+    break;</code></pre>
+<p>As you can see from the code above, we first check to see if the user already has the required read permission and if they don't we request it. This will trigger another login <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a>, where we can check to see if the permission was granted and then request publish permissions (which in turn will trigger another <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The "publish" permissions are pretty much obsolete and only used for some very specific things. In general, you can ignore them and simply request read permissions.</p>
+</div>
+<p>For a full list of the permissions that you can request, see this Facebook Developer article:</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/facebook-login/permissions/v3.0">Permissions Reference - Facebook Login</a></p>
+</blockquote>
+<h3 id="posting-to-facebook">Posting To Facebook</h3>
+<p>You now have your user data as well as the permissions you require for your game. you can use the user data to interact with the user by applying their avatar to achievements, in-game identifiers, etc., but you may also want to let the user share information about the game with other people on Facebook. For that, we have the function <a href="home.html#fb_dialog">fb_dialog</a>.</p>
+<p>This function can be called from anywhere in your game and would look something like this:</p>
+<pre class="highlight"><code class="language-gml">if (fb_status() == "AUTHORISED")
+{
+    fb_dialog("http://link.com");
+}</code></pre>
+<p>A few things to note when using this function:</p>
+<ul>
+<li>The user does NOT have to be logged in when it is called, as the function will request the user log in if they're not already.</li>
+<li>The URL you supply should link to a page related to the content being shared.</li>
+<li>The dialog message will be populated using the Open Graph meta tags embedded in the header of the URL you give. An example of this would be:
+<pre class="highlight"><code>&lt;meta property="og:title" content="Mesh - Fast Finger Fun!" /&gt;
+&lt;meta property="og:url" content="http://www.nocturnegames.com" /&gt;
+&lt;meta property="og:description" content="Mesh is a frenzied neon arcade game where quick fingers are needed to score points and combos as you try to beat your previous high scores!" /&gt;
+&lt;meta property="og:image" content="https://m.gjcdn.net/screenshot-thumbnail/900x2000/334601-v3.jpg" /&gt;</code></pre></li>
+</ul>
+<p>For more information on Open Graph meta tags, please see:</p>
+<blockquote>
+<p><a href="https://ogp.me">The Open Graph Protocol</a></p>
+</blockquote>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="home.html" class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="guide_login.html" class="btn btn-neutral float-right" title="Login Guide">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>YoYoGames 2025</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="home.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="guide_login.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

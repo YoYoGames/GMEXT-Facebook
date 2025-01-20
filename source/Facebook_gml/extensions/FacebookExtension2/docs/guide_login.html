@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Login Guide - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Login Guide";
+        var mkdocs_page_input_path = "guide_login.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="home.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="guide_setup.html">Setup Guide</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Login Guide</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#android-ios-and-html5">Android, iOS and HTML5</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#oauth">OAuth</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Login Guide</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/guide_login.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p>This guide contains information on how to use <a href="https://developers.facebook.com/docs/facebook-login/">Facebook Login</a>.</p>
+<p>The Login functionality of the Facebook extension is supported on all platforms by the extension. On <a href="https://developers.facebook.com/docs/facebook-login/android">Android</a>, <a href="https://developers.facebook.com/docs/facebook-login/ios">iOS</a> and <a href="https://developers.facebook.com/docs/facebook-login/web">HTML5</a> it makes use of the SDK, on other platforms OAuth can be used.</p>
+<h2 id="login-flow">Login Flow</h2>
+<h3 id="android-ios-and-html5">Android, iOS and HTML5</h3>
+<p>The following page of the Facebook developer documentation describes how to create a Facebook app and set it up to use the login functionality:</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/create-an-app/facebook-login-for-games-use-case">Facebook Login Use Case</a></p>
+</blockquote>
+<p>Once you've set up the app in the App Dashboard you can add code to your project for the login functionality. On the platforms supported by the SDK, you can use the function <a href="home.html#fb_login">fb_login</a>:</p>
+<pre class="highlight"><code class="language-gml">var _permissions = ds_list_create();
+ds_list_add(perms, "public_profile", "user_friends");
+fb_login(real(_permissions));
+ds_list_destroy(_permissions);</code></pre>
+<p>This function will bring up a login dialog. A <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> is then triggered which provides information about the result.</p>
+<h3 id="oauth">OAuth</h3>
+<p>For browser-based login for a web or desktop app without using the SDKs, or a login flow using entirely server-side code, Facebook has the option to build a login flow for yourself by using browser redirects. An overview of how to do this is provided on the following page:</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow">Manually Build a Login Flow</a></p>
+</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before you can start using this login method, you need to set the <strong>App ID</strong> and the <strong>OAuth Redirect URL</strong> in the <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Extensions.htm#extension_options">Extension Options</a>.</p>
+</div>
+<p>The Facebook extension provides the <a href="home.html#fb_login_oauth">fb_login_oauth</a> function which starts this OAuth login flow by invoking the login dialog in a browser window:
+<pre class="highlight"><code class="language-gml">/// Create Event
+search_request = undefined;
+search_tries = 50;
+
+state = __facebook_signin_state_create(32, "123456789");
+
+fb_login_oauth(state);</code></pre></p>
+<p>In the browser window the user can grant permissions to the scopes requested in the function call.
+If the user grants the app permission for the requested scopes on their behalf, the Facebook server sends a code to the <strong>OAuth Redirect URL</strong> on your own server, which then exchanges it for the actual access token.</p>
+<p>The <a href="home.html#fb_login_oauth">fb_login_oauth</a> triggers a <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> when it finishes:
+<pre class="highlight"><code class="language-gml">/// Async Social Event
+if (async_load[? "type"] == "fb_login_oauth") {
+    // Start polling our own server at regular intervals for the token
+    alarm[0] = game_get_speed(gamespeed_fps);
+}</code></pre></p>
+<p>The <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> indicates that the dialog has been invoked. From here on, you can check with your own server periodically to see if it has the token.
+This can be done by, e.g., triggering a <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Asset_Management/Instances/Instance_Variables/alarm.htm">alarm</a> after a second. In the alarm an HTTP <code>"POST"</code> request is made using <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Asynchronous_Functions/HTTP/http_request.htm">http_request</a>. The state number from the original call to <a href="home.html#fb_login_oauth">fb_login_oauth</a> can be used to let the server know which login request this request is for. The code for this may look as follows:
+<pre class="highlight"><code class="language-gml">/// Alarm 0 Event
+var _headers = ds_map_create();
+ds_map_add(_headers, "Content-Type", "application/json");
+
+var _body = json_stringify({ state: state });
+
+search_request = http_request(search_url, "POST", _headers, _body);
+ds_map_destroy(_headers);</code></pre></p>
+<p>The HTTP request will trigger a <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/HTTP.htm">Http Async Event</a> in which you can check if the token is present:
+<pre class="highlight"><code class="language-gml">/// Async HTTP Event
+if(async_load[?"status"] != 0) { exit; }
+if(async_load[? "id"] != search_request) { exit; }
+
+var _data;
+try {
+    // This should always be a JSON encoded string unless the
+    // server couldn't be reached for some reason.
+    _data = json_parse(async_load[? "result"]);
+}
+catch (_error) {
+    _data = { errorCode: 503, errorMessage: "Server couldn't be reached." };
+    show_debug_message(_data);
+}
+
+if (struct_exists(_data, "errorCode"))
+{
+    if (--search_tries &gt; 0) {
+        alarm[0] = game_get_speed(gamespeed_fps);
+    }
+    else {
+        var _map = ds_map_create();
+        _map[? "type"] = "fb_login_oauth_token";
+        _map[? "success"] = false;
+        event_perform_async(ev_async_social, _map);
+        instance_destroy();
+    }
+    return;
+}
+
+var _map = ds_map_create();
+_map[? "token"] = _data.access_token;
+_map[? "type"] = "fb_login_oauth_token";
+_map[? "success"] = true;
+event_perform_async(ev_async_social, _map);
+instance_destroy();</code></pre></p>
+<p>In this event the result is parsed into a struct using <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/File_Handling/Encoding_And_Hashing/json_parse.htm">json_parse</a>. If an error occurred, a new HTTP request is sent after a 1 second wait. The number of tries is limited.
+If no error occurred, the token is read from the struct and a <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> is triggered.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="guide_setup.html" class="btn btn-neutral float-left" title="Setup Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>YoYoGames 2025</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="guide_setup.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
