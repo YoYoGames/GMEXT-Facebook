@@ -138,16 +138,20 @@ function __facebook_signin_state_create(_digits = 32, _allowed_chars = "01234567
 /// 4. Creates an asynchronous event payload with OAuth initialization details and triggers the event.
 /// 
 /// @param {String} _state A unique state string used for security and validation during the OAuth process.
-function fb_login_oauth(_state) {
+function fb_login_oauth(_state, _scopes = "public_profile") {
 	#macro FACEBOOK_OAUTH_ENDPOINT "https://www.facebook.com/v21.0/dialog/oauth"
 
 	static _client_id = extension_get_option_value("FacebookExtension2", "oauthAppId");
 	static _redirect_uri = extension_get_option_value("FacebookExtension2", "oauthRedirectUrl");
 
+	var _response_type = "code";
+
 	var _auth_url = FACEBOOK_OAUTH_ENDPOINT
 			+ "&client_id=" + __facebook_signin_url_encode(_client_id)
 			+ "?redirect_uri=" + __facebook_signin_url_encode(_redirect_uri)
+			+ "&response_type=" + __facebook_signin_url_encode(_response_type)
 			+ "&state=" + _state
+			+ "&scope=" + __facebook_signin_url_encode(_scopes)
 
 	// This will be the OAuth initialization
 	url_open(_auth_url);

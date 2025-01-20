@@ -404,7 +404,6 @@ public class FacebookExtension2 extends RunnerSocial {
 		return msLoginStatus;
 	}
 
-	// Handle FB login
 	private double fb_login(double permissions_list) {
 		Log.i("yoyo", "fb_login called! Permissions list ID: " + permissions_list);
 
@@ -424,7 +423,6 @@ public class FacebookExtension2 extends RunnerSocial {
 		msLoginStatus = newState;
 	}
 
-	// new permissions support WIP...
 	public Boolean fb_check_permission(String _permission) {
 		AccessToken token = AccessToken.getCurrentAccessToken();
 		if (token != null) {
@@ -493,7 +491,6 @@ public class FacebookExtension2 extends RunnerSocial {
 		}
 	}
 
-	// Log the user out from Facebook
 	public void fb_logout() {
 		if (loginManager != null) {
 			loginManager.logOut();
@@ -501,10 +498,6 @@ public class FacebookExtension2 extends RunnerSocial {
 		fb_set_status(STATUS_IDLE);
 	}
 
-	// Posts a message to the users feed based on the set of key-value pairs found
-	// in the given array: ["key0", "value0", "key1", "value1"..."keyN", "valueN"]
-	// See http://developers.facebook.com/docs/reference/api/user/#posts for the set
-	// of key-value pairs expected
 	public double fb_graph_request(final String graphPath, final String httpMethod, final double paramListId) {
 		final int currentRequestId = getNewRequestId();
 		final Bundle parameters = buildParamsBundle((int) paramListId);

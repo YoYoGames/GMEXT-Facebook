@@ -1,13 +1,4 @@
 
-//TODO::FIX obfuscated internal calls...
-//debug() ds_list_, ds_map_ functions... etc...
-
-//+Instead of returning graph request data in user-created ds_maps, we should trigger Social Async events for consistency with other extensions/APIs.
-//-to which functions does this apply? facebook_dialog, facebook_graph_request, facebook_login 
-
-
-
-
 // -----------------------------------------
 var GMS2_FB_EXTENSION = true;   //
 
@@ -56,27 +47,10 @@ var g_fbExtLoginStatus = FBEXT_STATE_IDLE;
 var g_fbExtInitCalled = false;
 var g_FB_SDKReady = false;
 
-//extension init function - load the facebook sdk
 function fb_init()
 {
 	if(!g_fbExtInitCalled)
-	{
-		// if( typeof( GMS_API ) == "undefined" )
-		// {
-			// //TODO::ideally output minimum runtime version required
-			// alert("Facebook extension is not supported in current Runtime\nUpdate your Runtime to use this extension");
-			// return;
-		// }
-		
-		// var appId = GMS_API.get_facebook_app_id();
-		// if( appId == undefined || appId == "" )
-		// {
-			// alert("Facebook AppID has not been defined\nEnsure 'Use Facebook' is checked in HTML5 Game Options");
-			// return;
-		// }
-		
-		// FBExt_FBInit( appId );
-		
+	{	
 		FBExt_FBInit(GMS_API.extension_get_option_value("FacebookExtension2","appId"));
 		g_fbExtInitCalled = true;
 	}
@@ -245,16 +219,11 @@ function FBExt_CheckSDKReady( _funcname )
 }
 
 //API ------------------------------------------------
-function facebook_test(_arg0)
-{
-	GMS_API.debug_msg("api test!");
-}
 
 function fb_accesstoken() {
 	if( !FBExt_CheckSDKReady( "fb_accesstoken" )) return "";
     return g_fbExtOAuthToken;
 }
-
 
 function fb_ready()
 {
@@ -290,7 +259,6 @@ function fb_user_id() {
         
     return g_fbExtUserId;
 }
-
 
 function fb_login(_permissions) {
 
@@ -377,7 +345,6 @@ function fbRequestPermissions( _dsList )
     
     return requestId;
 }
-
 
 function fb_graph_request(_graphPath, _httpVerb, _dsMapParams ) 
 {
