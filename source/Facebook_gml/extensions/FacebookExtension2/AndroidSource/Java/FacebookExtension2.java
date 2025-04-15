@@ -227,7 +227,6 @@ public class FacebookExtension2 extends RunnerSocial {
 	public void fb_init() {
 		if (msInitialized == 1)
 			return;
-
 		final Activity activity = RunnerActivity.CurrentActivity;
 
 		// Disable automatic Facebook SDK initialization
@@ -236,9 +235,7 @@ public class FacebookExtension2 extends RunnerSocial {
 		try {
 			// Set Facebook App ID and Client Token
 			FacebookSdk.setApplicationId(activity.getResources().getString(R.string.facebook_app_id));
-			Log.i("yoyo", activity.getResources().getString(R.string.facebook_app_id));
 			FacebookSdk.setClientToken(activity.getResources().getString(R.string.facebook_client_token));
-			Log.i("yoyo", activity.getResources().getString(R.string.facebook_client_token));
 
 			// Initialize Facebook SDK
 			FacebookSdk.sdkInitialize(activity.getApplicationContext(), new FacebookSdk.InitializeCallback() {
@@ -365,6 +362,47 @@ public class FacebookExtension2 extends RunnerSocial {
 							break;
 					}
 
+					if (paramKeyParsed != null) {
+						// Parse param value
+						String paramValAsStr = RunnerJNILib.dsListGetValueString((int) _eventParamsDsList, i + 1);
+						if (paramValAsStr != null) {
+							paramsBundle.putString(paramKeyParsed, paramValAsStr);
+							Log.i("yoyo", "Added to bundle as string. " + paramKeyParsed + " : " + paramValAsStr);
+						} else {
+							double paramValAsDouble = RunnerJNILib.dsListGetValueDouble((int) _eventParamsDsList,
+									i + 1);
+							paramsBundle.putDouble(paramKeyParsed, paramValAsDouble);
+							Log.i("yoyo", "Added to bundle as double. " + paramKeyParsed + " : " + paramValAsDouble);
+						}
+					}
+				}
+			}
+		}
+
+		// Send app event
+		logger.logEvent(eventTypeParsed, _eventValue, paramsBundle);
+		return 1.0;
+	}
+	
+	public double fb_send_event(String _eventId, double _eventValue, double _eventParamsDsList) {
+		AppEventsLogger logger = AppEventsLogger.newLogger(RunnerActivity.CurrentActivity);
+Log.i("yoyo","_eventId: " + _eventId);
+		// Parse event type
+		String eventTypeParsed = _eventId;
+
+		// Parse parameters
+		Bundle paramsBundle = new Bundle();
+		if (_eventParamsDsList >= 0.0) {
+			// Check if the list contains key/value pairs
+			int len = RunnerJNILib.dsListGetSize((int) _eventParamsDsList);
+			if (len >= 2 && len % 2 == 0) {
+				for (int i = 0; i < len; i += 2) {
+					// Parse ds list key as double
+					String paramKey = (RunnerJNILib.dsListGetValueString((int) _eventParamsDsList, i));
+					String paramKeyParsed = null;
+					
+					paramKeyParsed = paramKey;
+Log.i("yoyo","paramKeyParsed: " + paramKeyParsed);
 					if (paramKeyParsed != null) {
 						// Parse param value
 						String paramValAsStr = RunnerJNILib.dsListGetValueString((int) _eventParamsDsList, i + 1);

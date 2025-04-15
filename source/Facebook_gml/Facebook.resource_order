@@ -24,6 +24,7 @@
     {"name":"Obj_YoYo_button","order":2,"path":"objects/Obj_YoYo_button/Obj_YoYo_button.yy",},
     {"name":"Obj_YoYo_text","order":3,"path":"objects/Obj_YoYo_text/Obj_YoYo_text.yy",},
     {"name":"Obj_YoYo_textbox","order":4,"path":"objects/Obj_YoYo_textbox/Obj_YoYo_textbox.yy",},
+    {"name":"Facebook_AppEventsConstants","order":2,"path":"scripts/Facebook_AppEventsConstants/Facebook_AppEventsConstants.yy",},
     {"name":"Spr_YoYo_button","order":1,"path":"sprites/Spr_YoYo_button/Spr_YoYo_button.yy",},
     {"name":"Spr_YoYo_textbox","order":2,"path":"sprites/Spr_YoYo_textbox/Spr_YoYo_textbox.yy",},
   ],

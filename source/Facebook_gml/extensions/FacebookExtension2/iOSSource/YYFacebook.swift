@@ -402,6 +402,59 @@ class YYFacebookShareDialog: SharingDelegate
         return 1.0;
         
     }
+	
+    @objc public func fb_send_event(_eventId:(String), _eventValue:(Double), _eventParamsDsList:(NSArray)) -> Double
+    {
+        // Parse event type
+        var eventTypeParsed:AppEvents.Name;
+		
+		 eventTypeParsed = _eventId;
+
+        // Parse parameters
+        let dictionary = NSMutableDictionary();
+        //if (_eventParamsDsList >= 0.0)
+        //{
+            // Check if the list contains key/value pairs
+            let len = _eventParamsDsList.count; //dsListGetSize((int)_eventParamsDsList);
+            if(len >= 2 && len % 2 == 0)
+            {
+                var i = -2;
+                while(true)//for (let i = 0; i < len; i += 2)
+                {
+                    i += 2;
+                    
+                    if(i >= len)
+                    {break;}
+                    
+                    // Parse ds list key as double
+                    let paramKey = _eventParamsDsList.object(at: i) as! String; //(int)(dsListGetValueDouble((int)_eventParamsDsList, i));
+                    var paramKeyParsed: String = "";
+                    
+                    paramKeyParsed = paramKey;
+                    
+                    if(paramKeyParsed != "")
+                    {
+                        let fake_str = "";
+                        // Parse param value
+                        if(_eventParamsDsList.object(at: i+1) is String)
+                        {
+                            dictionary.setObject(_eventParamsDsList.object(at: i+1), forKey: paramKeyParsed as NSCopying);
+
+                        }
+                        else
+                        {
+                            dictionary.setObject(_eventParamsDsList.object(at: i+1) as! Int, forKey: paramKeyParsed as NSCopying);
+                        }
+                    }
+                }
+            }
+        //}
+        
+        AppEvents.shared.logEvent(eventTypeParsed, valueToSum: _eventValue, parameters: dictionary as? [AppEvents.ParameterName : Any])
+        
+        return 1.0;
+        
+    }
 
     @objc public func getRequestId() -> Int
     {

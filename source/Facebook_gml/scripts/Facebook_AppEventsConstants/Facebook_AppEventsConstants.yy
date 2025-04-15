@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"Facebook_AppEventsConstants",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Facebook_AppEventsConstants",
+  "parent":{
+    "name":"Extensions",
+    "path":"folders/FacebookAPI/Extensions.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

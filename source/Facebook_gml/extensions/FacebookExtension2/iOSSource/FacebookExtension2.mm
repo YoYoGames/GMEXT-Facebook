@@ -169,6 +169,11 @@ YYFacebook *mFb;
     return [mFb fb_send_eventWith_eventId:_eventId _eventValue:_eventValue _eventParamsDsList:[self dsListToArray:_eventParamsDsList]];
 }
 
+-(double)fb_send_event:(NSString*)_eventId withEventValue:(double)_eventValue withEventParams:(double)_eventParamsDsList
+{
+    return [mFb fb_send_eventWith_eventId:_eventId _eventValue:_eventValue _eventParamsDsList:[self dsListToArray:_eventParamsDsList]];
+}
+
 
 
 -(NSMutableArray*) dsListToArray: (int)_dsListId
