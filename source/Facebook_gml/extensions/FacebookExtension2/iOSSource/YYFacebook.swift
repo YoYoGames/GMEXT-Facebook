@@ -403,12 +403,12 @@ class YYFacebookShareDialog: SharingDelegate
         
     }
 	
-    @objc public func fb_send_event(_eventId:(String), _eventValue:(Double), _eventParamsDsList:(NSArray)) -> Double
+    @objc public func fb_send_event_(_eventId:(String), _eventValue:(Double), _eventParamsDsList:(NSArray)) -> Double
     {
         // Parse event type
-        var eventTypeParsed:AppEvents.Name;
+        var eventTypeParsed: AppEvents.Name;
 		
-		 eventTypeParsed = _eventId;
+        eventTypeParsed = AppEvents.Name(rawValue: _eventId);
 
         // Parse parameters
         let dictionary = NSMutableDictionary();

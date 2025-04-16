@@ -384,9 +384,9 @@ public class FacebookExtension2 extends RunnerSocial {
 		return 1.0;
 	}
 	
-	public double fb_send_event(String _eventId, double _eventValue, double _eventParamsDsList) {
+	public double fb_send_event_(String _eventId, double _eventValue, double _eventParamsDsList) {
 		AppEventsLogger logger = AppEventsLogger.newLogger(RunnerActivity.CurrentActivity);
-Log.i("yoyo","_eventId: " + _eventId);
+// Log.i("yoyo","_eventId: " + _eventId);
 		// Parse event type
 		String eventTypeParsed = _eventId;
 
@@ -402,18 +402,18 @@ Log.i("yoyo","_eventId: " + _eventId);
 					String paramKeyParsed = null;
 					
 					paramKeyParsed = paramKey;
-Log.i("yoyo","paramKeyParsed: " + paramKeyParsed);
+// Log.i("yoyo","paramKeyParsed: " + paramKeyParsed);
 					if (paramKeyParsed != null) {
 						// Parse param value
 						String paramValAsStr = RunnerJNILib.dsListGetValueString((int) _eventParamsDsList, i + 1);
 						if (paramValAsStr != null) {
 							paramsBundle.putString(paramKeyParsed, paramValAsStr);
-							Log.i("yoyo", "Added to bundle as string. " + paramKeyParsed + " : " + paramValAsStr);
+							// Log.i("yoyo", "Added to bundle as string. " + paramKeyParsed + " : " + paramValAsStr);
 						} else {
 							double paramValAsDouble = RunnerJNILib.dsListGetValueDouble((int) _eventParamsDsList,
 									i + 1);
 							paramsBundle.putDouble(paramKeyParsed, paramValAsDouble);
-							Log.i("yoyo", "Added to bundle as double. " + paramKeyParsed + " : " + paramValAsDouble);
+							// Log.i("yoyo", "Added to bundle as double. " + paramKeyParsed + " : " + paramValAsDouble);
 						}
 					}
 				}

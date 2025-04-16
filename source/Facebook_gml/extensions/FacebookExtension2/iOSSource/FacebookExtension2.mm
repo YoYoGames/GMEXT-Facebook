@@ -6,7 +6,7 @@
 //
 
 #import "FacebookExtension2.h"
-#import "${YYXCodeProjName}-Swift.h"
+#import "Facebook-Swift.h"
 
 extern UIViewController *g_controller;
 
@@ -169,9 +169,9 @@ YYFacebook *mFb;
     return [mFb fb_send_eventWith_eventId:_eventId _eventValue:_eventValue _eventParamsDsList:[self dsListToArray:_eventParamsDsList]];
 }
 
--(double)fb_send_event:(NSString*)_eventId withEventValue:(double)_eventValue withEventParams:(double)_eventParamsDsList
+-(double)fb_send_event_:(NSString*)_eventId withEventValue:(double)_eventValue withEventParams:(double)_eventParamsDsList
 {
-    return [mFb fb_send_eventWith_eventId:_eventId _eventValue:_eventValue _eventParamsDsList:[self dsListToArray:_eventParamsDsList]];
+    return [mFb fb_send_event_With_eventId:_eventId _eventValue:_eventValue _eventParamsDsList:[self dsListToArray:_eventParamsDsList]];
 }
 
 
