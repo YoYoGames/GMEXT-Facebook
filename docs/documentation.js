@@ -330,8 +330,6 @@
  * @param {real} [value_to_sum] The value to add to the sum for this event
  * @param {ds_list} [event_params] The event parameters (one or more of ${constant.FacebookExtension2_PARAM}) as key-value pairs
  * 
- * @returns {boolean}
- * 
  * @example
  * ```gml
  * var _params = ds_list_create();
@@ -345,6 +343,32 @@
  * ```
  * The code above first creates a ${type.ds_list} and adds the key-value pairs to be used as the parameters to it. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.
  * @func_end
+ */
+
+/**
+ * @function fb_send_event_string
+ * @desc This function logs a custom app event.
+ * 
+ * See: [App Events](https://developers.facebook.com/docs/app-events/overview/)
+ * 
+ * @param {constant.FACEBOOK_EVENT_NAME} event_name 
+ * @param {real} value_to_sum 
+ * @param {ds_list} event_params A ${type.list} of ${constant.FACEBOOK_EVENT_PARAM}.
+ * 
+ * @example 
+ * ```gml
+ * var _params = ds_list_create();
+ * ds_list_add(_params, 
+ *     FACEBOOK_EVENT_PARAM.CONTENT_ID, "ContentIdTest",
+ *     FACEBOOK_EVENT_PARAM.CURRENCY, "GBP",
+ *     FACEBOOK_EVENT_PARAM.NUM_ITEMS, 3);
+ * 
+ * fb_send_event_string(FACEBOOK_EVENT_NAME.ADDED_TO_WISHLIST, 123, real(_params));
+ * 
+ * ds_list_destroy(_params);
+ * ```gml
+ * The code example above logs an app event. The parameters are added to a temporary ${type.list}, which is destroyed after the call to the function.
+ * @function_end
  */
 
 // Constants
@@ -391,6 +415,70 @@
  * @const_end
  */
 
+/**
+ * @const FACEBOOK_EVENT_NAME
+ * @desc 
+ * 
+ * This set of constants represents the possible built-in event names.
+ * 
+ * @member ACHIEVED_LEVEL Log this event when the user has achieved a level in the app. Takes event parameters: `FACEBOOK_EVENT_PARAM.LEVEL`.
+ * @member ACTIVATED_APP The launch of your app. Takes no event parameters.
+ * @member AD_CLICK An ad from a third-party platform is clicked within your app. Takes event parameters: `FACEBOOK_EVENT_PARAM.AD_TYPE`.
+ * @member AD_IMPRESSION An ad from a third-party platform appears on-screen within your app. If `value_to_sum` is provided, the event can be used for in-app ads optimization. The `value_to_sum` value represents the in-app ads revenue generated from a user viewing an ad in your app. Refer to the [documentation here](https://developers.facebook.com/docs/app-events/guides/maximize-in-app-ad-revenue) to learn about maximizing the value of in-app ad impressions. Takes event parameters: `FACEBOOK_EVENT_PARAM.AD_TYPE`.
+ * @member ADDED_PAYMENT_INFO Log this event when the user has entered their payment info. Takes event parameters: `FACEBOOK_EVENT_PARAM.SUCCESS`.
+ * @member ADDED_TO_CART Log this event when the user has added an item to their cart. The `value_to_sum` passed to ${function.fb_send_event} should be the item's price. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` or `FACEBOOK_EVENT_PARAM.CONTENT` and `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member ADDED_TO_WISHLIST Log this event when the user has added an item to their wishlist. The `value_to_sum` passed to ${function.fb_send_event} should be the item's price. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` or `FACEBOOK_EVENT_PARAM.CONTENT` and `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member COMPLETED_REGISTRATION Log this event when the user has completed registration with the app. Takes event parameters: `FACEBOOK_EVENT_PARAM.REGISTRATION_METHOD`.
+ * @member COMPLETED_TUTORIAL Log this event when the user has completed a tutorial in the app. Takes event parameters: `FACEBOOK_EVENT_PARAM.SUCCESS`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` or `FACEBOOK_EVENT_PARAM.CONTENT`.
+ * @member CONTACT A telephone or SMS, email, chat or other type of contact between a customer and your business.
+ * @member CUSTOMIZE_PRODUCT The customization of products through a configuration tool or other application your business owns.
+ * @member DEACTIVATED_APP The app is deactivated.
+ * @member DONATE The donation of funds to your organization or cause.
+ * @member FIND_LOCATION When a person finds one of your locations via web or app, with an intention to visit. For example, searching for a product and finding it at one of your local stores.
+ * @member INITIATED_CHECKOUT Log this event when the user has entered the checkout process. The `value_to_sum` passed to ${function.fb_send_event} should be the total price in the cart. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` OR `FACEBOOK_EVENT_PARAM.CONTENT`, `FACEBOOK_EVENT_PARAM.NUM_ITEMS`, `FACEBOOK_EVENT_PARAM.PAYMENT_INFO_AVAILABLE`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member PURCHASED [Deprecated] The completion of a purchase, usually signified by receiving order or purchase confirmation or a transaction receipt. Takes event parameters: `FACEBOOK_EVENT_PARAM.NUM_ITEMS`, `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID`, `FACEBOOK_EVENT_PARAM.CONTENT`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member RATED Log this event when the user has rated an item in the app. The `value_to_sum` passed to ${function.fb_send_event} should be the numeric rating. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` or `FACEBOOK_EVENT_PARAM.CONTENT`, `FACEBOOK_EVENT_PARAM.MAX_RATING_VALUE`.
+ * @member SCHEDULE The booking of an appointment to visit one of your locations.
+ * @member SEARCHED A search performed on your website, app or other property, such as product searches, travel searches, etc. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.SEARCH_STRING`, `FACEBOOK_EVENT_PARAM.SUCCESS`.
+ * @member SESSION_INTERRUPTIONS 
+ * @member SPENT_CREDITS The completion of a transaction where people spend credits specific to your business or application, such as in-app currency. Log this event when the user has spent app credits. The `value_to_sum` passed to ${function.fb_send_event} should be the number of credits spent. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID` or `FACEBOOK_EVENT_PARAM.CONTENT`.
+ * @member START_TRIAL The start of a free trial of a product or service you offer, such as a trial subscription. Takes event parameters: `FACEBOOK_EVENT_PARAM.SUBSCRIPTION_ID`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member SUBMIT_APPLICATION The submission of an application for a product, service or program you offer, such as a credit card, educational program or job.
+ * @member SUBSCRIBE The start of a paid subscription for a product or service you offer. Takes event parameters: `FACEBOOK_EVENT_PARAM.SUBSCRIPTION_ID`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * @member TIME_BETWEEN_SESSIONS 
+ * @member UNLOCKED_ACHIEVEMENT Log this event when the user has unlocked an achievement in the app. Takes event parameters: `FACEBOOK_EVENT_PARAM.DESCRIPTION`.
+ * @member VIEWED_CONTENT Log this event when the user has viewed a form of content in the app. Takes event parameters: `FACEBOOK_EVENT_PARAM.CONTENT_TYPE`, `FACEBOOK_EVENT_PARAM.CONTENT_ID`, `FACEBOOK_EVENT_PARAM.CONTENT`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
+ * 
+ * @const_end
+ */
+
+/**
+ * @const FACEBOOK_EVENT_PARAM
+ * @desc 
+ * 
+ * This set of constants represents the possible built-in event parameter types.
+ * 
+ * @member AD_TYPE Type of ad: banner, interstitial, rewarded_video, native
+ * @member CONTENT_ID Parameter key used to specify an ID for the specific piece of content being logged about. This could be an EAN, article identifier, etc., depending on the nature of the app.
+ * @member CONTENT_TYPE Parameter key used to specify a generic content type/family for the logged event, e.g. `"music"`, `"photo"`, `"video"`.  Options to use will vary depending on the nature of the app.
+ * @member CURRENCY Parameter key used to specify currency used with logged event.  E.g. `"USD"`, `"EUR"`, `"GBP"`. See [ISO-4217](http://en.wikipedia.org/wiki/ISO_4217) for specific values.
+ * @member DESCRIPTION Parameter key used to specify a description appropriate to the event being logged. E.g., the name of the achievement unlocked in the `FACEBOOK_EVENT_NAME.ACHIEVEMENT_UNLOCKED` event.
+ * @member LEVEL Parameter key used to specify the level achieved in a `FACEBOOK_EVENT_NAME.LEVEL_ACHIEVED` event.
+ * @member MAX_RATING_VALUE Parameter key used to specify the maximum rating available for the `FACEBOOK_EVENT_NAME.RATED` event. E.g., `"5"` or `"10"`.
+ * @member NUM_ITEMS Parameter key used to specify how many items are being processed for a `FACEBOOK_EVENT_NAME.INITIATED_CHECKOUT` or `FACEBOOK_EVENT_NAME.PURCHASED` event.
+ * @member ORDER_ID The unique ID for all events within a subscription
+ * @member PAYMENT_INFO_AVAILABLE Parameter key used to specify whether payment info is available for the `FACEBOOK_EVENT_NAME.INITIATED_CHECKOUT` event. `FACEBOOK_EVENT_PARAM.VALUE_YES` and `FACEBOOK_EVENT_PARAM.VALUE_NO` are good canonical values to use for this parameter.
+ * @member REGISTRATION_METHOD Parameter key used to specify the method the user has used to register for the app, e.g., `"Facebook"`, `"email"`, `"Twitter"`, etc.
+ * @member SEARCH_STRING Parameter key used to specify the string provided by the user for a search operation.
+ * @member SUCCESS Parameter key used to specify whether the activity being logged about was successful or not. `FACEBOOK_EVENT_PARAM.VALUE_YES` and `FACEBOOK_EVENT_PARAM.VALUE_NO` are good canonical values to use for this parameter.
+ * 
+ * @member SOURCE_APPLICATION Parameter key used to specify source application package.
+ * @member VALUE_YES Yes-valued parameter value to be used with parameter keys that need a Yes/No value
+ * @member VALUE_NO No-valued parameter value to be used with parameter keys that need a Yes/No value
+ * 
+ * @const_end
+ */
+
 // Modules
 
 /**
@@ -418,6 +506,8 @@
  * 
  * @ref FacebookExtension2_PARAM
  * @ref FacebookExtension2_EVENT
+ * @ref FACEBOOK_EVENT_NAME
+ * @ref FACEBOOK_EVENT_PARAM
  * @section_end
  * 
  * @module_end
