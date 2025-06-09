@@ -59,7 +59,7 @@ global.__FACEBOOK_EVENT_NAME =
 	
 
 	/** A telephone/SMS, email, chat or other type of contact between a customer and your business. */
-	NAME_CONTACT: "Contact",
+	CONTACT: "Contact",
 
 	/**
 	 * The customization of products through a configuration tool or other application your business
@@ -68,7 +68,7 @@ global.__FACEBOOK_EVENT_NAME =
 	CUSTOMIZE_PRODUCT: "CustomizeProduct",
 
 	/** The donation of funds to your organization or cause. */
-	EVENT_NAME_DONATE: "Donate",
+	DONATE: "Donate",
 
 	/**
 	 * When a person finds one of your locations via web or application, with an intention to visit
