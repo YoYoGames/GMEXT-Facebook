@@ -351,8 +351,8 @@
  * 
  * See: [App Events](https://developers.facebook.com/docs/app-events/overview/)
  * 
- * @param {constant.FACEBOOK_EVENT_NAME} event_name 
- * @param {real} value_to_sum 
+ * @param {constant.FACEBOOK_EVENT_NAME} event_name The name of the event to log
+ * @param {real} value_to_sum The value to add to the sum for this event
  * @param {ds_list} event_params A ${type.ds_list} of ${constant.FACEBOOK_EVENT_PARAM}.
  * 
  * @example 
@@ -366,7 +366,7 @@
  * fb_send_event_string(FACEBOOK_EVENT_NAME.ADDED_TO_WISHLIST, 123, real(_params));
  * 
  * ds_list_destroy(_params);
- * ```gml
+ * ```
  * The code example above logs an app event. The parameters are added to a temporary ${type.ds_list}, which is destroyed after the call to the function.
  * @function_end
  */
@@ -417,7 +417,7 @@
 
 /**
  * @const FACEBOOK_EVENT_NAME
- * @desc **Facebook Object**: [AppEventsConstants](https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt#L15)
+ * @desc > **Facebook Object**: [AppEventsConstants](https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt)
  * 
  * This set of constants represents the possible built-in event names.
  * 
@@ -461,7 +461,7 @@
 
 /**
  * @const FACEBOOK_EVENT_PARAM
- * @desc **Facebook Object**: [AppEventsConstants](https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt#L15)
+ * @desc > **Facebook Object**: [AppEventsConstants](https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt)
  * 
  * This set of constants represents the possible built-in event parameter types.
  * 
