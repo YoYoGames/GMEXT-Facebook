@@ -353,7 +353,7 @@
  * 
  * @param {constant.FACEBOOK_EVENT_NAME} event_name 
  * @param {real} value_to_sum 
- * @param {ds_list} event_params A ${type.list} of ${constant.FACEBOOK_EVENT_PARAM}.
+ * @param {ds_list} event_params A ${type.ds_list} of ${constant.FACEBOOK_EVENT_PARAM}.
  * 
  * @example 
  * ```gml
@@ -367,7 +367,7 @@
  * 
  * ds_list_destroy(_params);
  * ```gml
- * The code example above logs an app event. The parameters are added to a temporary ${type.list}, which is destroyed after the call to the function.
+ * The code example above logs an app event. The parameters are added to a temporary ${type.ds_list}, which is destroyed after the call to the function.
  * @function_end
  */
 
