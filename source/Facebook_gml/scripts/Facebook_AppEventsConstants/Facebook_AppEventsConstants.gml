@@ -1,6 +1,6 @@
 #macro FACEBOOK_EVENT_NAME global.__FACEBOOK_EVENT_NAME
 
-global.__FACEBOOK_EVENT_NAME = 
+global.__FACEBOOK_EVENT_NAME =
 {
     ACTIVATED_APP: "fb_mobile_activate_app",
     DEACTIVATED_APP: "fb_mobile_deactivate_app",
@@ -56,6 +56,57 @@ global.__FACEBOOK_EVENT_NAME =
      * The valueToSum passed to logEvent should be the number of credits spent.
      */
     SPENT_CREDITS: "fb_mobile_spent_credits",
+	
+
+	/** A telephone/SMS, email, chat or other type of contact between a customer and your business. */
+	NAME_CONTACT: "Contact",
+
+	/**
+	 * The customization of products through a configuration tool or other application your business
+	 * owns.
+	 */
+	CUSTOMIZE_PRODUCT: "CustomizeProduct",
+
+	/** The donation of funds to your organization or cause. */
+	EVENT_NAME_DONATE: "Donate",
+
+	/**
+	 * When a person finds one of your locations via web or application, with an intention to visit
+	 * (example: find product at a local store).
+	 */
+	FIND_LOCATION: "FindLocation",
+
+	/** The booking of an appointment to visit one of your locations. */
+	SCHEDULE: "Schedule",
+
+	/** The start of a free trial of a product or service you offer (example: trial subscription). */
+	START_TRIAL: "StartTrial",
+
+	/**
+	 * The submission of an application for a product, service or program you offer (example: credit
+	 * card, educational program or job).
+	 */
+	SUBMIT_APPLICATION: "SubmitApplication",
+
+	/** The start of a paid subscription for a product or service you offer. */
+	SUBSCRIBE: "Subscribe",
+
+	/** Log this event when the user views an ad. */
+	AD_IMPRESSION: "AdImpression",
+
+	/** Log this event when the user clicks an ad. */
+	AD_CLICK: "AdClick",
+
+	/** Log the live streaming events from sdk */
+	LIVE_STREAMING_START: "fb_sdk_live_streaming_start",
+	LIVE_STREAMING_STOP: "fb_sdk_live_streaming_stop",
+	LIVE_STREAMING_PAUSE: "fb_sdk_live_streaming_pause",
+	LIVE_STREAMING_RESUME: "fb_sdk_live_streaming_resume",
+	LIVE_STREAMING_ERROR: "fb_sdk_live_streaming_error",
+	LIVE_STREAMING_UPDATE_STATUS: "fb_sdk_live_streaming_update_status",
+
+	/** Product Catalog related events */
+	PRODUCT_CATALOG_UPDATE: "fb_mobile_catalog_update",
 }
 
 
@@ -64,7 +115,7 @@ global.__FACEBOOK_EVENT_NAME =
 
 #macro FACEBOOK_EVENT_PARAM global.__FACEBOOK_EVENT_PARAM
 
-global.__FACEBOOK_EVENT_PARAM = 
+global.__FACEBOOK_EVENT_PARAM =
 {
     // Event parameters
 
@@ -129,5 +180,62 @@ global.__FACEBOOK_EVENT_PARAM =
     VALUE_YES: "1",
     /** No-valued parameter value to be used with parameter keys that need a Yes/No value */
     VALUE_NO: "0",	
+	
+
+
+    /** Product Catalog related events */
+    PRODUCT_CATALOG_UPDATE: "fb_mobile_catalog_update",
+    // Event parameters
+    /** Paramete keys for live streaming events */
+    LIVE_STREAMING_PREV_STATUS: "live_streaming_prev_status",
+    LIVE_STREAMING_STATUS: "live_streaming_status",
+    LIVE_STREAMING_ERROR: "live_streaming_error",
+
+
+    /**
+     * Parameter key used to specify the type of ad in an EVENT_NAME_AD_IMPRESSION or
+     * EVENT_NAME_AD_CLICK event. E.g. "banner", "interstitial", "rewarded_video", "native"
+     */
+    AD_TYPE: "ad_type",
+
+    /**
+     * Parameter key used to specify the unique ID for all events within a subscription in an
+     * EVENT_NAME_SUBSCRIBE or EVENT_NAME_START_TRIAL event.
+     */
+    ORDER_ID: "fb_order_id",
+    VALUE_TO_SUM: "_valueToSum",
+
+    /**
+     * Parameter keys used to specify additional information about item for
+     * EVENT_NAME_PRODUCT_CATALOG_UPDATE event.
+     */
+    PRODUCT_CUSTOM_LABEL_0: "fb_product_custom_label_0",
+    PRODUCT_CUSTOM_LABEL_1: "fb_product_custom_label_1",
+    PRODUCT_CUSTOM_LABEL_2: "fb_product_custom_label_2",
+    PRODUCT_CUSTOM_LABEL_3: "fb_product_custom_label_3",
+    PRODUCT_CUSTOM_LABEL_4: "fb_product_custom_label_4",
+
+    // Optional field "google_product_category"
+    PRODUCT_CATEGORY: "fb_product_category",
+
+    /**
+     * Parameter keys used to specify the product deep links for EVENT_NAME_PRODUCT_CATALOG_UPDATE
+     * event.
+     */
+    PRODUCT_APPLINK_IOS_URL: "fb_product_applink_ios_url",
+    PRODUCT_APPLINK_IOS_APP_STORE_ID: "fb_product_applink_ios_app_store_id",
+    PRODUCT_APPLINK_IOS_APP_NAME: "fb_product_applink_ios_app_name",
+    PRODUCT_APPLINK_IPHONE_URL: "fb_product_applink_iphone_url",
+    PRODUCT_APPLINK_IPHONE_APP_STORE_ID: "fb_product_applink_iphone_app_store_id",
+    PRODUCT_APPLINK_IPHONE_APP_NAME: "fb_product_applink_iphone_app_name",
+    PRODUCT_APPLINK_IPAD_URL: "fb_product_applink_ipad_url",
+    PRODUCT_APPLINK_IPAD_APP_STORE_ID: "fb_product_applink_ipad_app_store_id",
+    PRODUCT_APPLINK_IPAD_APP_NAME: "fb_product_applink_ipad_app_name",
+    PRODUCT_APPLINK_ANDROID_URL: "fb_product_applink_android_url",
+    PRODUCT_APPLINK_ANDROID_PACKAGE: "fb_product_applink_android_package",
+    PRODUCT_APPLINK_ANDROID_APP_NAME: "fb_product_applink_android_app_name",
+    PRODUCT_APPLINK_WINDOWS_PHONE_URL: "fb_product_applink_windows_phone_url",
+    PRODUCT_APPLINK_WINDOWS_PHONE_APP_ID: "fb_product_applink_windows_phone_app_id",
+    PRODUCT_APPLINK_WINDOWS_PHONE_APP_NAME: "fb_product_applink_windows_phone_app_name",
 }
 
