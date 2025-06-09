@@ -448,12 +448,12 @@
  * @member SUBSCRIBE The start of a paid subscription for a product or service you offer. Takes event parameters: `FACEBOOK_EVENT_PARAM.SUBSCRIPTION_ID`, `FACEBOOK_EVENT_PARAM.CURRENCY`.
  * @member AD_IMPRESSION An ad from a third-party platform appears on-screen within your app. If `value_to_sum` is provided, the event can be used for in-app ads optimization. The `value_to_sum` value represents the in-app ads revenue generated from a user viewing an ad in your app. Refer to the [documentation here](https://developers.facebook.com/docs/app-events/guides/maximize-in-app-ad-revenue) to learn about maximizing the value of in-app ad impressions. Takes event parameters: `FACEBOOK_EVENT_PARAM.AD_TYPE`.
  * @member AD_CLICK An ad from a third-party platform is clicked within your app. Takes event parameters: `FACEBOOK_EVENT_PARAM.AD_TYPE`.
- * @member LIVE_STREAMING_START 
- * @member LIVE_STREAMING_STOP 
- * @member LIVE_STREAMING_PAUSE 
- * @member LIVE_STREAMING_RESUME 
- * @member LIVE_STREAMING_ERROR 
- * @member LIVE_STREAMING_UPDATE_STATUS 
+ * @member LIVE_STREAMING_START Live streaming event
+ * @member LIVE_STREAMING_STOP Live streaming event
+ * @member LIVE_STREAMING_PAUSE Live streaming event
+ * @member LIVE_STREAMING_RESUME Live streaming event
+ * @member LIVE_STREAMING_ERROR Live streaming event
+ * @member LIVE_STREAMING_UPDATE_STATUS Live streaming event
  * @member PRODUCT_CATALOG_UPDATE Update of a product catalog item
  * 
  * @const_end
@@ -479,9 +479,9 @@
  * @member SOURCE_APPLICATION Parameter key used to specify source application package.
  * @member VALUE_YES Yes-valued parameter value to be used with parameter keys that need a Yes/No value
  * @member VALUE_NO No-valued parameter value to be used with parameter keys that need a Yes/No value
- * @member LIVE_STREAMING_PREV_STATUS 
- * @member LIVE_STREAMING_STATUS 
- * @member LIVE_STREAMING_ERROR 
+ * @member LIVE_STREAMING_PREV_STATUS Live streaming event parameter
+ * @member LIVE_STREAMING_STATUS Live streaming event parameter
+ * @member LIVE_STREAMING_ERROR Live streaming event parameter
  * @member AD_TYPE Type of ad: banner, interstitial, rewarded_video, native
  * @member ORDER_ID The unique ID for all events within a subscription
  * @member VALUE_TO_SUM The value to sum for the event
@@ -491,20 +491,20 @@
  * @member PRODUCT_CUSTOM_LABEL_3 Parameter key used to specify additional information about item for `EVENT_NAME.PRODUCT_CATALOG_UPDATE` event
  * @member PRODUCT_CUSTOM_LABEL_4 Parameter key used to specify additional information about item for `EVENT_NAME.PRODUCT_CATALOG_UPDATE` event
  * @member PRODUCT_CATEGORY Product category
- * @member PRODUCT_APPLINK_IOS_URL 
- * @member PRODUCT_APPLINK_IOS_APP_STORE_ID 
- * @member PRODUCT_APPLINK_IOS_APP_NAME 
- * @member PRODUCT_APPLINK_IPHONE_URL 
- * @member PRODUCT_APPLINK_IPHONE_APP_STORE_ID 
- * @member PRODUCT_APPLINK_IPHONE_APP_NAME 
- * @member PRODUCT_APPLINK_IPAD_APP_STORE_ID 
- * @member PRODUCT_APPLINK_IPAD_APP_NAME 
- * @member PRODUCT_APPLINK_ANDROID_URL 
- * @member PRODUCT_APPLINK_ANDROID_PACKAGE 
- * @member PRODUCT_APPLINK_ANDROID_APP_NAME 
- * @member PRODUCT_APPLINK_WINDOWS_PHONE_URL 
- * @member PRODUCT_APPLINK_WINDOWS_PHONE_APP_ID 
- * @member PRODUCT_APPLINK_WINDOWS_PHONE_APP_NAME 
+ * @member PRODUCT_APPLINK_IOS_URL App Link event parameter
+ * @member PRODUCT_APPLINK_IOS_APP_STORE_ID App Link event parameter
+ * @member PRODUCT_APPLINK_IOS_APP_NAME App Link event parameter
+ * @member PRODUCT_APPLINK_IPHONE_URL App Link event parameter
+ * @member PRODUCT_APPLINK_IPHONE_APP_STORE_ID App Link event parameter
+ * @member PRODUCT_APPLINK_IPHONE_APP_NAME App Link event parameter
+ * @member PRODUCT_APPLINK_IPAD_APP_STORE_ID App Link event parameter
+ * @member PRODUCT_APPLINK_IPAD_APP_NAME App Link event parameter
+ * @member PRODUCT_APPLINK_ANDROID_URL App Link event parameter
+ * @member PRODUCT_APPLINK_ANDROID_PACKAGE App Link event parameter
+ * @member PRODUCT_APPLINK_ANDROID_APP_NAME App Link event parameter
+ * @member PRODUCT_APPLINK_WINDOWS_PHONE_URL App Link event parameter
+ * @member PRODUCT_APPLINK_WINDOWS_PHONE_APP_ID App Link event parameter
+ * @member PRODUCT_APPLINK_WINDOWS_PHONE_APP_NAME App Link event parameter
  * @const_end
  */
 
