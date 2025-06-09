@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"AnyOtherResource",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"AnyOtherResource",
+  "parent":{
+    "name":"Facebook",
+    "path":"Facebook.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
