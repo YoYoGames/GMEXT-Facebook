@@ -135,6 +135,8 @@ class YYFacebookShareDialog: SharingDelegate
     @objc public func fb_init()
     {
         mIsReady = 1;
+		
+		//Settings.isAutoInitEnabled = true    //not need on iOS
         
         //NSLog("fb_init: Access token %@", AccessToken.current ?? "");
         if (AccessToken.current != nil)        {
@@ -147,6 +149,14 @@ class YYFacebookShareDialog: SharingDelegate
             fb_set_status(_status:"IDLE");
         }
     }
+	
+	@objc public func fb_set_auto_log_app_events_enabled(on: Bool) {
+		Settings.shared.isAutoLogAppEventsEnabled = on
+	}
+	
+	@objc public func fb_set_advertiser_id_collection_enabled(on: Bool) {
+		Settings.shared.isAdvertiserIDCollectionEnabled = on
+	}
 
     @objc public func onResume()
     {

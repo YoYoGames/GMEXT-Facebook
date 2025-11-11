@@ -232,6 +232,7 @@ public class FacebookExtension2 extends RunnerSocial {
 		// Disable automatic Facebook SDK initialization
 		FacebookSdk.setAutoInitEnabled(false);
 
+
 		try {
 			// Set Facebook App ID and Client Token
 			FacebookSdk.setApplicationId(activity.getResources().getString(R.string.facebook_app_id));
@@ -260,6 +261,14 @@ public class FacebookExtension2 extends RunnerSocial {
 		} catch (Exception e) {
 			Log.i("yoyo", "Error initializing Facebook SDK: " + e.getMessage());
 		}
+	}
+	
+	public void fb_set_auto_log_app_events_enabled(double on) {
+		FacebookSdk.setAutoLogAppEventsEnabled(on > 0.5);		
+	}
+	
+	public void fb_set_advertiser_id_collection_enabled(double on) {
+		FacebookSdk.setAdvertiserIDCollectionEnabled(on > 0.5);
 	}
 
 	public double fb_send_event(double _eventId, double _eventValue, double _eventParamsDsList) {

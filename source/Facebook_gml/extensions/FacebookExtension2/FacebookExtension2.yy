@@ -16,7 +16,7 @@
   "exportToGame":true,
   "extensionVersion":"2.1.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[
+    {"$GMExtensionFile":"v1","%Name":"","constants":[
         {"$GMExtensionConstant":"","%Name":"FacebookExtension2_EVENT_ACHIEVED_LEVEL","hidden":false,"name":"FacebookExtension2_EVENT_ACHIEVED_LEVEL","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"101",},
         {"$GMExtensionConstant":"","%Name":"FacebookExtension2_EVENT_ADDED_PAYMENT_INFO","hidden":false,"name":"FacebookExtension2_EVENT_ADDED_PAYMENT_INFO","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"102",},
         {"$GMExtensionConstant":"","%Name":"FacebookExtension2_EVENT_ADDED_TO_CART","hidden":false,"name":"FacebookExtension2_EVENT_ADDED_TO_CART","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"103",},
@@ -60,22 +60,9 @@
         {"$GMExtensionFunction":"","%Name":"fb_refresh_accesstoken","argCount":0,"args":[],"documentation":"","externalName":"fb_refresh_accesstoken","help":"fb_refresh_accesstoken()","hidden":false,"kind":4,"name":"fb_refresh_accesstoken","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"fb_send_event","argCount":0,"args":[2,2,2,],"documentation":"/// @desc Publishes an App Event. App Events allow you to measure the effectiveness of your Facebook app ads and better\r\n/// understand the makeup of users engaging with your app. You can use one of our predefined events such as AchievedLevel,\r\n/// or use custom events you define.\r\n/// @param {Real} _event_id Used to denote the event. Choose amongst the FacebookExtension2_EVENT_* constants.\r\n/// @param {Real} _value_to_sum A number representing a value to be summed when reported\r\n/// @param {Id.DsList<String>} _params Additional parameters to pass along with the logged event; the format used \r\n/// is [key1, value1, key2, value2, ...] parameter keys must be `FacebookExtension2_EVENT_` and values can be either \r\n/// of type string or number.","externalName":"fb_send_event","help":"fb_send_event(event_id, value_to_sum, params)","hidden":false,"kind":4,"name":"fb_send_event","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"fb_send_event_string","argCount":0,"args":[1,2,2,],"documentation":"","externalName":"fb_send_event_","help":"fb_send_event_string(event_id, value_to_sum, params)","hidden":false,"kind":4,"name":"fb_send_event_string","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
-      ],"init":"","kind":4,"name":"","order":[
-        {"name":"fb_accesstoken","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_check_permission","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_dialog","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_graph_request","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_ready","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_login","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_logout","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_request_publish_permissions","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_request_read_permissions","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_status","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_user_id","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_init","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_refresh_accesstoken","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-        {"name":"fb_send_event_string","path":"extensions/FacebookExtension2/FacebookExtension2.yy",},
-      ],"origname":"extensions\\FacebookExt2.ext","ProxyFiles":[
+        {"$GMExtensionFunction":"","%Name":"fb_set_advertiser_id_collection_enabled","argCount":0,"args":[2,],"documentation":"","externalName":"fb_set_advertiser_id_collection_enabled","help":"fb_set_advertiser_id_collection_enabled(on)","hidden":false,"kind":4,"name":"fb_set_advertiser_id_collection_enabled","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
+        {"$GMExtensionFunction":"","%Name":"fb_set_auto_log_app_events_enabled","argCount":0,"args":[2,],"documentation":"","externalName":"fb_set_auto_log_app_events_enabled","help":"fb_set_auto_log_app_events_enabled(on)","hidden":false,"kind":4,"name":"fb_set_auto_log_app_events_enabled","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
+      ],"init":"","kind":4,"name":"","origname":"extensions\\FacebookExt2.ext","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"FacebookExtJS.js","name":"FacebookExtJS.js","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":5,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],

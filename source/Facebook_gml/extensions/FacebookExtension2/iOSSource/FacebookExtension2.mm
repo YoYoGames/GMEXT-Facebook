@@ -75,6 +75,16 @@ YYFacebook *mFb;
     [mFb fb_init];
 }
 
+- (void) fb_set_auto_log_app_events_enabled:(double) on
+{
+  [mFb fb_set_auto_log_app_events_enabledOn:on>0.5];
+}
+
+- (void) fb_set_advertiser_id_collection_enabled:(double) on
+{
+  [mFb fb_set_advertiser_id_collection_enabledOn:on>0.5];
+}
+
 -(void)onResume
 {
     [mFb onResume];
