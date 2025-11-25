@@ -371,6 +371,37 @@
  * @function_end
  */
 
+/**
+ * @function fb_set_auto_log_app_events_enabled
+ * @desc This function sets whether to enable automatic logging of app events.
+ * 
+ * See: [Automatic App Event Logging](https://developers.facebook.com/docs/app-events/automatic-event-collection-detail/), [App Events](https://developers.facebook.com/docs/app-events/overview/)
+ * 
+ * @param {bool} on Whether to enable automatic logging of app events
+ * 
+ * @example
+ * ```gml
+ * fb_set_auto_log_app_events_enabled(false);
+ * ```
+ * The code example above disables automatic logging of app events.
+ * @function_end
+ */
+
+/**
+ * @function fb_set_advertiser_id_collection_enabled
+ * @desc This function sets whether to enable or disable the collection of advertiser IDs.
+ * 
+ * See: [Disable Collection of Advertiser IDs](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id)
+ * 
+ * @param {bool} on Whether to enable the collection of advertiser IDs
+ * @example
+ * ```gml
+ * fb_set_advertiser_id_collection_enabled(false);
+ * ```
+ * The code example above disables the collection of advertiser IDs.
+ * @function_end
+ */
+
 // Constants
 
 /**
