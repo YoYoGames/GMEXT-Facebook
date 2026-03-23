@@ -6,7 +6,7 @@
 //
 
 #import "FacebookExtension2.h"
-#import "Facebook-Swift.h"
+#import "${YYXCodeProjName}-Swift.h"
 
 extern UIViewController *g_controller;
 
