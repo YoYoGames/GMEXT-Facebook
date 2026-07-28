@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"GMFacebook_API",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"GMFacebook_API",
+  "parent":{
+    "name":"Extensions",
+    "path":"folders/FacebookAPI/Extensions.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

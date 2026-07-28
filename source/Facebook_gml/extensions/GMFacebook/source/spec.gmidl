@@ -1,0 +1,189 @@
+
+[gml_api]
+module GMFacebook;
+
+// -----------------------------------------------------------------------------
+// Status and event enums
+// -----------------------------------------------------------------------------
+
+enum FacebookLoginStatus:int32 {
+    Idle = 0,
+    Processing = 1,
+    Failed = 2,
+    Authorised = 3,
+}
+
+enum FacebookOperationStatus:int32 {
+    Success = 0,
+    Cancelled = 1,
+    Error = 2,
+}
+
+enum FacebookHttpMethod:int32 {
+    Get = 0,
+    Post = 1,
+    Delete = 2,
+}
+
+enum FacebookAppEvent:int32 {
+    AchievedLevel = 101,
+    AddedPaymentInfo = 102,
+    AddedToCart = 103,
+    AddedToWishlist = 104,
+    CompletedRegistration = 105,
+    CompletedTutorial = 106,
+    InitiatedCheckout = 107,
+    Rated = 109,
+    Searched = 110,
+    SpentCredits = 111,
+    UnlockedAchievement = 112,
+    ViewedContent = 113,
+}
+
+enum FacebookAppEventParameter:int32 {
+    ContentId = 1003,
+    ContentType = 1004,
+    Currency = 1005,
+    Description = 1006,
+    Level = 1007,
+    MaxRatingValue = 1008,
+    NumItems = 1009,
+    PaymentInfoAvailable = 1010,
+    RegistrationMethod = 1011,
+    SearchString = 1012,
+    Success = 1013,
+}
+
+// -----------------------------------------------------------------------------
+// Typed input and callback records
+// -----------------------------------------------------------------------------
+
+[global]
+class `[[FacebookEventParameterValue]]` prototype Object
+{
+    // Use a FacebookAppEventParameter enum value.
+    [field] property key : int32 { get; set; }
+    [field] property string_value : string { get; set; }
+    [field] property number_value : real { get; set; }
+    [field] property use_number : bool { get; set; }
+}
+
+[global]
+class `[[FacebookNamedValue]]` prototype Object
+{
+    [field] property name : string { get; set; }
+    [field] property string_value : string { get; set; }
+    [field] property number_value : real { get; set; }
+    [field] property use_number : bool { get; set; }
+}
+
+[global]
+class `[[FacebookCallbackResult]]` prototype Object
+{
+    [field] property success : bool { get; set; }
+    // FacebookOperationStatus enum value.
+    [field] property status : int32 { get; set; }
+    [field] property request_id : int32 { get; set; }
+    [field] property error_message : string { get; set; }
+    [field] property access_token : string { get; set; }
+    [field] property user_id : string { get; set; }
+    [field] property response_text : string { get; set; }
+    [field] property post_id : string { get; set; }
+    //[field] property granted_permissions : string[] { get; set; }
+    //[field] property declined_permissions : string[] { get; set; }
+}
+
+// -----------------------------------------------------------------------------
+// Initialization and state
+// -----------------------------------------------------------------------------
+
+[global, bind = typed_gml]
+function fb_initialize(callback: func): unit;
+
+[global, bind = typed_gml]
+function fb_ready(): bool;
+
+[global, bind = typed_gml, type_hint=`FacebookLoginStatus`]
+function fb_status(): gmval;
+
+[global, bind = typed_gml]
+function fb_user_id(): string;
+
+[global, bind = typed_gml]
+function fb_access_token(): string;
+
+[global, bind = typed_gml]
+function fb_logout(): unit;
+
+// -----------------------------------------------------------------------------
+// Privacy / App Events settings
+// -----------------------------------------------------------------------------
+
+[global, bind = typed_gml]
+function fb_set_auto_log_app_events_enabled(enabled: bool): unit;
+
+[global, bind = typed_gml]
+function fb_set_advertiser_id_collection_enabled(enabled: bool): unit;
+
+// -----------------------------------------------------------------------------
+// Login and permissions
+// -----------------------------------------------------------------------------
+
+[global, bind = typed_gml]
+function fb_check_permission(permission: string): bool;
+
+[global, bind = typed_gml]
+function fb_login(
+    [type_hint=`string[]`] permissions: gmval,
+    callback: func
+): unit;
+
+[global, bind = typed_gml]
+function fb_request_read_permissions(
+    [type_hint=`string[]`] permissions: gmval,
+    callback: func
+): unit;
+
+// Retained for source compatibility. Current Facebook platform apps should not
+// request deprecated publish permissions; the callback receives Error.
+[global, bind = typed_gml]
+function fb_request_publish_permissions(
+    [type_hint=`string[]`] permissions: gmval,
+    callback: func
+): unit;
+
+[global, bind = typed_gml]
+function fb_refresh_access_token(callback: func): unit;
+
+// -----------------------------------------------------------------------------
+// Graph API and sharing
+// -----------------------------------------------------------------------------
+
+[global, bind = typed_gml]
+function fb_graph_request(
+    graph_path: string,
+    [type_hint=`FacebookHttpMethod[]`]method: gmval,
+    [type_hint=`FacebookNamedValue[]`] parameters: gmval,
+    callback: func
+): unit;
+
+[global, bind = typed_gml]
+function fb_dialog(link_url: string, callback: func): unit;
+
+// -----------------------------------------------------------------------------
+// App Events
+// -----------------------------------------------------------------------------
+
+[global, bind = typed_gml]
+function fb_send_event(
+    [type_hint=`FacebookAppEvent[]`] event: gmval,
+    value: real,
+    [type_hint=`FacebookEventParameterValue[]`] parameters: gmval
+): bool;
+
+[global, bind = typed_gml]
+function fb_send_custom_event(
+    event_name: string,
+    value: real,
+    [type_hint=`FacebookNamedValue[]`] parameters: gmval
+): bool;
