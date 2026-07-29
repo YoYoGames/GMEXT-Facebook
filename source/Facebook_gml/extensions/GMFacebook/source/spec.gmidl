@@ -89,8 +89,8 @@ class `[[FacebookCallbackResult]]` prototype Object
     [field] property user_id : string { get; set; }
     [field] property response_text : string { get; set; }
     [field] property post_id : string { get; set; }
-    //[field] property granted_permissions : string[] { get; set; }
-    //[field] property declined_permissions : string[] { get; set; }
+    [field,type_hint = `string[]`] property granted_permissions : gmval { get; set; }
+    [field,type_hint = `string[]`] property declined_permissions : gmval { get; set; }
 }
 
 // -----------------------------------------------------------------------------

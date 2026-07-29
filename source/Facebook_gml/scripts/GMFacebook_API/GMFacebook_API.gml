@@ -120,6 +120,8 @@ function FacebookCallbackResult() constructor
     self.user_id = undefined;
     self.response_text = undefined;
     self.post_id = undefined;
+    self.granted_permissions = undefined;
+    self.declined_permissions = undefined;
 
 }
 
@@ -309,6 +311,28 @@ function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFU
         buffer_write(_buffer, buffer_u32, string_byte_length(self.post_id));
         buffer_write(_buffer, buffer_string, self.post_id);
 
+        // field: granted_permissions, type: String[]
+        if (!is_array(self.granted_permissions)) show_error($"{_where} :: self.granted_permissions expected array", true);
+        var __length__ = array_length(self.granted_permissions);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            if (!is_string(self.granted_permissions[_i])) show_error($"{_where} :: self.granted_permissions[_i] expected string", true);
+            buffer_write(_buffer, buffer_u32, string_byte_length(self.granted_permissions[_i]));
+            buffer_write(_buffer, buffer_string, self.granted_permissions[_i]);
+        }
+
+        // field: declined_permissions, type: String[]
+        if (!is_array(self.declined_permissions)) show_error($"{_where} :: self.declined_permissions expected array", true);
+        var __length__ = array_length(self.declined_permissions);
+        buffer_write(_buffer, buffer_u32, __length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            if (!is_string(self.declined_permissions[_i])) show_error($"{_where} :: self.declined_permissions[_i] expected string", true);
+            buffer_write(_buffer, buffer_u32, string_byte_length(self.declined_permissions[_i]));
+            buffer_write(_buffer, buffer_string, self.declined_permissions[_i]);
+        }
+
     }
 }
 
@@ -354,6 +378,24 @@ function __FacebookCallbackResult_decode(_buffer, _offset)
         // field: post_id, type: String
         buffer_read(_buffer, buffer_u32);
         self.post_id = buffer_read(_buffer, buffer_string);
+
+        // field: granted_permissions, type: String[]
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.granted_permissions = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            buffer_read(_buffer, buffer_u32);
+            self.granted_permissions[_i] = buffer_read(_buffer, buffer_string);
+        }
+
+        // field: declined_permissions, type: String[]
+        var __length__ = buffer_read(_buffer, buffer_u32);
+        self.declined_permissions = array_create(__length__);
+        for (var _i = 0; _i < __length__; ++_i)
+        {
+            buffer_read(_buffer, buffer_u32);
+            self.declined_permissions[_i] = buffer_read(_buffer, buffer_string);
+        }
 
     }
 

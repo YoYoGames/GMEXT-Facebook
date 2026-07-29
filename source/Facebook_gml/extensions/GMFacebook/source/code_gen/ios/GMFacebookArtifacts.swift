@@ -77,6 +77,8 @@ public struct FacebookCallbackResult: ITypedStruct
     public var user_id: String
     public var response_text: String
     public var post_id: String
+    public var granted_permissions: [String]
+    public var declined_permissions: [String]
 }
 
 extension FacebookEventParameterValue
@@ -135,6 +137,8 @@ extension FacebookCallbackResult
         self.user_id = try r.readRaw(String.self)
         self.response_text = try r.readRaw(String.self)
         self.post_id = try r.readRaw(String.self)
+        self.granted_permissions = try r.readRaw([String].self)
+        self.declined_permissions = try r.readRaw([String].self)
     }
 
     public func encode<W: IByteWriter>(_ w: inout W) throws
@@ -147,6 +151,8 @@ extension FacebookCallbackResult
         try w.writeRaw(self.user_id)
         try w.writeRaw(self.response_text)
         try w.writeRaw(self.post_id)
+        try w.writeRawList(self.granted_permissions)
+        try w.writeRawList(self.declined_permissions)
     }
 }
 

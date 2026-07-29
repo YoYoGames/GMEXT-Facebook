@@ -40,9 +40,7 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: AccessToken.current?.tokenString ?? "",
                 user_id: AccessToken.current?.userID ?? "",
                 response_text: "",
-                post_id: postId,
-                granted_permissions: [],
-                declined_permissions: []
+                post_id: postId
             )
         )
 
@@ -62,9 +60,7 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: "",
                 user_id: "",
                 response_text: "",
-                post_id: "",
-                granted_permissions: [],
-                declined_permissions: []
+                post_id: ""
             )
         )
 
@@ -81,9 +77,7 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: "",
                 user_id: "",
                 response_text: "",
-                post_id: "",
-                granted_permissions: [],
-                declined_permissions: []
+                post_id: ""
             )
         )
 
@@ -125,9 +119,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         accessToken: String = "",
         userId: String = "",
         responseText: String = "",
-        postId: String = "",
-        grantedPermissions: [String] = [],
-        declinedPermissions: [String] = []
+        postId: String = ""
     ) -> FacebookCallbackResult {
         return FacebookCallbackResult(
             success: success,
@@ -137,9 +129,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             access_token: accessToken,
             user_id: userId,
             response_text: responseText,
-            post_id: postId,
-            granted_permissions: grantedPermissions,
-            declined_permissions: declinedPermissions
+            post_id: postId
         )
     }
 
@@ -213,7 +203,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 didFinishLaunchingWithOptions: nil
             )
 
-            Profile.enableUpdatesOnAccessTokenChange(true)
+            Profile.isUpdatedWithAccessTokenChange = true
 
             self.ready = true
             self.loginStatus =
@@ -356,11 +346,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                         userId:
                             loginResult.token?.userID
                             ?? AccessToken.current?.userID
-                            ?? "",
-                        grantedPermissions:
-                            Array(loginResult.grantedPermissions).sorted(),
-                        declinedPermissions:
-                            Array(loginResult.declinedPermissions).sorted()
+                            ?? ""
                     )
                 )
             }
@@ -423,7 +409,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
     public override func fb_graph_request(
         graph_path: String,
-        method: FacebookHttpMethod,
+        method: [FacebookHttpMethod],
         parameters: [FacebookNamedValue],
         callback: GMFunction
     ) {
@@ -443,8 +429,15 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return
         }
 
+        guard let methodValue = method.first else {
+            callback.call(
+                failure(requestId, "No HTTP method specified.")
+            )
+            return
+        }
+
         let httpMethod: HTTPMethod
-        switch method {
+        switch methodValue {
         case .Get:
             httpMethod = .get
         case .Delete:
@@ -536,11 +529,15 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     }
 
     public override func fb_send_event(
-        event: FacebookAppEvent,
+        event: [FacebookAppEvent],
         value: Double,
         parameters: [FacebookEventParameterValue]
     ) -> Bool {
-        guard let eventName = standardEventName(event) else {
+        guard let eventValue = event.first else {
+            return false
+        }
+
+        guard let eventName = standardEventName(eventValue) else {
             return false
         }
 

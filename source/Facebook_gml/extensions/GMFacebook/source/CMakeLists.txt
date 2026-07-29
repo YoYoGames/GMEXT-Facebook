@@ -206,12 +206,6 @@ if(APPLE)
     XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
   target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
-
-  # Enable Swift/Clang modules (required for framework imports in Swift)
-  set_target_properties(${PROJECT_NAME} PROPERTIES
-    XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES YES)
-  target_compile_options(${PROJECT_NAME} PRIVATE
-    $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>)
 endif()
 
 # ============================================================

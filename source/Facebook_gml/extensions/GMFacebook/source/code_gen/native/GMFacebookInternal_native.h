@@ -103,6 +103,8 @@ namespace gm_structs
         std::string user_id;
         std::string response_text;
         std::string post_id;
+        std::vector<std::string> granted_permissions;
+        std::vector<std::string> declined_permissions;
     };
 
 }
@@ -160,6 +162,8 @@ namespace gm::wire::codec
         gm::wire::codec::writeValue(_buf, obj.user_id);
         gm::wire::codec::writeValue(_buf, obj.response_text);
         gm::wire::codec::writeValue(_buf, obj.post_id);
+        gm::wire::codec::writeValue(_buf, obj.granted_permissions);
+        gm::wire::codec::writeValue(_buf, obj.declined_permissions);
     }
 
     template<>
@@ -174,6 +178,8 @@ namespace gm::wire::codec
         obj.user_id = gm::wire::codec::readValue<std::string>(_buf);
         obj.response_text = gm::wire::codec::readValue<std::string>(_buf);
         obj.post_id = gm::wire::codec::readValue<std::string>(_buf);
+        obj.granted_permissions = gm::wire::codec::readVector<std::string>(_buf);
+        obj.declined_permissions = gm::wire::codec::readVector<std::string>(_buf);
         return obj;
     }
 

@@ -141,6 +141,8 @@
  * @member {String} user_id
  * @member {String} response_text
  * @member {String} post_id
+ * @member {Array[String]} granted_permissions
+ * @member {Array[String]} declined_permissions
  * @struct_end
  */
 

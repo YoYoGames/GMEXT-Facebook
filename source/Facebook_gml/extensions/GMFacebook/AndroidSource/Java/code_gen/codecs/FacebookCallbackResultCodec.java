@@ -5,6 +5,7 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import java.util.List;
 import ${YYAndroidPackageName}.records.*;
 
 public final class FacebookCallbackResultCodec {
@@ -29,7 +30,11 @@ public final class FacebookCallbackResultCodec {
 
         String post_id = GMExtWire.readString(b);
 
-        return new FacebookCallbackResult(success, status, request_id, error_message, access_token, user_id, response_text, post_id);
+        java.util.List<String> granted_permissions = GMExtWire.readList(b, bb -> GMExtWire.readString(bb));
+
+        java.util.List<String> declined_permissions = GMExtWire.readList(b, bb -> GMExtWire.readString(bb));
+
+        return new FacebookCallbackResult(success, status, request_id, error_message, access_token, user_id, response_text, post_id, granted_permissions, declined_permissions);
     }
 
     public static void write(ByteBuffer b, FacebookCallbackResult obj)
@@ -49,6 +54,10 @@ public final class FacebookCallbackResultCodec {
         GMExtWire.writeString(b, obj.response_text());
 
         GMExtWire.writeString(b, obj.post_id());
+
+        GMExtWire.writeList(b, obj.granted_permissions(), (bb, x) -> GMExtWire.writeString(bb, x));
+
+        GMExtWire.writeList(b, obj.declined_permissions(), (bb, x) -> GMExtWire.writeString(bb, x));
 
     }
 }
