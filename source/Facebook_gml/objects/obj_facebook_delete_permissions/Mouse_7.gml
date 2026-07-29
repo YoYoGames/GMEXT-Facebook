@@ -1,6 +1,24 @@
 event_inherited();
 
-// A successful request invalidates the current user access token.
+if (os_type != os_android && os_type != os_ios)
+{
+    show_message_async("GMFacebook supports Android and iOS only.");
+    exit;
+}
+
+if (!fb_ready())
+{
+    show_message_async("Facebook SDK is not initialized yet.");
+    exit;
+}
+
+if (!fb_is_logged_in())
+{
+    show_message_async("Log in before deleting Facebook permissions.");
+    exit;
+}
+
+// A successful DELETE /me/permissions request invalidates the current token.
 // The user must log in again afterward.
 fb_graph_request(
     "me/permissions",
@@ -10,10 +28,7 @@ fb_graph_request(
     {
         if (result.success)
         {
-            show_debug_message(
-                "Facebook permissions deleted."
-            );
-
+            show_debug_message("Facebook permissions deleted.");
             fb_logout();
         }
         else

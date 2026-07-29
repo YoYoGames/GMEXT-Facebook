@@ -129,6 +129,12 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     return __result;
 }
 
+- (double)__EXT_NATIVE__fb_is_logged_in
+{
+    double __result = __impl->__EXT_SWIFT__fb_is_logged_in();
+    return __result;
+}
+
 - (char*)__EXT_NATIVE__fb_user_id
 {
     static std::string __result;
@@ -155,9 +161,39 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     return 0;
 }
 
+- (double)__EXT_NATIVE__fb_auto_log_app_events_enabled
+{
+    double __result = __impl->__EXT_SWIFT__fb_auto_log_app_events_enabled();
+    return __result;
+}
+
 - (double)__EXT_NATIVE__fb_set_advertiser_id_collection_enabled:(double)enabled
 {
     __impl->__EXT_SWIFT__fb_set_advertiser_id_collection_enabled(enabled);
+    return 0;
+}
+
+- (double)__EXT_NATIVE__fb_advertiser_id_collection_enabled
+{
+    double __result = __impl->__EXT_SWIFT__fb_advertiser_id_collection_enabled();
+    return __result;
+}
+
+- (double)__EXT_NATIVE__fb_set_event_data_usage_limited:(double)enabled
+{
+    __impl->__EXT_SWIFT__fb_set_event_data_usage_limited(enabled);
+    return 0;
+}
+
+- (double)__EXT_NATIVE__fb_event_data_usage_limited
+{
+    double __result = __impl->__EXT_SWIFT__fb_event_data_usage_limited();
+    return __result;
+}
+
+- (double)__EXT_NATIVE__fb_set_data_processing_options:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+{
+    __impl->__EXT_SWIFT__fb_set_data_processing_options(__arg_buffer, __arg_buffer_length);
     return 0;
 }
 
@@ -213,6 +249,37 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
 {
     double __result = __impl->__EXT_SWIFT__fb_send_custom_event(__arg_buffer, __arg_buffer_length);
     return __result;
+}
+
+- (double)__EXT_NATIVE__fb_send_purchase:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+{
+    double __result = __impl->__EXT_SWIFT__fb_send_purchase(__arg_buffer, __arg_buffer_length);
+    return __result;
+}
+
+- (double)__EXT_NATIVE__fb_flush_events
+{
+    __impl->__EXT_SWIFT__fb_flush_events();
+    return 0;
+}
+
+- (double)__EXT_NATIVE__fb_set_event_user_id:(char*)user_id
+{
+    __impl->__EXT_SWIFT__fb_set_event_user_id(user_id);
+    return 0;
+}
+
+- (char*)__EXT_NATIVE__fb_get_event_user_id
+{
+    static std::string __result;
+    __result = (std::string)__impl->__EXT_SWIFT__fb_get_event_user_id();
+    return (char*)__result.c_str();
+}
+
+- (double)__EXT_NATIVE__fb_clear_event_user_id
+{
+    __impl->__EXT_SWIFT__fb_clear_event_user_id();
+    return 0;
 }
 
 // Internal function used for fetching dispatched function calls to GML

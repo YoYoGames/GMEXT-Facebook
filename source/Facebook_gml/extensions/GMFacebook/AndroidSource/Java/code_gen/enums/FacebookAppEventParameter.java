@@ -4,6 +4,8 @@ package ${YYAndroidPackageName}.enums;
 
 public enum FacebookAppEventParameter
 {
+    Content((int)1001),
+    AdType((int)1002),
     ContentId((int)1003),
     ContentType((int)1004),
     Currency((int)1005),
@@ -14,7 +16,8 @@ public enum FacebookAppEventParameter
     PaymentInfoAvailable((int)1010),
     RegistrationMethod((int)1011),
     SearchString((int)1012),
-    Success((int)1013);
+    Success((int)1013),
+    OrderId((int)1014);
 
     private final int value;
     private FacebookAppEventParameter(int v)
@@ -29,6 +32,10 @@ public enum FacebookAppEventParameter
     {
         switch (v)
         {
+            case 1001:
+                return FacebookAppEventParameter.Content;
+            case 1002:
+                return FacebookAppEventParameter.AdType;
             case 1003:
                 return FacebookAppEventParameter.ContentId;
             case 1004:
@@ -51,6 +58,8 @@ public enum FacebookAppEventParameter
                 return FacebookAppEventParameter.SearchString;
             case 1013:
                 return FacebookAppEventParameter.Success;
+            case 1014:
+                return FacebookAppEventParameter.OrderId;
             default:
                 throw new IllegalArgumentException("Unknown FacebookAppEventParameter value: " + v);
         }

@@ -42,6 +42,12 @@ GMEXPORT double __EXT_NATIVE__fb_status(char* __ret_buffer, double __ret_buffer_
     return 0;
 }
 
+GMEXPORT double __EXT_NATIVE__fb_is_logged_in()
+{
+    auto&& __result = fb_is_logged_in();
+    return static_cast<double>(__result);
+}
+
 GMEXPORT char* __EXT_NATIVE__fb_user_id()
 {
     static std::string __result;
@@ -68,9 +74,50 @@ GMEXPORT double __EXT_NATIVE__fb_set_auto_log_app_events_enabled(double enabled)
     return 0;
 }
 
+GMEXPORT double __EXT_NATIVE__fb_auto_log_app_events_enabled()
+{
+    auto&& __result = fb_auto_log_app_events_enabled();
+    return static_cast<double>(__result);
+}
+
 GMEXPORT double __EXT_NATIVE__fb_set_advertiser_id_collection_enabled(double enabled)
 {
     fb_set_advertiser_id_collection_enabled(static_cast<bool>(enabled));
+    return 0;
+}
+
+GMEXPORT double __EXT_NATIVE__fb_advertiser_id_collection_enabled()
+{
+    auto&& __result = fb_advertiser_id_collection_enabled();
+    return static_cast<double>(__result);
+}
+
+GMEXPORT double __EXT_NATIVE__fb_set_event_data_usage_limited(double enabled)
+{
+    fb_set_event_data_usage_limited(static_cast<bool>(enabled));
+    return 0;
+}
+
+GMEXPORT double __EXT_NATIVE__fb_event_data_usage_limited()
+{
+    auto&& __result = fb_event_data_usage_limited();
+    return static_cast<double>(__result);
+}
+
+GMEXPORT double __EXT_NATIVE__fb_set_data_processing_options(char* __arg_buffer, double __arg_buffer_length)
+{
+    gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
+
+    // field: options, type: String[]
+    std::vector<std::string_view> options = gm::wire::codec::readVector<std::string_view>(__br);
+
+    // field: country, type: Int32
+    std::int32_t country = gm::wire::codec::readValue<std::int32_t>(__br);
+
+    // field: state, type: Int32
+    std::int32_t state = gm::wire::codec::readValue<std::int32_t>(__br);
+
+    fb_set_data_processing_options(options, country, state);
     return 0;
 }
 
@@ -140,8 +187,8 @@ GMEXPORT double __EXT_NATIVE__fb_graph_request(char* __arg_buffer, double __arg_
     // field: graph_path, type: String
     std::string_view graph_path = gm::wire::codec::readValue<std::string_view>(__br);
 
-    // field: method, type: enum FacebookHttpMethod[]
-    std::vector<gm_enums::FacebookHttpMethod> method = gm::wire::codec::readVector<gm_enums::FacebookHttpMethod>(__br);
+    // field: method, type: enum FacebookHttpMethod
+    gm_enums::FacebookHttpMethod method = gm::wire::codec::readValue<gm_enums::FacebookHttpMethod>(__br);
 
     // field: parameters, type: struct FacebookNamedValue[]
     std::vector<gm_structs::FacebookNamedValue> parameters = gm::wire::codec::readVector<gm_structs::FacebookNamedValue>(__br);
@@ -171,8 +218,8 @@ GMEXPORT double __EXT_NATIVE__fb_send_event(char* __arg_buffer, double __arg_buf
 {
     gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
 
-    // field: event, type: enum FacebookAppEvent[]
-    std::vector<gm_enums::FacebookAppEvent> event = gm::wire::codec::readVector<gm_enums::FacebookAppEvent>(__br);
+    // field: event, type: enum FacebookAppEvent
+    gm_enums::FacebookAppEvent event = gm::wire::codec::readValue<gm_enums::FacebookAppEvent>(__br);
 
     // field: value, type: Float64
     double value = gm::wire::codec::readValue<double>(__br);
@@ -199,5 +246,47 @@ GMEXPORT double __EXT_NATIVE__fb_send_custom_event(char* __arg_buffer, double __
 
     auto&& __result = fb_send_custom_event(event_name, value, parameters);
     return static_cast<double>(__result);
+}
+
+GMEXPORT double __EXT_NATIVE__fb_send_purchase(char* __arg_buffer, double __arg_buffer_length)
+{
+    gm::byteio::BufferReader __br{__arg_buffer, static_cast<size_t>(__arg_buffer_length)};
+
+    // field: amount, type: Float64
+    double amount = gm::wire::codec::readValue<double>(__br);
+
+    // field: currency, type: String
+    std::string_view currency = gm::wire::codec::readValue<std::string_view>(__br);
+
+    // field: parameters, type: struct FacebookNamedValue[]
+    std::vector<gm_structs::FacebookNamedValue> parameters = gm::wire::codec::readVector<gm_structs::FacebookNamedValue>(__br);
+
+    auto&& __result = fb_send_purchase(amount, currency, parameters);
+    return static_cast<double>(__result);
+}
+
+GMEXPORT double __EXT_NATIVE__fb_flush_events()
+{
+    fb_flush_events();
+    return 0;
+}
+
+GMEXPORT double __EXT_NATIVE__fb_set_event_user_id(char* user_id)
+{
+    fb_set_event_user_id(user_id);
+    return 0;
+}
+
+GMEXPORT char* __EXT_NATIVE__fb_get_event_user_id()
+{
+    static std::string __result;
+    __result = fb_get_event_user_id();
+    return (char*)__result.c_str();
+}
+
+GMEXPORT double __EXT_NATIVE__fb_clear_event_user_id()
+{
+    fb_clear_event_user_id();
+    return 0;
 }
 

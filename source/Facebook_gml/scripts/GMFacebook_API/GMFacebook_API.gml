@@ -43,11 +43,23 @@ enum FacebookAppEvent
     Searched = 110,
     SpentCredits = 111,
     UnlockedAchievement = 112,
-    ViewedContent = 113
+    ViewedContent = 113,
+    Contact = 114,
+    CustomizeProduct = 115,
+    Donate = 116,
+    FindLocation = 117,
+    Schedule = 118,
+    StartTrial = 119,
+    SubmitApplication = 120,
+    Subscribe = 121,
+    AdImpression = 122,
+    AdClick = 123
 }
 
 enum FacebookAppEventParameter
 {
+    Content = 1001,
+    AdType = 1002,
     ContentId = 1003,
     ContentType = 1004,
     Currency = 1005,
@@ -58,7 +70,8 @@ enum FacebookAppEventParameter
     PaymentInfoAvailable = 1010,
     RegistrationMethod = 1011,
     SearchString = 1012,
-    Success = 1013
+    Success = 1013,
+    OrderId = 1014
 }
 
 // #####################################################################
@@ -142,7 +155,8 @@ function __FacebookEventParameterValue_encode(_inst, _buffer, _offset, _where = 
     buffer_seek(_buffer, buffer_seek_start, _offset);
     with (_inst)
     {
-        // field: key, type: Int32
+        // field: key, type: enum FacebookAppEventParameter
+
         if (!is_numeric(self.key)) show_error($"{_where} :: self.key expected number", true);
         buffer_write(_buffer, buffer_s32, self.key);
 
@@ -176,7 +190,7 @@ function __FacebookEventParameterValue_decode(_buffer, _offset)
     _inst = new FacebookEventParameterValue();
     with (_inst)
     {
-        // field: key, type: Int32
+        // field: key, type: enum FacebookAppEventParameter
         self.key = buffer_read(_buffer, buffer_s32);
 
         // field: string_value, type: String
@@ -278,7 +292,8 @@ function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFU
         if (!is_bool(self.success)) show_error($"{_where} :: self.success expected bool", true);
         buffer_write(_buffer, buffer_bool, self.success);
 
-        // field: status, type: Int32
+        // field: status, type: enum FacebookOperationStatus
+
         if (!is_numeric(self.status)) show_error($"{_where} :: self.status expected number", true);
         buffer_write(_buffer, buffer_s32, self.status);
 
@@ -353,7 +368,7 @@ function __FacebookCallbackResult_decode(_buffer, _offset)
         // field: success, type: Bool
         self.success = buffer_read(_buffer, buffer_bool);
 
-        // field: status, type: Int32
+        // field: status, type: enum FacebookOperationStatus
         self.status = buffer_read(_buffer, buffer_s32);
 
         // field: request_id, type: Int32
@@ -448,6 +463,9 @@ function fb_status()
     return __result__;
 }
 
+// Skipping function fb_is_logged_in (no wrapper is required)
+
+
 // Skipping function fb_user_id (no wrapper is required)
 
 
@@ -460,8 +478,56 @@ function fb_status()
 // Skipping function fb_set_auto_log_app_events_enabled (no wrapper is required)
 
 
+// Skipping function fb_auto_log_app_events_enabled (no wrapper is required)
+
+
 // Skipping function fb_set_advertiser_id_collection_enabled (no wrapper is required)
 
+
+// Skipping function fb_advertiser_id_collection_enabled (no wrapper is required)
+
+
+// Skipping function fb_set_event_data_usage_limited (no wrapper is required)
+
+
+// Skipping function fb_event_data_usage_limited (no wrapper is required)
+
+
+/**
+ * @param {Array[String]} _options
+ * @param {Real} _country
+ * @param {Real} _state
+ */
+function fb_set_data_processing_options(_options, _country, _state)
+{
+    var __available__ = __GMFacebook_is_available();
+    if (!__available__) return;
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _options, type: String[]
+    if (!is_array(_options)) show_error($"{_GMFUNCTION_} :: _options expected array", true);
+    var __length__ = array_length(_options);
+    buffer_write(__args_buffer, buffer_u32, __length__);
+    for (var _i = 0; _i < __length__; ++_i)
+    {
+        if (!is_string(_options[_i])) show_error($"{_GMFUNCTION_} :: _options[_i] expected string", true);
+        buffer_write(__args_buffer, buffer_u32, string_byte_length(_options[_i]));
+        buffer_write(__args_buffer, buffer_string, _options[_i]);
+    }
+
+    // param: _country, type: Int32
+    if (!is_numeric(_country)) show_error($"{_GMFUNCTION_} :: _country expected number", true);
+    buffer_write(__args_buffer, buffer_s32, _country);
+
+    // param: _state, type: Int32
+    if (!is_numeric(_state)) show_error($"{_GMFUNCTION_} :: _state expected number", true);
+    buffer_write(__args_buffer, buffer_s32, _state);
+
+    var __return_value__ = __fb_set_data_processing_options(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
 
 // Skipping function fb_check_permission (no wrapper is required)
 
@@ -592,7 +658,7 @@ function fb_refresh_access_token(_callback)
 
 /**
  * @param {String} _graph_path
- * @param {Array[Enum.FacebookHttpMethod]} _method
+ * @param {Enum.FacebookHttpMethod} _method
  * @param {Array[Struct.FacebookNamedValue]} _parameters
  * @param {Function} _callback
  */
@@ -610,16 +676,10 @@ function fb_graph_request(_graph_path, _method, _parameters, _callback)
     buffer_write(__args_buffer, buffer_u32, string_byte_length(_graph_path));
     buffer_write(__args_buffer, buffer_string, _graph_path);
 
-    // param: _method, type: enum FacebookHttpMethod[]
-    if (!is_array(_method)) show_error($"{_GMFUNCTION_} :: _method expected array", true);
-    var __length__ = array_length(_method);
-    buffer_write(__args_buffer, buffer_u32, __length__);
-    for (var _i = 0; _i < __length__; ++_i)
-    {
+    // param: _method, type: enum FacebookHttpMethod
 
-        if (!is_numeric(_method[_i])) show_error($"{_GMFUNCTION_} :: _method[_i] expected number", true);
-        buffer_write(__args_buffer, buffer_s32, _method[_i]);
-    }
+    if (!is_numeric(_method)) show_error($"{_GMFUNCTION_} :: _method expected number", true);
+    buffer_write(__args_buffer, buffer_s32, _method);
 
     // param: _parameters, type: struct FacebookNamedValue[]
     if (!is_array(_parameters)) show_error($"{_GMFUNCTION_} :: _parameters expected array", true);
@@ -670,7 +730,7 @@ function fb_dialog(_link_url, _callback)
 }
 
 /**
- * @param {Array[Enum.FacebookAppEvent]} _event
+ * @param {Enum.FacebookAppEvent} _event
  * @param {Real} _value
  * @param {Array[Struct.FacebookEventParameterValue]} _parameters
  * @returns {Bool}
@@ -682,16 +742,10 @@ function fb_send_event(_event, _value, _parameters)
 
     var __args_buffer = __ext_core_get_args_buffer();
 
-    // param: _event, type: enum FacebookAppEvent[]
-    if (!is_array(_event)) show_error($"{_GMFUNCTION_} :: _event expected array", true);
-    var __length__ = array_length(_event);
-    buffer_write(__args_buffer, buffer_u32, __length__);
-    for (var _i = 0; _i < __length__; ++_i)
-    {
+    // param: _event, type: enum FacebookAppEvent
 
-        if (!is_numeric(_event[_i])) show_error($"{_GMFUNCTION_} :: _event[_i] expected number", true);
-        buffer_write(__args_buffer, buffer_s32, _event[_i]);
-    }
+    if (!is_numeric(_event)) show_error($"{_GMFUNCTION_} :: _event expected number", true);
+    buffer_write(__args_buffer, buffer_s32, _event);
 
     // param: _value, type: Float64
     if (!is_numeric(_value)) show_error($"{_GMFUNCTION_} :: _value expected number", true);
@@ -748,6 +802,55 @@ function fb_send_custom_event(_event_name, _value, _parameters)
 
     return __return_value__;
 }
+
+/**
+ * @param {Real} _amount
+ * @param {String} _currency
+ * @param {Array[Struct.FacebookNamedValue]} _parameters
+ * @returns {Bool}
+ */
+function fb_send_purchase(_amount, _currency, _parameters)
+{
+    var __available__ = __GMFacebook_is_available();
+    if (!__available__) return;
+
+    var __args_buffer = __ext_core_get_args_buffer();
+
+    // param: _amount, type: Float64
+    if (!is_numeric(_amount)) show_error($"{_GMFUNCTION_} :: _amount expected number", true);
+    buffer_write(__args_buffer, buffer_f64, _amount);
+
+    // param: _currency, type: String
+    if (!is_string(_currency)) show_error($"{_GMFUNCTION_} :: _currency expected string", true);
+    buffer_write(__args_buffer, buffer_u32, string_byte_length(_currency));
+    buffer_write(__args_buffer, buffer_string, _currency);
+
+    // param: _parameters, type: struct FacebookNamedValue[]
+    if (!is_array(_parameters)) show_error($"{_GMFUNCTION_} :: _parameters expected array", true);
+    var __length__ = array_length(_parameters);
+    buffer_write(__args_buffer, buffer_u32, __length__);
+    for (var _i = 0; _i < __length__; ++_i)
+    {
+        if (_parameters[_i].__uid != 778246291) show_error($"{_GMFUNCTION_} :: _parameters[_i] expected FacebookNamedValue", true);
+        __FacebookNamedValue_encode(_parameters[_i], __args_buffer, buffer_tell(__args_buffer), _GMFUNCTION_);
+    }
+
+    var __return_value__ = __fb_send_purchase(buffer_get_address(__args_buffer), buffer_tell(__args_buffer));
+
+    return __return_value__;
+}
+
+// Skipping function fb_flush_events (no wrapper is required)
+
+
+// Skipping function fb_set_event_user_id (no wrapper is required)
+
+
+// Skipping function fb_get_event_user_id (no wrapper is required)
+
+
+// Skipping function fb_clear_event_user_id (no wrapper is required)
+
 
 /// @ignore
 function __GMFacebook_get_decoders()

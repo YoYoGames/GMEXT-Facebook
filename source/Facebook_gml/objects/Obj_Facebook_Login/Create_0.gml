@@ -1,4 +1,2 @@
-
-event_inherited()
-
-text = "Sign In"
+event_inherited();
+text = "Sign In";

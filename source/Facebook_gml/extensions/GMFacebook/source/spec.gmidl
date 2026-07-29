@@ -1,4 +1,3 @@
-
 [gml_api]
 module GMFacebook;
 
@@ -38,9 +37,21 @@ enum FacebookAppEvent:int32 {
     SpentCredits = 111,
     UnlockedAchievement = 112,
     ViewedContent = 113,
+    Contact = 114,
+    CustomizeProduct = 115,
+    Donate = 116,
+    FindLocation = 117,
+    Schedule = 118,
+    StartTrial = 119,
+    SubmitApplication = 120,
+    Subscribe = 121,
+    AdImpression = 122,
+    AdClick = 123,
 }
 
 enum FacebookAppEventParameter:int32 {
+    Content = 1001,
+    AdType = 1002,
     ContentId = 1003,
     ContentType = 1004,
     Currency = 1005,
@@ -52,6 +63,7 @@ enum FacebookAppEventParameter:int32 {
     RegistrationMethod = 1011,
     SearchString = 1012,
     Success = 1013,
+    OrderId = 1014,
 }
 
 // -----------------------------------------------------------------------------
@@ -61,8 +73,7 @@ enum FacebookAppEventParameter:int32 {
 [global]
 class `[[FacebookEventParameterValue]]` prototype Object
 {
-    // Use a FacebookAppEventParameter enum value.
-    [field] property key : int32 { get; set; }
+    [field, type_hint=`FacebookAppEventParameter`] property key : gmval { get; set; }
     [field] property string_value : string { get; set; }
     [field] property number_value : real { get; set; }
     [field] property use_number : bool { get; set; }
@@ -81,8 +92,7 @@ class `[[FacebookNamedValue]]` prototype Object
 class `[[FacebookCallbackResult]]` prototype Object
 {
     [field] property success : bool { get; set; }
-    // FacebookOperationStatus enum value.
-    [field] property status : int32 { get; set; }
+    [field, type_hint=`FacebookOperationStatus`] property status : gmval { get; set; }
     [field] property request_id : int32 { get; set; }
     [field] property error_message : string { get; set; }
     [field] property access_token : string { get; set; }
@@ -107,6 +117,9 @@ function fb_ready(): bool;
 function fb_status(): gmval;
 
 [global, bind = typed_gml]
+function fb_is_logged_in(): bool;
+
+[global, bind = typed_gml]
 function fb_user_id(): string;
 
 [global, bind = typed_gml]
@@ -123,12 +136,36 @@ function fb_logout(): unit;
 function fb_set_auto_log_app_events_enabled(enabled: bool): unit;
 
 [global, bind = typed_gml]
+function fb_auto_log_app_events_enabled(): bool;
+
+[global, bind = typed_gml]
 function fb_set_advertiser_id_collection_enabled(enabled: bool): unit;
+
+[global, bind = typed_gml]
+function fb_advertiser_id_collection_enabled(): bool;
+
+[global, bind = typed_gml]
+function fb_set_event_data_usage_limited(enabled: bool): unit;
+
+[global, bind = typed_gml]
+function fb_event_data_usage_limited(): bool;
+
+// Options are intentionally strings because Meta may add new values. "LDU" is
+// the currently documented Limited Data Use option. country/state are Meta's
+// numeric location codes; use 0/0 when they should be inferred.
+[global, bind = typed_gml]
+function fb_set_data_processing_options(
+    [type_hint=`string[]`] options: gmval,
+    country: int32,
+    state: int32
+): unit;
 
 // -----------------------------------------------------------------------------
 // Login and permissions
 // -----------------------------------------------------------------------------
 
+// Permission identifiers remain strings because the available permissions are
+// app-review and Graph-API dependent rather than a stable native enum.
 [global, bind = typed_gml]
 function fb_check_permission(permission: string): bool;
 
@@ -145,7 +182,7 @@ function fb_request_read_permissions(
 ): unit;
 
 // Retained for source compatibility. Current Facebook platform apps should not
-// request deprecated publish permissions; the callback receives Error.
+// request removed publish permissions; the callback receives Error.
 [global, bind = typed_gml]
 function fb_request_publish_permissions(
     [type_hint=`string[]`] permissions: gmval,
@@ -162,7 +199,7 @@ function fb_refresh_access_token(callback: func): unit;
 [global, bind = typed_gml]
 function fb_graph_request(
     graph_path: string,
-    [type_hint=`FacebookHttpMethod[]`]method: gmval,
+    [type_hint=`FacebookHttpMethod`]method: gmval,
     [type_hint=`FacebookNamedValue[]`] parameters: gmval,
     callback: func
 ): unit;
@@ -176,7 +213,7 @@ function fb_dialog(link_url: string, callback: func): unit;
 
 [global, bind = typed_gml]
 function fb_send_event(
-    [type_hint=`FacebookAppEvent[]`] event: gmval,
+    [type_hint=`FacebookAppEvent`]event: gmval,
     value: real,
     [type_hint=`FacebookEventParameterValue[]`] parameters: gmval
 ): bool;
@@ -187,3 +224,22 @@ function fb_send_custom_event(
     value: real,
     [type_hint=`FacebookNamedValue[]`] parameters: gmval
 ): bool;
+
+[global, bind = typed_gml]
+function fb_send_purchase(
+    amount: real,
+    currency: string,
+    [type_hint=`FacebookNamedValue[]`] parameters: gmval
+): bool;
+
+[global, bind = typed_gml]
+function fb_flush_events(): unit;
+
+[global, bind = typed_gml]
+function fb_set_event_user_id(user_id: string): unit;
+
+[global, bind = typed_gml]
+function fb_get_event_user_id(): string;
+
+[global, bind = typed_gml]
+function fb_clear_event_user_id(): unit;

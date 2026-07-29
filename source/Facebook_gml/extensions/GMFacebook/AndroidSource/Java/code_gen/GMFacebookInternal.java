@@ -47,6 +47,12 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return 0;
     }
 
+    public double __EXT_NATIVE__fb_is_logged_in()
+    {
+        boolean __result = fb_is_logged_in();
+        return __result ? 1.0 : 0.0;
+    }
+
     public String __EXT_NATIVE__fb_user_id()
     {
         String __result = fb_user_id();
@@ -71,9 +77,50 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return 0;
     }
 
+    public double __EXT_NATIVE__fb_auto_log_app_events_enabled()
+    {
+        boolean __result = fb_auto_log_app_events_enabled();
+        return __result ? 1.0 : 0.0;
+    }
+
     public double __EXT_NATIVE__fb_set_advertiser_id_collection_enabled(double enabled)
     {
         fb_set_advertiser_id_collection_enabled(enabled != 0);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__fb_advertiser_id_collection_enabled()
+    {
+        boolean __result = fb_advertiser_id_collection_enabled();
+        return __result ? 1.0 : 0.0;
+    }
+
+    public double __EXT_NATIVE__fb_set_event_data_usage_limited(double enabled)
+    {
+        fb_set_event_data_usage_limited(enabled != 0);
+        return 0;
+    }
+
+    public double __EXT_NATIVE__fb_event_data_usage_limited()
+    {
+        boolean __result = fb_event_data_usage_limited();
+        return __result ? 1.0 : 0.0;
+    }
+
+    public double __EXT_NATIVE__fb_set_data_processing_options(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: options, type: String[]
+        java.util.List<String> options = GMExtWire.readList(__arg_buffer, bb -> GMExtWire.readString(bb));
+
+        // field: country, type: Int32
+        int country = GMExtWire.readI32(__arg_buffer);
+
+        // field: state, type: Int32
+        int state = GMExtWire.readI32(__arg_buffer);
+
+        fb_set_data_processing_options(options, country, state);
         return 0;
     }
 
@@ -143,8 +190,8 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: graph_path, type: String
         String graph_path = GMExtWire.readString(__arg_buffer);
 
-        // field: method, type: enum FacebookHttpMethod[]
-        java.util.List<FacebookHttpMethod> method = GMExtWire.readList(__arg_buffer, bb -> FacebookHttpMethod.from(GMExtWire.readI32(bb)));
+        // field: method, type: enum FacebookHttpMethod
+        FacebookHttpMethod method = FacebookHttpMethod.from(GMExtWire.readI32(__arg_buffer));
 
         // field: parameters, type: struct FacebookNamedValue[]
         java.util.List<FacebookNamedValue> parameters = GMExtWire.readList(__arg_buffer, bb -> FacebookNamedValueCodec.read(bb));
@@ -174,8 +221,8 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
     {
         GMExtWire.order(__arg_buffer);
 
-        // field: event, type: enum FacebookAppEvent[]
-        java.util.List<FacebookAppEvent> event = GMExtWire.readList(__arg_buffer, bb -> FacebookAppEvent.from(GMExtWire.readI32(bb)));
+        // field: event, type: enum FacebookAppEvent
+        FacebookAppEvent event = FacebookAppEvent.from(GMExtWire.readI32(__arg_buffer));
 
         // field: value, type: Float64
         double value = GMExtWire.readF64(__arg_buffer);
@@ -202,6 +249,47 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
 
         boolean __result = fb_send_custom_event(event_name, value, parameters);
         return __result ? 1.0 : 0.0;
+    }
+
+    public double __EXT_NATIVE__fb_send_purchase(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    {
+        GMExtWire.order(__arg_buffer);
+
+        // field: amount, type: Float64
+        double amount = GMExtWire.readF64(__arg_buffer);
+
+        // field: currency, type: String
+        String currency = GMExtWire.readString(__arg_buffer);
+
+        // field: parameters, type: struct FacebookNamedValue[]
+        java.util.List<FacebookNamedValue> parameters = GMExtWire.readList(__arg_buffer, bb -> FacebookNamedValueCodec.read(bb));
+
+        boolean __result = fb_send_purchase(amount, currency, parameters);
+        return __result ? 1.0 : 0.0;
+    }
+
+    public double __EXT_NATIVE__fb_flush_events()
+    {
+        fb_flush_events();
+        return 0;
+    }
+
+    public double __EXT_NATIVE__fb_set_event_user_id(String user_id)
+    {
+        fb_set_event_user_id(user_id);
+        return 0;
+    }
+
+    public String __EXT_NATIVE__fb_get_event_user_id()
+    {
+        String __result = fb_get_event_user_id();
+        return __result;
+    }
+
+    public double __EXT_NATIVE__fb_clear_event_user_id()
+    {
+        fb_clear_event_user_id();
+        return 0;
     }
 
 }

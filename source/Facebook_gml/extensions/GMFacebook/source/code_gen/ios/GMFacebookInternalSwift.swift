@@ -27,6 +27,12 @@ open class GMFacebookInternalSwift
         return FacebookLoginStatus(rawValue: 0)!
     }
 
+    open func fb_is_logged_in() -> Bool
+    {
+        // default stub for fb_is_logged_in
+        return false
+    }
+
     open func fb_user_id() -> String
     {
         // default stub for fb_user_id
@@ -49,9 +55,37 @@ open class GMFacebookInternalSwift
         // default stub for fb_set_auto_log_app_events_enabled
     }
 
+    open func fb_auto_log_app_events_enabled() -> Bool
+    {
+        // default stub for fb_auto_log_app_events_enabled
+        return false
+    }
+
     open func fb_set_advertiser_id_collection_enabled(enabled: Bool)
     {
         // default stub for fb_set_advertiser_id_collection_enabled
+    }
+
+    open func fb_advertiser_id_collection_enabled() -> Bool
+    {
+        // default stub for fb_advertiser_id_collection_enabled
+        return false
+    }
+
+    open func fb_set_event_data_usage_limited(enabled: Bool)
+    {
+        // default stub for fb_set_event_data_usage_limited
+    }
+
+    open func fb_event_data_usage_limited() -> Bool
+    {
+        // default stub for fb_event_data_usage_limited
+        return false
+    }
+
+    open func fb_set_data_processing_options(options: [String], country: Int32, state: Int32)
+    {
+        // default stub for fb_set_data_processing_options
     }
 
     open func fb_check_permission(permission: String) -> Bool
@@ -80,7 +114,7 @@ open class GMFacebookInternalSwift
         // default stub for fb_refresh_access_token
     }
 
-    open func fb_graph_request(graph_path: String, method: [FacebookHttpMethod], parameters: [FacebookNamedValue], callback: GMFunction)
+    open func fb_graph_request(graph_path: String, method: FacebookHttpMethod, parameters: [FacebookNamedValue], callback: GMFunction)
     {
         // default stub for fb_graph_request
     }
@@ -90,7 +124,7 @@ open class GMFacebookInternalSwift
         // default stub for fb_dialog
     }
 
-    open func fb_send_event(event: [FacebookAppEvent], value: Double, parameters: [FacebookEventParameterValue]) -> Bool
+    open func fb_send_event(event: FacebookAppEvent, value: Double, parameters: [FacebookEventParameterValue]) -> Bool
     {
         // default stub for fb_send_event
         return false
@@ -100,6 +134,33 @@ open class GMFacebookInternalSwift
     {
         // default stub for fb_send_custom_event
         return false
+    }
+
+    open func fb_send_purchase(amount: Double, currency: String, parameters: [FacebookNamedValue]) -> Bool
+    {
+        // default stub for fb_send_purchase
+        return false
+    }
+
+    open func fb_flush_events()
+    {
+        // default stub for fb_flush_events
+    }
+
+    open func fb_set_event_user_id(user_id: String)
+    {
+        // default stub for fb_set_event_user_id
+    }
+
+    open func fb_get_event_user_id() -> String
+    {
+        // default stub for fb_get_event_user_id
+        return ""
+    }
+
+    open func fb_clear_event_user_id()
+    {
+        // default stub for fb_clear_event_user_id
     }
 
     public func __EXT_SWIFT__fb_initialize(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
@@ -145,6 +206,12 @@ open class GMFacebookInternalSwift
         }
     }
 
+    public func __EXT_SWIFT__fb_is_logged_in() -> Double
+    {
+        let __result = self.fb_is_logged_in()
+        return __result ? 1.0 : 0.0
+    }
+
     public func __EXT_SWIFT__fb_user_id() -> String
     {
         let __result = self.fb_user_id()
@@ -169,10 +236,59 @@ open class GMFacebookInternalSwift
         return 0.0
     }
 
+    public func __EXT_SWIFT__fb_auto_log_app_events_enabled() -> Double
+    {
+        let __result = self.fb_auto_log_app_events_enabled()
+        return __result ? 1.0 : 0.0
+    }
+
     public func __EXT_SWIFT__fb_set_advertiser_id_collection_enabled(_ enabled: Double) -> Double
     {
         self.fb_set_advertiser_id_collection_enabled(enabled: enabled != 0)
         return 0.0
+    }
+
+    public func __EXT_SWIFT__fb_advertiser_id_collection_enabled() -> Double
+    {
+        let __result = self.fb_advertiser_id_collection_enabled()
+        return __result ? 1.0 : 0.0
+    }
+
+    public func __EXT_SWIFT__fb_set_event_data_usage_limited(_ enabled: Double) -> Double
+    {
+        self.fb_set_event_data_usage_limited(enabled: enabled != 0)
+        return 0.0
+    }
+
+    public func __EXT_SWIFT__fb_event_data_usage_limited() -> Double
+    {
+        let __result = self.fb_event_data_usage_limited()
+        return __result ? 1.0 : 0.0
+    }
+
+    public func __EXT_SWIFT__fb_set_data_processing_options(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    {
+        do
+        {
+            var __br = BufferReader(base: UnsafeRawPointer(__arg_buffer!), size: Int(__arg_buffer_length))
+
+            // field: options, type: String[]
+            let options: [String] = try __br.readRaw([String].self)
+
+            // field: country, type: Int32
+            let country: Int32 = try __br.readRaw(Int32.self)
+
+            // field: state, type: Int32
+            let state: Int32 = try __br.readRaw(Int32.self)
+
+            self.fb_set_data_processing_options(options: options, country: country, state: state)
+            return 0.0
+        }
+        catch
+        {
+            os_log("Corrupted buffer when calling 'fb_set_data_processing_options'", log: .default, type: .error)
+            return -1
+        }
     }
 
     public func __EXT_SWIFT__fb_check_permission(_ permission: String) -> Double
@@ -275,8 +391,8 @@ open class GMFacebookInternalSwift
             // field: graph_path, type: String
             let graph_path: String = try __br.readRaw(String.self)
 
-            // field: method, type: enum FacebookHttpMethod[]
-            let method: [FacebookHttpMethod] = try __br.readRaw([FacebookHttpMethod].self)
+            // field: method, type: enum FacebookHttpMethod
+            let method: FacebookHttpMethod = (FacebookHttpMethod(rawValue: try __br.readRaw(Int32.self))!)
 
             // field: parameters, type: struct FacebookNamedValue[]
             let parameters: [FacebookNamedValue] = try __br.readRaw([FacebookNamedValue].self)
@@ -322,8 +438,8 @@ open class GMFacebookInternalSwift
         {
             var __br = BufferReader(base: UnsafeRawPointer(__arg_buffer!), size: Int(__arg_buffer_length))
 
-            // field: event, type: enum FacebookAppEvent[]
-            let event: [FacebookAppEvent] = try __br.readRaw([FacebookAppEvent].self)
+            // field: event, type: enum FacebookAppEvent
+            let event: FacebookAppEvent = (FacebookAppEvent(rawValue: try __br.readRaw(Int32.self))!)
 
             // field: value, type: Float64
             let value: Double = try __br.readRaw(Double.self)
@@ -364,6 +480,55 @@ open class GMFacebookInternalSwift
             os_log("Corrupted buffer when calling 'fb_send_custom_event'", log: .default, type: .error)
             return -1
         }
+    }
+
+    public func __EXT_SWIFT__fb_send_purchase(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    {
+        do
+        {
+            var __br = BufferReader(base: UnsafeRawPointer(__arg_buffer!), size: Int(__arg_buffer_length))
+
+            // field: amount, type: Float64
+            let amount: Double = try __br.readRaw(Double.self)
+
+            // field: currency, type: String
+            let currency: String = try __br.readRaw(String.self)
+
+            // field: parameters, type: struct FacebookNamedValue[]
+            let parameters: [FacebookNamedValue] = try __br.readRaw([FacebookNamedValue].self)
+
+            let __result = self.fb_send_purchase(amount: amount, currency: currency, parameters: parameters)
+            return __result ? 1.0 : 0.0
+        }
+        catch
+        {
+            os_log("Corrupted buffer when calling 'fb_send_purchase'", log: .default, type: .error)
+            return -1
+        }
+    }
+
+    public func __EXT_SWIFT__fb_flush_events() -> Double
+    {
+        self.fb_flush_events()
+        return 0.0
+    }
+
+    public func __EXT_SWIFT__fb_set_event_user_id(_ user_id: String) -> Double
+    {
+        self.fb_set_event_user_id(user_id: user_id)
+        return 0.0
+    }
+
+    public func __EXT_SWIFT__fb_get_event_user_id() -> String
+    {
+        let __result = self.fb_get_event_user_id()
+        return __result
+    }
+
+    public func __EXT_SWIFT__fb_clear_event_user_id() -> Double
+    {
+        self.fb_clear_event_user_id()
+        return 0.0
     }
 
     public func __EXT_SWIFT__GMFacebook_invocation_handler(_ __ret_buffer: UnsafeMutablePointer<CChar>?, arg1 __ret_buffer_length: Double) -> Double

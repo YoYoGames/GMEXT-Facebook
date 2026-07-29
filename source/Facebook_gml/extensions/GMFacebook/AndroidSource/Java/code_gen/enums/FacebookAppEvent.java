@@ -15,7 +15,17 @@ public enum FacebookAppEvent
     Searched((int)110),
     SpentCredits((int)111),
     UnlockedAchievement((int)112),
-    ViewedContent((int)113);
+    ViewedContent((int)113),
+    Contact((int)114),
+    CustomizeProduct((int)115),
+    Donate((int)116),
+    FindLocation((int)117),
+    Schedule((int)118),
+    StartTrial((int)119),
+    SubmitApplication((int)120),
+    Subscribe((int)121),
+    AdImpression((int)122),
+    AdClick((int)123);
 
     private final int value;
     private FacebookAppEvent(int v)
@@ -54,6 +64,26 @@ public enum FacebookAppEvent
                 return FacebookAppEvent.UnlockedAchievement;
             case 113:
                 return FacebookAppEvent.ViewedContent;
+            case 114:
+                return FacebookAppEvent.Contact;
+            case 115:
+                return FacebookAppEvent.CustomizeProduct;
+            case 116:
+                return FacebookAppEvent.Donate;
+            case 117:
+                return FacebookAppEvent.FindLocation;
+            case 118:
+                return FacebookAppEvent.Schedule;
+            case 119:
+                return FacebookAppEvent.StartTrial;
+            case 120:
+                return FacebookAppEvent.SubmitApplication;
+            case 121:
+                return FacebookAppEvent.Subscribe;
+            case 122:
+                return FacebookAppEvent.AdImpression;
+            case 123:
+                return FacebookAppEvent.AdClick;
             default:
                 throw new IllegalArgumentException("Unknown FacebookAppEvent value: " + v);
         }

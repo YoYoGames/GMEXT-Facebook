@@ -19,7 +19,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.Profile;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
@@ -28,9 +27,12 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -88,6 +90,47 @@ public class GMFacebook extends GMFacebookInternal
         }
 
         return output;
+    }
+
+    private static List<String> sortedStrings(Set<String> values)
+    {
+        if (values == null || values.isEmpty())
+            return Collections.emptyList();
+
+        List<String> output = new ArrayList<>(values);
+        Collections.sort(output);
+        return output;
+    }
+
+    private static String errorMessage(Throwable throwable)
+    {
+        if (throwable == null)
+            return "Unknown Facebook SDK error.";
+
+        String message = throwable.getMessage();
+        return message != null && !message.trim().isEmpty()
+            ? message
+            : throwable.getClass().getSimpleName();
+    }
+
+    private AppEventsLogger appEventsLogger()
+    {
+        Activity currentActivity = activity();
+
+        if (!ready || currentActivity == null || !FacebookSdk.isInitialized())
+            return null;
+
+        try
+        {
+            return AppEventsLogger.newLogger(
+                currentActivity.getApplicationContext()
+            );
+        }
+        catch (Exception exception)
+        {
+            Log.e(TAG, "Could not create AppEventsLogger.", exception);
+            return null;
+        }
     }
 
     private GMExtWire.StructStream result(
@@ -176,6 +219,29 @@ public class GMFacebook extends GMFacebookInternal
     }
 
     @SuppressWarnings("deprecation")
+    private void initializeSdkIfNeeded(
+        Activity currentActivity,
+        Runnable completion)
+    {
+        if (FacebookSdk.isInitialized())
+        {
+            FacebookSdk.fullyInitialize();
+            completion.run();
+            return;
+        }
+
+        // Compatibility fallback for hosts where FacebookInitProvider was not
+        // allowed to initialize the SDK before the GameMaker extension loads.
+        FacebookSdk.sdkInitialize(
+            currentActivity.getApplicationContext(),
+            () ->
+            {
+                FacebookSdk.fullyInitialize();
+                completion.run();
+            }
+        );
+    }
+
     public void fb_initialize(final GMFunction callback)
     {
         final Activity currentActivity = activity();
@@ -188,58 +254,64 @@ public class GMFacebook extends GMFacebookInternal
 
         currentActivity.runOnUiThread(() ->
         {
+            if (ready)
+            {
+                call(callback, success(0));
+                return;
+            }
+
             try
             {
                 String appId =
-                    currentActivity.getString(R.string.facebook_app_id);
+                    safe(currentActivity.getString(R.string.facebook_app_id)).trim();
                 String clientToken =
-                    currentActivity.getString(R.string.facebook_client_token);
+                    safe(currentActivity.getString(R.string.facebook_client_token)).trim();
+
+                if (appId.isEmpty())
+                {
+                    call(callback, failure(0, "facebook_app_id is empty."));
+                    return;
+                }
+
+                if (clientToken.isEmpty())
+                {
+                    call(callback, failure(0, "facebook_client_token is empty."));
+                    return;
+                }
 
                 FacebookSdk.setApplicationId(appId);
                 FacebookSdk.setClientToken(clientToken);
 
-                Runnable finish = () ->
-                {
-                    try
+                initializeSdkIfNeeded(
+                    currentActivity,
+                    () ->
                     {
-                        FacebookSdk.fullyInitialize();
-                        callbackManager = CallbackManager.Factory.create();
-                        loginManager = LoginManager.getInstance();
+                        try
+                        {
+                            callbackManager = CallbackManager.Factory.create();
+                            loginManager = LoginManager.getInstance();
+                            ready = true;
+                            loginStatus =
+                                AccessToken.isCurrentAccessTokenActive()
+                                    ? FacebookLoginStatus.Authorised
+                                    : FacebookLoginStatus.Idle;
 
-                        AccessToken token = AccessToken.getCurrentAccessToken();
-                        ready = true;
-                        loginStatus =
-                            token != null && !token.isExpired()
-                                ? FacebookLoginStatus.Authorised
-                                : FacebookLoginStatus.Idle;
-
-                        call(callback, success(0));
+                            call(callback, success(0));
+                        }
+                        catch (Exception exception)
+                        {
+                            ready = false;
+                            loginStatus = FacebookLoginStatus.Failed;
+                            call(callback, failure(0, errorMessage(exception)));
+                        }
                     }
-                    catch (Exception exception)
-                    {
-                        ready = false;
-                        loginStatus = FacebookLoginStatus.Failed;
-                        call(callback, failure(0, exception.getMessage()));
-                    }
-                };
-
-                if (FacebookSdk.isInitialized())
-                {
-                    finish.run();
-                }
-                else
-                {
-                    FacebookSdk.sdkInitialize(
-                        currentActivity.getApplicationContext(),
-                        finish::run
-                    );
-                }
+                );
             }
             catch (Exception exception)
             {
                 ready = false;
                 loginStatus = FacebookLoginStatus.Failed;
-                call(callback, failure(0, exception.getMessage()));
+                call(callback, failure(0, errorMessage(exception)));
             }
         });
     }
@@ -251,7 +323,31 @@ public class GMFacebook extends GMFacebookInternal
 
     public FacebookLoginStatus fb_status()
     {
+        if (loginStatus == FacebookLoginStatus.Processing)
+            return loginStatus;
+
+        if (fb_is_logged_in())
+        {
+            loginStatus = FacebookLoginStatus.Authorised;
+            return loginStatus;
+        }
+
+        if (loginStatus == FacebookLoginStatus.Authorised)
+            loginStatus = FacebookLoginStatus.Idle;
+
         return loginStatus;
+    }
+
+    public boolean fb_is_logged_in()
+    {
+        try
+        {
+            return AccessToken.isCurrentAccessTokenActive();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
     }
 
     public String fb_user_id()
@@ -259,11 +355,10 @@ public class GMFacebook extends GMFacebookInternal
         try
         {
             AccessToken token = AccessToken.getCurrentAccessToken();
-            if (token != null && !token.isExpired())
-                return safe(token.getUserId());
 
-            Profile profile = Profile.getCurrentProfile();
-            return profile != null ? safe(profile.getId()) : "";
+            return token != null && !token.isExpired()
+                ? safe(token.getUserId())
+                : "";
         }
         catch (Exception exception)
         {
@@ -276,6 +371,7 @@ public class GMFacebook extends GMFacebookInternal
         try
         {
             AccessToken token = AccessToken.getCurrentAccessToken();
+
             return token != null && !token.isExpired()
                 ? safe(token.getToken())
                 : "";
@@ -288,8 +384,14 @@ public class GMFacebook extends GMFacebookInternal
 
     public void fb_logout()
     {
-        if (loginManager != null)
-            loginManager.logOut();
+        try
+        {
+            LoginManager.getInstance().logOut();
+        }
+        catch (Exception exception)
+        {
+            Log.e(TAG, "Could not log out from Facebook.", exception);
+        }
 
         loginStatus = FacebookLoginStatus.Idle;
     }
@@ -299,18 +401,91 @@ public class GMFacebook extends GMFacebookInternal
         FacebookSdk.setAutoLogAppEventsEnabled(enabled);
     }
 
+    public boolean fb_auto_log_app_events_enabled()
+    {
+        try
+        {
+            return FacebookSdk.getAutoLogAppEventsEnabled();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+    }
+
     public void fb_set_advertiser_id_collection_enabled(boolean enabled)
     {
         FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
     }
 
+    public boolean fb_advertiser_id_collection_enabled()
+    {
+        try
+        {
+            return FacebookSdk.getAdvertiserIDCollectionEnabled();
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+    }
+
+    public void fb_set_event_data_usage_limited(boolean enabled)
+    {
+        Activity currentActivity = activity();
+
+        if (currentActivity != null && FacebookSdk.isInitialized())
+        {
+            FacebookSdk.setLimitEventAndDataUsage(
+                currentActivity.getApplicationContext(),
+                enabled
+            );
+        }
+    }
+
+    public boolean fb_event_data_usage_limited()
+    {
+        Activity currentActivity = activity();
+
+        if (currentActivity == null || !FacebookSdk.isInitialized())
+            return false;
+
+        try
+        {
+            return FacebookSdk.getLimitEventAndDataUsage(
+                currentActivity.getApplicationContext()
+            );
+        }
+        catch (Exception exception)
+        {
+            return false;
+        }
+    }
+
+    public void fb_set_data_processing_options(
+        List<String> options,
+        int country,
+        int state)
+    {
+        String[] values =
+            options == null
+                ? new String[0]
+                : options.toArray(new String[0]);
+
+        FacebookSdk.setDataProcessingOptions(values, country, state);
+    }
+
     public boolean fb_check_permission(String permission)
     {
+        if (permission == null || permission.trim().isEmpty())
+            return false;
+
+        String requestedPermission = permission.trim();
         AccessToken token = AccessToken.getCurrentAccessToken();
 
         return token != null
             && !token.isExpired()
-            && token.getPermissions().contains(permission);
+            && token.getPermissions().contains(requestedPermission);
     }
 
     public void fb_login(
@@ -336,6 +511,15 @@ public class GMFacebook extends GMFacebookInternal
         if (!requireReady(callback, requestId))
             return;
 
+        if (loginStatus == FacebookLoginStatus.Processing)
+        {
+            call(
+                callback,
+                failure(requestId, "A Facebook login request is already in progress.")
+            );
+            return;
+        }
+
         final Activity currentActivity = activity();
         if (currentActivity == null)
         {
@@ -352,77 +536,101 @@ public class GMFacebook extends GMFacebookInternal
 
         currentActivity.runOnUiThread(() ->
         {
-            loginManager.registerCallback(
-                callbackManager,
-                new FacebookCallback<LoginResult>()
-                {
-                    @Override
-                    public void onSuccess(LoginResult loginResult)
+            try
+            {
+                loginManager.registerCallback(
+                    callbackManager,
+                    new FacebookCallback<LoginResult>()
                     {
-                        loginStatus = FacebookLoginStatus.Authorised;
+                        @Override
+                        public void onSuccess(LoginResult loginResult)
+                        {
+                            AccessToken token =
+                                loginResult != null
+                                    ? loginResult.getAccessToken()
+                                    : null;
 
-                        AccessToken token = loginResult.getAccessToken();
-                        Set<String> grantedSet =
-                            token != null
-                                ? token.getPermissions()
-                                : Collections.emptySet();
-                        Set<String> declinedSet =
-                            token != null
-                                ? token.getDeclinedPermissions()
-                                : Collections.emptySet();
+                            if (token == null || token.isExpired())
+                            {
+                                loginStatus = FacebookLoginStatus.Failed;
+                                call(
+                                    callback,
+                                    failure(
+                                        requestId,
+                                        "Facebook login returned no active access token."
+                                    )
+                                );
+                                return;
+                            }
 
-                        call(
-                            callback,
-                            result(
-                                true,
-                                FacebookOperationStatus.Success,
-                                requestId,
-                                "",
-                                token != null ? token.getToken() : "",
-                                token != null ? token.getUserId() : "",
-                                "",
-                                "",
-                                new ArrayList<>(grantedSet),
-                                new ArrayList<>(declinedSet)
-                            )
-                        );
+                            loginStatus = FacebookLoginStatus.Authorised;
+
+                            Set<String> grantedSet =
+                                loginResult.getRecentlyGrantedPermissions();
+                            Set<String> declinedSet =
+                                loginResult.getRecentlyDeniedPermissions();
+
+                            call(
+                                callback,
+                                result(
+                                    true,
+                                    FacebookOperationStatus.Success,
+                                    requestId,
+                                    "",
+                                    safe(token.getToken()),
+                                    safe(token.getUserId()),
+                                    "",
+                                    "",
+                                    sortedStrings(grantedSet),
+                                    sortedStrings(declinedSet)
+                                )
+                            );
+                        }
+
+                        @Override
+                        public void onCancel()
+                        {
+                            loginStatus = FacebookLoginStatus.Idle;
+
+                            call(
+                                callback,
+                                result(
+                                    false,
+                                    FacebookOperationStatus.Cancelled,
+                                    requestId,
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    Collections.emptyList(),
+                                    Collections.emptyList()
+                                )
+                            );
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception)
+                        {
+                            loginStatus = FacebookLoginStatus.Failed;
+                            call(
+                                callback,
+                                failure(requestId, errorMessage(exception))
+                            );
+                        }
                     }
+                );
 
-                    @Override
-                    public void onCancel()
-                    {
-                        loginStatus = FacebookLoginStatus.Idle;
-
-                        call(
-                            callback,
-                            result(
-                                false,
-                                FacebookOperationStatus.Cancelled,
-                                requestId,
-                                "",
-                                "",
-                                "",
-                                "",
-                                "",
-                                Collections.emptyList(),
-                                Collections.emptyList()
-                            )
-                        );
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception)
-                    {
-                        loginStatus = FacebookLoginStatus.Failed;
-                        call(callback, failure(requestId, exception.getMessage()));
-                    }
-                }
-            );
-
-            loginManager.logInWithReadPermissions(
-                currentActivity,
-                requested
-            );
+                loginManager.logInWithReadPermissions(
+                    currentActivity,
+                    requested
+                );
+            }
+            catch (Exception exception)
+            {
+                loginStatus = FacebookLoginStatus.Failed;
+                call(callback, failure(requestId, errorMessage(exception)));
+            }
         });
     }
 
@@ -446,7 +654,7 @@ public class GMFacebook extends GMFacebookInternal
         final int requestId = nextRequestId();
         AccessToken current = AccessToken.getCurrentAccessToken();
 
-        if (current == null)
+        if (current == null || current.isExpired())
         {
             call(
                 callback,
@@ -464,6 +672,19 @@ public class GMFacebook extends GMFacebookInternal
                 @Override
                 public void OnTokenRefreshed(AccessToken token)
                 {
+                    if (token == null || token.isExpired())
+                    {
+                        loginStatus = FacebookLoginStatus.Failed;
+                        call(
+                            callback,
+                            failure(
+                                requestId,
+                                "Facebook returned no active access token."
+                            )
+                        );
+                        return;
+                    }
+
                     loginStatus = FacebookLoginStatus.Authorised;
 
                     call(
@@ -473,8 +694,8 @@ public class GMFacebook extends GMFacebookInternal
                             FacebookOperationStatus.Success,
                             requestId,
                             "",
-                            token != null ? token.getToken() : "",
-                            token != null ? token.getUserId() : "",
+                            safe(token.getToken()),
+                            safe(token.getUserId()),
                             "",
                             "",
                             Collections.emptyList(),
@@ -487,28 +708,10 @@ public class GMFacebook extends GMFacebookInternal
                 public void OnTokenRefreshFailed(
                     FacebookException exception)
                 {
-                    call(callback, failure(requestId, exception.getMessage()));
+                    loginStatus = FacebookLoginStatus.Failed;
+                    call(callback, failure(requestId, errorMessage(exception)));
                 }
             }
-        );
-    }
-
-    public void fb_graph_request(
-        String graphPath,
-        List<FacebookHttpMethod> methods,
-        List<FacebookNamedValue> parameters,
-        final GMFunction callback)
-    {
-        FacebookHttpMethod method =
-            methods != null && !methods.isEmpty()
-                ? methods.get(0)
-                : FacebookHttpMethod.Get;
-
-        fb_graph_request(
-            graphPath,
-            method,
-            parameters,
-            callback
         );
     }
 
@@ -523,6 +726,12 @@ public class GMFacebook extends GMFacebookInternal
         if (!requireReady(callback, requestId))
             return;
 
+        if (graphPath == null || graphPath.trim().isEmpty())
+        {
+            call(callback, failure(requestId, "Graph path is empty."));
+            return;
+        }
+
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null || token.isExpired())
         {
@@ -535,6 +744,9 @@ public class GMFacebook extends GMFacebookInternal
 
         final Bundle bundle = namedValuesToBundle(parameters);
         final HttpMethod httpMethod;
+
+        if (method == null)
+            method = FacebookHttpMethod.Get;
 
         switch (method)
         {
@@ -554,14 +766,17 @@ public class GMFacebook extends GMFacebookInternal
 
         GraphRequest request = new GraphRequest(
             token,
-            safe(graphPath),
+            graphPath.trim(),
             bundle,
             httpMethod,
             (GraphResponse response) ->
             {
                 if (response == null)
                 {
-                    call(callback, failure(requestId, "Facebook Graph response is null."));
+                    call(
+                        callback,
+                        failure(requestId, "Facebook Graph response is null.")
+                    );
                     return;
                 }
 
@@ -571,7 +786,7 @@ public class GMFacebook extends GMFacebookInternal
                         callback,
                         failure(
                             requestId,
-                            response.getError().getErrorMessage()
+                            safe(response.getError().getErrorMessage())
                         )
                     );
                     return;
@@ -614,13 +829,27 @@ public class GMFacebook extends GMFacebookInternal
             return;
         }
 
+        if (linkUrl == null || linkUrl.trim().isEmpty())
+        {
+            call(callback, failure(requestId, "Share URL is empty."));
+            return;
+        }
+
         currentActivity.runOnUiThread(() ->
         {
             try
             {
+                Uri contentUri = Uri.parse(linkUrl.trim());
+
+                if (contentUri.getScheme() == null)
+                {
+                    call(callback, failure(requestId, "Share URL has no scheme."));
+                    return;
+                }
+
                 ShareLinkContent content =
                     new ShareLinkContent.Builder()
-                        .setContentUrl(Uri.parse(safe(linkUrl)))
+                        .setContentUrl(contentUri)
                         .build();
 
                 ShareDialog dialog = new ShareDialog(currentActivity);
@@ -675,7 +904,7 @@ public class GMFacebook extends GMFacebookInternal
                         {
                             call(
                                 callback,
-                                failure(requestId, exception.getMessage())
+                                failure(requestId, errorMessage(exception))
                             );
                         }
                     }
@@ -685,38 +914,27 @@ public class GMFacebook extends GMFacebookInternal
             }
             catch (Exception exception)
             {
-                call(callback, failure(requestId, exception.getMessage()));
+                call(callback, failure(requestId, errorMessage(exception)));
             }
         });
     }
 
     @Override
     public boolean fb_send_event(
-        List<FacebookAppEvent> events,
-        double value,
-        List<FacebookEventParameterValue> parameters)
-    {
-        if (events == null || events.isEmpty())
-            return false;
-
-        return fb_send_event(
-            events.get(0),
-            value,
-            parameters
-        );
-    }
-
-    public boolean fb_send_event(
         FacebookAppEvent event,
         double value,
         List<FacebookEventParameterValue> parameters)
     {
         String eventName = standardEventName(event);
-        if (eventName.isEmpty())
-            return false;
+        AppEventsLogger logger = appEventsLogger();
 
-        AppEventsLogger logger =
-            AppEventsLogger.newLogger(activity());
+        if (logger == null
+            || eventName.isEmpty()
+            || Double.isNaN(value)
+            || Double.isInfinite(value))
+        {
+            return false;
+        }
 
         logger.logEvent(
             eventName,
@@ -732,19 +950,86 @@ public class GMFacebook extends GMFacebookInternal
         double value,
         List<FacebookNamedValue> parameters)
     {
-        if (eventName == null || eventName.trim().isEmpty())
-            return false;
+        AppEventsLogger logger = appEventsLogger();
 
-        AppEventsLogger logger =
-            AppEventsLogger.newLogger(activity());
+        if (logger == null
+            || eventName == null
+            || eventName.trim().isEmpty()
+            || Double.isNaN(value)
+            || Double.isInfinite(value))
+        {
+            return false;
+        }
 
         logger.logEvent(
-            eventName,
+            eventName.trim(),
             value,
             namedValuesToBundle(parameters)
         );
 
         return true;
+    }
+
+    public boolean fb_send_purchase(
+        double amount,
+        String currency,
+        List<FacebookNamedValue> parameters)
+    {
+        AppEventsLogger logger = appEventsLogger();
+
+        if (logger == null
+            || Double.isNaN(amount)
+            || Double.isInfinite(amount)
+            || amount < 0.0)
+        {
+            return false;
+        }
+
+        String currencyCode = safe(currency).trim().toUpperCase(Locale.US);
+        if (currencyCode.length() != 3)
+            return false;
+
+        try
+        {
+            logger.logPurchase(
+                BigDecimal.valueOf(amount),
+                Currency.getInstance(currencyCode),
+                namedValuesToBundle(parameters)
+            );
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Log.e(TAG, "Could not log Facebook purchase.", exception);
+            return false;
+        }
+    }
+
+    public void fb_flush_events()
+    {
+        AppEventsLogger logger = appEventsLogger();
+
+        if (logger != null)
+            logger.flush();
+    }
+
+    public void fb_set_event_user_id(String userId)
+    {
+        AppEventsLogger.setUserID(
+            userId == null || userId.trim().isEmpty()
+                ? null
+                : userId.trim()
+        );
+    }
+
+    public String fb_get_event_user_id()
+    {
+        return safe(AppEventsLogger.getUserID());
+    }
+
+    public void fb_clear_event_user_id()
+    {
+        AppEventsLogger.clearUserID();
     }
 
     private Bundle namedValuesToBundle(
@@ -760,7 +1045,7 @@ public class GMFacebook extends GMFacebookInternal
             if (parameter == null)
                 continue;
 
-            String name = safe(parameter.name());
+            String name = safe(parameter.name()).trim();
             if (name.isEmpty())
                 continue;
 
@@ -830,37 +1115,67 @@ public class GMFacebook extends GMFacebookInternal
                 return AppEventsConstants.EVENT_NAME_UNLOCKED_ACHIEVEMENT;
             case ViewedContent:
                 return AppEventsConstants.EVENT_NAME_VIEWED_CONTENT;
+            case Contact:
+                return AppEventsConstants.EVENT_NAME_CONTACT;
+            case CustomizeProduct:
+                return AppEventsConstants.EVENT_NAME_CUSTOMIZE_PRODUCT;
+            case Donate:
+                return AppEventsConstants.EVENT_NAME_DONATE;
+            case FindLocation:
+                return AppEventsConstants.EVENT_NAME_FIND_LOCATION;
+            case Schedule:
+                return AppEventsConstants.EVENT_NAME_SCHEDULE;
+            case StartTrial:
+                return AppEventsConstants.EVENT_NAME_START_TRIAL;
+            case SubmitApplication:
+                return AppEventsConstants.EVENT_NAME_SUBMIT_APPLICATION;
+            case Subscribe:
+                return AppEventsConstants.EVENT_NAME_SUBSCRIBE;
+            case AdImpression:
+                return AppEventsConstants.EVENT_NAME_AD_IMPRESSION;
+            case AdClick:
+                return AppEventsConstants.EVENT_NAME_AD_CLICK;
             default:
                 return "";
         }
     }
 
-    private String standardParameterName(int key)
+    private String standardParameterName(
+        FacebookAppEventParameter key)
     {
+        if (key == null)
+            return "";
+
         switch (key)
         {
-            case 1003:
+            case Content:
+                return AppEventsConstants.EVENT_PARAM_CONTENT;
+            case AdType:
+                return AppEventsConstants.EVENT_PARAM_AD_TYPE;
+            case ContentId:
                 return AppEventsConstants.EVENT_PARAM_CONTENT_ID;
-            case 1004:
+            case ContentType:
                 return AppEventsConstants.EVENT_PARAM_CONTENT_TYPE;
-            case 1005:
+            case Currency:
                 return AppEventsConstants.EVENT_PARAM_CURRENCY;
-            case 1006:
+            case Description:
                 return AppEventsConstants.EVENT_PARAM_DESCRIPTION;
-            case 1007:
+            case Level:
                 return AppEventsConstants.EVENT_PARAM_LEVEL;
-            case 1008:
+            case MaxRatingValue:
                 return AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE;
-            case 1009:
+            case NumItems:
                 return AppEventsConstants.EVENT_PARAM_NUM_ITEMS;
-            case 1010:
+            case PaymentInfoAvailable:
                 return AppEventsConstants.EVENT_PARAM_PAYMENT_INFO_AVAILABLE;
-            case 1011:
+            case RegistrationMethod:
                 return AppEventsConstants.EVENT_PARAM_REGISTRATION_METHOD;
-            case 1012:
+            case SearchString:
                 return AppEventsConstants.EVENT_PARAM_SEARCH_STRING;
-            case 1013:
+            case Success:
                 return AppEventsConstants.EVENT_PARAM_SUCCESS;
+            case OrderId:
+                return AppEventsConstants.EVENT_PARAM_ORDER_ID;
             default:
                 return "";
         }

@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
 import java.util.List;
+import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
 
 public final class FacebookCallbackResultCodec {
@@ -16,7 +17,7 @@ public final class FacebookCallbackResultCodec {
     {
         boolean success = GMExtWire.readBool(b);
 
-        int status = GMExtWire.readI32(b);
+        FacebookOperationStatus status = FacebookOperationStatus.from(GMExtWire.readI32(b));
 
         int request_id = GMExtWire.readI32(b);
 
@@ -41,7 +42,7 @@ public final class FacebookCallbackResultCodec {
     {
         GMExtWire.writeBool(b, obj.success());
 
-        GMExtWire.writeI32(b, obj.status());
+        GMExtWire.writeI32(b, obj.status().value());
 
         GMExtWire.writeI32(b, obj.request_id());
 

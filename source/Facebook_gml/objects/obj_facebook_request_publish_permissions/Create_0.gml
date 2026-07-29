@@ -1,3 +1,2 @@
 event_inherited();
-text = "Publish Perms";
-
+text = "Publish (Unsupported)";

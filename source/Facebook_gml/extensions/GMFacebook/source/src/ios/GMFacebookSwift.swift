@@ -31,14 +31,17 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
             ?? (results["post_id"] as? String)
             ?? ""
 
+        let token = AccessToken.current
+        let activeToken = token?.isExpired == false ? token : nil
+
         callback.call(
             FacebookCallbackResult(
                 success: true,
-                status: FacebookOperationStatus.Success.rawValue,
+                status: FacebookOperationStatus.Success,
                 request_id: requestId,
                 error_message: "",
-                access_token: AccessToken.current?.tokenString ?? "",
-                user_id: AccessToken.current?.userID ?? "",
+                access_token: activeToken?.tokenString ?? "",
+                user_id: activeToken?.userID ?? "",
                 response_text: "",
                 post_id: postId,
                 granted_permissions: [],
@@ -56,7 +59,7 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
         callback.call(
             FacebookCallbackResult(
                 success: false,
-                status: FacebookOperationStatus.Error.rawValue,
+                status: FacebookOperationStatus.Error,
                 request_id: requestId,
                 error_message: error.localizedDescription,
                 access_token: "",
@@ -75,7 +78,7 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
         callback.call(
             FacebookCallbackResult(
                 success: false,
-                status: FacebookOperationStatus.Cancelled.rawValue,
+                status: FacebookOperationStatus.Cancelled,
                 request_id: requestId,
                 error_message: "",
                 access_token: "",
@@ -94,13 +97,14 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
 /**
  Extension Generator conversion of YYFacebook.
 
- Meta iOS SDK target: 18.0.3.
+ Meta iOS SDK target: 18.1.x.
  Social Async DS-map events were replaced by per-function GMFunction callbacks.
  */
 public final class GMFacebookSwift: GMFacebookInternalSwift {
     private var ready = false
     private var loginStatus = FacebookLoginStatus.Idle
     private var nextRequestId: Int32 = 1
+    private var applicationDelegateInitialized = false
 
     private let loginManager = LoginManager()
 
@@ -117,6 +121,34 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         return value
     }
 
+    private var activeAccessToken: AccessToken? {
+        guard let token = AccessToken.current,
+              !token.isExpired
+        else {
+            return nil
+        }
+
+        return token
+    }
+
+    private func initializeApplicationDelegateIfNeeded(
+        launchOptions: [
+            UIApplication.LaunchOptionsKey: Any
+        ]? = nil
+    ) {
+        guard !applicationDelegateInitialized else {
+            return
+        }
+
+        _ = ApplicationDelegate.shared.application(
+            UIApplication.shared,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+
+        applicationDelegateInitialized = true
+        Profile.isUpdatedWithAccessTokenChange = true
+    }
+
     private func result(
         success: Bool,
         status: FacebookOperationStatus,
@@ -131,7 +163,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     ) -> FacebookCallbackResult {
         return FacebookCallbackResult(
             success: success,
-            status: status.rawValue,
+            status: status,
             request_id: requestId,
             error_message: errorMessage,
             access_token: accessToken,
@@ -208,18 +240,17 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
     public override func fb_initialize(callback: GMFunction) {
         DispatchQueue.main.async {
-            _ = ApplicationDelegate.shared.application(
-                UIApplication.shared,
-                didFinishLaunchingWithOptions: nil
-            )
+            if self.ready {
+                callback.call(self.success(0))
+                return
+            }
 
-            Profile.isUpdatedWithAccessTokenChange = true
-
+            self.initializeApplicationDelegateIfNeeded()
             self.ready = true
             self.loginStatus =
-                AccessToken.current != nil
-                    ? FacebookLoginStatus.Authorised
-                    : FacebookLoginStatus.Idle
+                self.activeAccessToken != nil
+                    ? .Authorised
+                    : .Idle
 
             callback.call(self.success(0))
         }
@@ -230,15 +261,32 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     }
 
     public override func fb_status() -> FacebookLoginStatus {
+        if loginStatus == .Processing {
+            return loginStatus
+        }
+
+        if fb_is_logged_in() {
+            loginStatus = .Authorised
+            return loginStatus
+        }
+
+        if loginStatus == .Authorised {
+            loginStatus = .Idle
+        }
+
         return loginStatus
     }
 
+    public override func fb_is_logged_in() -> Bool {
+        return activeAccessToken != nil
+    }
+
     public override func fb_user_id() -> String {
-        return AccessToken.current?.userID ?? ""
+        return activeAccessToken?.userID ?? ""
     }
 
     public override func fb_access_token() -> String {
-        return AccessToken.current?.tokenString ?? ""
+        return activeAccessToken?.tokenString ?? ""
     }
 
     public override func fb_logout() {
@@ -252,17 +300,55 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         Settings.shared.isAutoLogAppEventsEnabled = enabled
     }
 
+    public override func fb_auto_log_app_events_enabled() -> Bool {
+        return Settings.shared.isAutoLogAppEventsEnabled
+    }
+
     public override func fb_set_advertiser_id_collection_enabled(
         enabled: Bool
     ) {
         Settings.shared.isAdvertiserIDCollectionEnabled = enabled
     }
 
+    public override func fb_advertiser_id_collection_enabled() -> Bool {
+        return Settings.shared.isAdvertiserIDCollectionEnabled
+    }
+
+    public override func fb_set_event_data_usage_limited(
+        enabled: Bool
+    ) {
+        Settings.shared.isEventDataUsageLimited = enabled
+    }
+
+    public override func fb_event_data_usage_limited() -> Bool {
+        return Settings.shared.isEventDataUsageLimited
+    }
+
+    public override func fb_set_data_processing_options(
+        options: [String],
+        country: Int32,
+        state: Int32
+    ) {
+        Settings.shared.setDataProcessingOptions(
+            options,
+            country: country,
+            state: state
+        )
+    }
+
     public override func fb_check_permission(
         permission: String
     ) -> Bool {
-        return AccessToken.current?.hasGranted(
-            permission: permission
+        let requestedPermission = permission.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        guard !requestedPermission.isEmpty else {
+            return false
+        }
+
+        return activeAccessToken?.hasGranted(
+            permission: requestedPermission
         ) ?? false
     }
 
@@ -293,6 +379,16 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         let requestId = newRequestId()
 
         guard requireReady(callback, requestId) else {
+            return
+        }
+
+        guard loginStatus != .Processing else {
+            callback.call(
+                failure(
+                    requestId,
+                    "A Facebook login request is already in progress."
+                )
+            )
             return
         }
 
@@ -342,6 +438,21 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                     return
                 }
 
+                guard let token =
+                    loginResult.token
+                    ?? self.activeAccessToken,
+                      !token.isExpired
+                else {
+                    self.loginStatus = .Failed
+                    callback.call(
+                        self.failure(
+                            requestId,
+                            "Facebook login returned no active access token."
+                        )
+                    )
+                    return
+                }
+
                 self.loginStatus = .Authorised
 
                 callback.call(
@@ -349,14 +460,8 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                         success: true,
                         status: .Success,
                         requestId: requestId,
-                        accessToken:
-                            loginResult.token?.tokenString
-                            ?? AccessToken.current?.tokenString
-                            ?? "",
-                        userId:
-                            loginResult.token?.userID
-                            ?? AccessToken.current?.userID
-                            ?? "",
+                        accessToken: token.tokenString,
+                        userId: token.userID,
                         grantedPermissions:
                             Array(loginResult.grantedPermissions).sorted(),
                         declinedPermissions:
@@ -384,7 +489,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     ) {
         let requestId = newRequestId()
 
-        guard AccessToken.current != nil else {
+        guard activeAccessToken != nil else {
             callback.call(
                 failure(
                     requestId,
@@ -398,10 +503,22 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             _, _, error in
 
             if let error {
+                self.loginStatus = .Failed
                 callback.call(
                     self.failure(
                         requestId,
                         error.localizedDescription
+                    )
+                )
+                return
+            }
+
+            guard let token = self.activeAccessToken else {
+                self.loginStatus = .Failed
+                callback.call(
+                    self.failure(
+                        requestId,
+                        "Facebook returned no active access token."
                     )
                 )
                 return
@@ -414,8 +531,8 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                     success: true,
                     status: .Success,
                     requestId: requestId,
-                    accessToken: self.fb_access_token(),
-                    userId: self.fb_user_id()
+                    accessToken: token.tokenString,
+                    userId: token.userID
                 )
             )
         }
@@ -423,7 +540,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
     public override func fb_graph_request(
         graph_path: String,
-        method: [FacebookHttpMethod],
+        method: FacebookHttpMethod,
         parameters: [FacebookNamedValue],
         callback: GMFunction
     ) {
@@ -433,7 +550,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return
         }
 
-        guard AccessToken.current != nil else {
+        guard activeAccessToken != nil else {
             callback.call(
                 failure(
                     requestId,
@@ -443,15 +560,19 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return
         }
 
-        guard let methodValue = method.first else {
+        let trimmedPath = graph_path.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        guard !trimmedPath.isEmpty else {
             callback.call(
-                failure(requestId, "No HTTP method specified.")
+                failure(requestId, "Graph path is empty.")
             )
             return
         }
 
         let httpMethod: HTTPMethod
-        switch methodValue {
+        switch method {
         case .Get:
             httpMethod = .get
         case .Delete:
@@ -461,7 +582,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         }
 
         let request = GraphRequest(
-            graphPath: graph_path,
+            graphPath: trimmedPath,
             parameters: namedValues(parameters),
             httpMethod: httpMethod
         )
@@ -500,7 +621,13 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return
         }
 
-        guard let url = URL(string: link_url) else {
+        let trimmedURL = link_url.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        guard let url = URL(string: trimmedURL),
+              url.scheme != nil
+        else {
             callback.call(
                 failure(requestId, "Invalid share URL.")
             )
@@ -543,15 +670,14 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     }
 
     public override func fb_send_event(
-        event: [FacebookAppEvent],
+        event: FacebookAppEvent,
         value: Double,
         parameters: [FacebookEventParameterValue]
     ) -> Bool {
-        guard let eventValue = event.first else {
-            return false
-        }
-
-        guard let eventName = standardEventName(eventValue) else {
+        guard ready,
+              value.isFinite,
+              let eventName = standardEventName(event)
+        else {
             return false
         }
 
@@ -569,19 +695,79 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         value: Double,
         parameters: [FacebookNamedValue]
     ) -> Bool {
-        guard !event_name.trimmingCharacters(
+        let name = event_name.trimmingCharacters(
             in: .whitespacesAndNewlines
-        ).isEmpty else {
+        )
+
+        guard ready,
+              value.isFinite,
+              !name.isEmpty
+        else {
             return false
         }
 
         AppEvents.shared.logEvent(
-            AppEvents.Name(rawValue: event_name),
+            AppEvents.Name(rawValue: name),
             valueToSum: value,
             parameters: namedEventValues(parameters)
         )
 
         return true
+    }
+
+    public override func fb_send_purchase(
+        amount: Double,
+        currency: String,
+        parameters: [FacebookNamedValue]
+    ) -> Bool {
+        let currencyCode = currency.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        ).uppercased()
+
+        guard ready,
+              amount.isFinite,
+              amount >= 0,
+              currencyCode.count == 3
+        else {
+            return false
+        }
+
+        AppEvents.shared.logPurchase(
+            amount: amount,
+            currency: currencyCode,
+            parameters: namedEventValues(parameters)
+        )
+
+        return true
+    }
+
+    public override func fb_flush_events() {
+        guard ready else {
+            return
+        }
+
+        AppEvents.shared.flush()
+    }
+
+    public override func fb_set_event_user_id(
+        user_id: String
+    ) {
+        let value = user_id.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+
+        AppEvents.shared.userID =
+            value.isEmpty
+                ? nil
+                : value
+    }
+
+    public override func fb_get_event_user_id() -> String {
+        return AppEvents.shared.userID ?? ""
+    }
+
+    public override func fb_clear_event_user_id() {
+        AppEvents.shared.userID = nil
     }
 
     private func namedValues(
@@ -590,11 +776,15 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         var output: [String: Any] = [:]
 
         for value in values {
-            guard !value.name.isEmpty else {
+            let name = value.name.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
+
+            guard !name.isEmpty else {
                 continue
             }
 
-            output[value.name] =
+            output[name] =
                 value.use_number
                     ? value.number_value
                     : value.string_value
@@ -609,11 +799,15 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         var output: [AppEvents.ParameterName: Any] = [:]
 
         for value in values {
-            guard !value.name.isEmpty else {
+            let name = value.name.trimmingCharacters(
+                in: .whitespacesAndNewlines
+            )
+
+            guard !name.isEmpty else {
                 continue
             }
 
-            output[AppEvents.ParameterName(rawValue: value.name)] =
+            output[AppEvents.ParameterName(rawValue: name)] =
                 value.use_number
                     ? value.number_value
                     : value.string_value
@@ -669,37 +863,61 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return .unlockedAchievement
         case .ViewedContent:
             return .viewedContent
+        case .Contact:
+            return AppEvents.Name(rawValue: "Contact")
+        case .CustomizeProduct:
+            return AppEvents.Name(rawValue: "CustomizeProduct")
+        case .Donate:
+            return AppEvents.Name(rawValue: "Donate")
+        case .FindLocation:
+            return AppEvents.Name(rawValue: "FindLocation")
+        case .Schedule:
+            return AppEvents.Name(rawValue: "Schedule")
+        case .StartTrial:
+            return AppEvents.Name(rawValue: "StartTrial")
+        case .SubmitApplication:
+            return AppEvents.Name(rawValue: "SubmitApplication")
+        case .Subscribe:
+            return AppEvents.Name(rawValue: "Subscribe")
+        case .AdImpression:
+            return AppEvents.Name(rawValue: "AdImpression")
+        case .AdClick:
+            return AppEvents.Name(rawValue: "AdClick")
         }
     }
 
     private func standardParameterName(
-        _ key: Int32
+        _ key: FacebookAppEventParameter
     ) -> AppEvents.ParameterName? {
         switch key {
-        case 1003:
+        case .Content:
+            return AppEvents.ParameterName(rawValue: "fb_content")
+        case .AdType:
+            return AppEvents.ParameterName(rawValue: "ad_type")
+        case .ContentId:
             return .contentID
-        case 1004:
+        case .ContentType:
             return .contentType
-        case 1005:
+        case .Currency:
             return .currency
-        case 1006:
+        case .Description:
             return .description
-        case 1007:
+        case .Level:
             return .level
-        case 1008:
+        case .MaxRatingValue:
             return .maxRatingValue
-        case 1009:
+        case .NumItems:
             return .numItems
-        case 1010:
+        case .PaymentInfoAvailable:
             return .paymentInfoAvailable
-        case 1011:
+        case .RegistrationMethod:
             return .registrationMethod
-        case 1012:
+        case .SearchString:
             return .searchString
-        case 1013:
+        case .Success:
             return .success
-        default:
-            return nil
+        case .OrderId:
+            return AppEvents.ParameterName(rawValue: "fb_order_id")
         }
     }
 
@@ -732,15 +950,12 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     @objc public func onLaunch(
         launchOptions: NSDictionary
     ) {
-        _ = ApplicationDelegate.shared.application(
-            UIApplication.shared,
-            didFinishLaunchingWithOptions:
+        initializeApplicationDelegateIfNeeded(
+            launchOptions:
                 launchOptions as? [
                     UIApplication.LaunchOptionsKey: Any
                 ]
         )
-
-        Profile.isUpdatedWithAccessTokenChange = true
     }
 
     @objc public func onResume() {
@@ -752,11 +967,18 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         sourceApplication: String,
         annotation: Any
     ) -> Bool {
+        var options: [
+            UIApplication.OpenURLOptionsKey: Any
+        ] = [
+            .sourceApplication: sourceApplication
+        ]
+
+        options[.annotation] = annotation
+
         return ApplicationDelegate.shared.application(
             UIApplication.shared,
             open: url as URL,
-            sourceApplication: sourceApplication,
-            annotation: annotation
+            options: options
         )
     }
 }
