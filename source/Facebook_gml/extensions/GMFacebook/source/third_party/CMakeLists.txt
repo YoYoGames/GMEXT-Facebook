@@ -217,10 +217,12 @@ elseif(APPLE)
     # FBSDKCoreKit depends on FBAEMKit and FBSDKCoreKit_Basics
     _ext_tp_link_pod_xcframework(
       "FBSDKCoreKit" "FBSDKCoreKit.xcframework" "FBSDKCoreKit" TRUE)
-
-    # Add other Facebook frameworks as needed (set _required to FALSE if optional):
-    # _ext_tp_link_pod_xcframework("FBSDKLoginKit" "FBSDKLoginKit.xcframework" "FBSDKLoginKit" FALSE)
-    # _ext_tp_link_pod_xcframework("FBSDKShareKit" "FBSDKShareKit.xcframework" "FBSDKShareKit" FALSE)
+    # FBSDKLoginKit for authentication
+    _ext_tp_link_pod_xcframework(
+      "FBSDKLoginKit" "FBSDKLoginKit.xcframework" "FBSDKLoginKit" TRUE)
+    # FBSDKShareKit for sharing (optional)
+    _ext_tp_link_pod_xcframework(
+      "FBSDKShareKit" "FBSDKShareKit.xcframework" "FBSDKShareKit" FALSE)
 
   # ----------------------
   # tvOS (mobile)
