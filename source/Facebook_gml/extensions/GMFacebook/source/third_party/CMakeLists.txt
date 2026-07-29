@@ -149,12 +149,25 @@ elseif(APPLE)
           endif()
 
           if(EXISTS "${_FACEBOOK_SLICE_DIR}")
-            # Add framework search path for both compile and link
-            target_compile_options(ext_third_party INTERFACE "-F${_FACEBOOK_SLICE_DIR}")
+            set(_FACEBOOK_FRAMEWORK_DIR "${_FACEBOOK_SLICE_DIR}/FBSDKCoreKit.framework")
+
+            # Add framework search path for both compile and link (Objective-C and Swift)
+            target_compile_options(ext_third_party INTERFACE
+              "-F${_FACEBOOK_SLICE_DIR}"
+              "-I${_FACEBOOK_FRAMEWORK_DIR}/Headers"
+            )
             target_link_options(ext_third_party INTERFACE "-F${_FACEBOOK_SLICE_DIR}")
 
             # Link the Facebook framework
             target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKCoreKit")
+
+            # Also set Xcode attributes for proper Swift module discovery
+            if(CMAKE_GENERATOR STREQUAL "Xcode")
+              set_target_properties(${EXT_MAIN_TARGET} PROPERTIES
+                XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "${_FACEBOOK_SLICE_DIR}"
+                XCODE_ATTRIBUTE_HEADER_SEARCH_PATHS "${_FACEBOOK_FRAMEWORK_DIR}/Headers"
+              )
+            endif()
 
             # Add other Facebook frameworks as needed
             # target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKLoginKit")
