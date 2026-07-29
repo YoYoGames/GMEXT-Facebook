@@ -123,104 +123,103 @@ if(WIN32)
 elseif(APPLE)
 
   # ----------------------
-  # iOS / tvOS (mobile)
+  # iOS (mobile)
   # ----------------------
-  if((CMAKE_OSX_SYSROOT MATCHES "iphone") OR (CMAKE_OSX_SYSROOT MATCHES "appletv"))
-    # CocoaPods frameworks (Facebook SDK)
-    if(CMAKE_OSX_SYSROOT MATCHES "iphone")
-      # Allow explicit Facebook Pods directory, or derive from EXT_GM_XCODEPROJ_OVERRIDE
-      set(FB_PODS_DIR "" CACHE PATH "Explicit path to CocoaPods Pods directory (optional)")
+  if(CMAKE_OSX_SYSROOT MATCHES "iphone")
+    # The GameMaker Xcode project (set via EXT_GM_XCODEPROJ_OVERRIDE in
+    # src/CMakeLists.txt) is where `pod install` drops the Facebook SDK.
+    # Its parent folder holds the CocoaPods `Pods/` tree.
+    get_filename_component(_GM_PARENT_DIR "${EXT_GM_XCODEPROJ_OVERRIDE}" DIRECTORY)
+    set(_PODS_DIR "${_GM_PARENT_DIR}/Pods")
 
-      if(FB_PODS_DIR)
-        set(_FACEBOOK_XCFRAMEWORK_DIR "${FB_PODS_DIR}")
-      elseif(EXT_GM_XCODEPROJ_OVERRIDE)
-        get_filename_component(_GM_PARENT_DIR "${EXT_GM_XCODEPROJ_OVERRIDE}" DIRECTORY)
-        set(_FACEBOOK_XCFRAMEWORK_DIR "${_GM_PARENT_DIR}/Pods")
-      else()
-        set(_FACEBOOK_XCFRAMEWORK_DIR "")
+    if(NOT EXISTS "${_PODS_DIR}")
+      message(FATAL_ERROR
+        "[third_party] CocoaPods folder not found: ${_PODS_DIR}\n"
+        "Run `pod install` in the GameMaker Xcode project first "
+        "(EXT_GM_XCODEPROJ_OVERRIDE = ${EXT_GM_XCODEPROJ_OVERRIDE}).")
+    endif()
+
+    # Pick device vs simulator slice for the current SDK.
+    # CMAKE_OSX_SYSROOT is iPhoneOS / iPhoneSimulator.
+    if(CMAKE_OSX_SYSROOT MATCHES "simulator")
+      set(_WANT_SIMULATOR TRUE)
+    else()
+      set(_WANT_SIMULATOR FALSE)
+    endif()
+
+    # -------------------------------------------------------------------------
+    # Locate a CocoaPods-vendored .xcframework by name (its exact path under
+    # Pods/ changes between SDK versions), select the device/simulator slice,
+    # then wire it into ext_third_party for BOTH compile (-F) and link.
+    # -------------------------------------------------------------------------
+    function(_ext_tp_link_pod_xcframework _pod_dir _xcf_name _fw_name _required)
+      # Bound the search to the pod's own folder when present; fall back to the
+      # whole Pods tree if the vendor uses an unexpected layout.
+      set(_search_root "${_PODS_DIR}/${_pod_dir}")
+      if(NOT EXISTS "${_search_root}")
+        set(_search_root "${_PODS_DIR}")
       endif()
 
-      if(_FACEBOOK_XCFRAMEWORK_DIR)
-        message(STATUS "[third_party] Looking for Facebook CocoaPods at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
+      file(GLOB_RECURSE _entries LIST_DIRECTORIES TRUE "${_search_root}/*")
+      set(_xcf "")
+      foreach(_c IN LISTS _entries)
+        if(IS_DIRECTORY "${_c}" AND _c MATCHES "/${_xcf_name}$")
+          set(_xcf "${_c}")
+          break()
+        endif()
+      endforeach()
 
-        # Check for Facebook Core SDK (framework or xcframework)
-        set(_FACEBOOK_CORE_XCFRAMEWORK "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit/FBSDKCoreKit.xcframework")
-        set(_FACEBOOK_CORE_FRAMEWORK "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework")
-
-        if(EXISTS "${_FACEBOOK_CORE_XCFRAMEWORK}")
-          message(STATUS "[third_party] Found FBSDKCoreKit.xcframework at: ${_FACEBOOK_CORE_XCFRAMEWORK}")
-
-          # Choose the correct slice based on SDK (device vs simulator)
-          if(CMAKE_OSX_SYSROOT MATCHES "simulator")
-            set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64_x86_64-simulator")
-            if(NOT EXISTS "${_FACEBOOK_SLICE_DIR}")
-              set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64-simulator")
-            endif()
-          else()
-            set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64")
-          endif()
-
-          if(EXISTS "${_FACEBOOK_SLICE_DIR}")
-            message(STATUS "[third_party] Using Facebook framework slice: ${_FACEBOOK_SLICE_DIR}")
-            set(_FACEBOOK_FRAMEWORK_DIR "${_FACEBOOK_SLICE_DIR}/FBSDKCoreKit.framework")
-
-            # Add framework search path for both compile and link (Objective-C and Swift)
-            target_compile_options(ext_third_party INTERFACE
-              "-F${_FACEBOOK_SLICE_DIR}"
-              "-I${_FACEBOOK_FRAMEWORK_DIR}/Headers"
-            )
-            target_link_options(ext_third_party INTERFACE "-F${_FACEBOOK_SLICE_DIR}")
-
-            # Link the Facebook framework
-            target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKCoreKit")
-
-            # Also set Xcode attributes for proper Swift module discovery
-            if(CMAKE_GENERATOR STREQUAL "Xcode")
-              set_target_properties(${EXT_MAIN_TARGET} PROPERTIES
-                XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "${_FACEBOOK_SLICE_DIR}"
-                XCODE_ATTRIBUTE_HEADER_SEARCH_PATHS "${_FACEBOOK_FRAMEWORK_DIR}/Headers"
-              )
-            endif()
-
-            # Add other Facebook frameworks as needed
-            # target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKLoginKit")
-            # target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKShareKit")
-          else()
-            message(WARNING "[third_party] Could not find Facebook framework slice at: ${_FACEBOOK_SLICE_DIR}")
-          endif()
-        elseif(EXISTS "${_FACEBOOK_CORE_FRAMEWORK}")
-          message(STATUS "[third_party] Found FBSDKCoreKit.framework (not xcframework) at: ${_FACEBOOK_CORE_FRAMEWORK}")
-
-          # Using .framework directly (not wrapped in xcframework)
-          set(_FACEBOOK_FRAMEWORK_DIR "${_FACEBOOK_CORE_FRAMEWORK}")
-
-          # Add framework search path for both compile and link (Objective-C and Swift)
-          target_compile_options(ext_third_party INTERFACE
-            "-F${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit"
-            "-I${_FACEBOOK_FRAMEWORK_DIR}/Headers"
-          )
-          target_link_options(ext_third_party INTERFACE "-F${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit")
-
-          # Link the Facebook framework
-          target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKCoreKit")
-
-          # Also set Xcode attributes for proper Swift module discovery
-          if(CMAKE_GENERATOR STREQUAL "Xcode")
-            set_target_properties(${EXT_MAIN_TARGET} PROPERTIES
-              XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit"
-              XCODE_ATTRIBUTE_HEADER_SEARCH_PATHS "${_FACEBOOK_FRAMEWORK_DIR}/Headers"
-            )
-          endif()
+      if(NOT _xcf)
+        if(_required)
+          message(FATAL_ERROR
+            "[third_party] Missing ${_xcf_name} under: ${_search_root}\n"
+            "Run `pod install` so the Facebook SDK is available.")
         else()
-          message(WARNING "[third_party] Facebook SDK not found at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
-          message(STATUS "[third_party] Searched for: ${_FACEBOOK_CORE_XCFRAMEWORK}")
-          message(STATUS "[third_party] Or: ${_FACEBOOK_CORE_FRAMEWORK}")
-          message(STATUS "[third_party] To fix: set -DFB_PODS_DIR=/path/to/Pods when running cmake")
+          message(STATUS "[third_party] Optional ${_xcf_name} not found under ${_search_root} (skipping)")
+          return()
+        endif()
+      endif()
+
+      # Choose the matching slice inside the xcframework.
+      if(_WANT_SIMULATOR)
+        set(_slice "${_xcf}/ios-arm64_x86_64-simulator")
+        if(NOT EXISTS "${_slice}")
+          # Some vendors ship arm64-only simulator slices on newer toolchains.
+          set(_slice "${_xcf}/ios-arm64-simulator")
         endif()
       else()
-        message(STATUS "[third_party] Facebook Pods path not determined; set -DFB_PODS_DIR=/path/to/Pods or ensure EXT_GM_XCODEPROJ_OVERRIDE is set")
+        set(_slice "${_xcf}/ios-arm64")
       endif()
-    endif()
+
+      if(NOT EXISTS "${_slice}/${_fw_name}.framework")
+        message(FATAL_ERROR
+          "[third_party] Could not find ${_fw_name}.framework slice.\n"
+          "XCFramework: ${_xcf}\n"
+          "Tried slice: ${_slice}\n"
+          "Sysroot: ${CMAKE_OSX_SYSROOT}")
+      endif()
+
+      message(STATUS "[third_party] Using ${_fw_name}: ${_slice}")
+
+      # -F for both compile and link; link the framework by name.
+      target_compile_options(ext_third_party INTERFACE "-F${_slice}")
+      target_link_options(ext_third_party INTERFACE "-F${_slice}")
+      target_link_libraries(ext_third_party INTERFACE "-framework" "${_fw_name}")
+    endfunction()
+
+    # Facebook SDK frameworks
+    _ext_tp_link_pod_xcframework(
+      "FBSDKCoreKit" "FBSDKCoreKit.xcframework" "FBSDKCoreKit" TRUE)
+
+    # Add other Facebook frameworks as needed (set _required to FALSE if optional):
+    # _ext_tp_link_pod_xcframework("FBSDKLoginKit" "FBSDKLoginKit.xcframework" "FBSDKLoginKit" FALSE)
+    # _ext_tp_link_pod_xcframework("FBSDKShareKit" "FBSDKShareKit.xcframework" "FBSDKShareKit" FALSE)
+
+  # ----------------------
+  # tvOS (mobile)
+  # ----------------------
+  elseif(CMAKE_OSX_SYSROOT MATCHES "appletv")
+    message(STATUS "[third_party] tvOS build detected; Facebook SDK linking would go here if needed")
 
     # Choose either xcframework/framework or static .a for mobile
     option(EXT_TP_IOS_USE_XCFRAMEWORK
