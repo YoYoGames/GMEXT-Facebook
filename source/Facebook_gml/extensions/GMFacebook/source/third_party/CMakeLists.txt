@@ -207,7 +207,10 @@ elseif(APPLE)
       target_link_libraries(ext_third_party INTERFACE "-framework" "${_fw_name}")
     endfunction()
 
-    # Facebook SDK frameworks
+    # Facebook SDK frameworks and dependencies
+    # FBAEMKit is a dependency of FBSDKCoreKit, must be linked first
+    _ext_tp_link_pod_xcframework(
+      "FBAEMKit" "FBAEMKit.xcframework" "FBAEMKit" TRUE)
     _ext_tp_link_pod_xcframework(
       "FBSDKCoreKit" "FBSDKCoreKit.xcframework" "FBSDKCoreKit" TRUE)
 
