@@ -40,7 +40,9 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: AccessToken.current?.tokenString ?? "",
                 user_id: AccessToken.current?.userID ?? "",
                 response_text: "",
-                post_id: postId
+                post_id: postId,
+                granted_permissions: [],
+                declined_permissions: []
             )
         )
 
@@ -60,7 +62,9 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: "",
                 user_id: "",
                 response_text: "",
-                post_id: ""
+                post_id: "",
+                granted_permissions: [],
+                declined_permissions: []
             )
         )
 
@@ -77,7 +81,9 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
                 access_token: "",
                 user_id: "",
                 response_text: "",
-                post_id: ""
+                post_id: "",
+                granted_permissions: [],
+                declined_permissions: []
             )
         )
 
@@ -119,7 +125,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         accessToken: String = "",
         userId: String = "",
         responseText: String = "",
-        postId: String = ""
+        postId: String = "",
+        grantedPermissions: [String] = [],
+        declinedPermissions: [String] = []
     ) -> FacebookCallbackResult {
         return FacebookCallbackResult(
             success: success,
@@ -129,7 +137,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             access_token: accessToken,
             user_id: userId,
             response_text: responseText,
-            post_id: postId
+            post_id: postId,
+            granted_permissions: grantedPermissions,
+            declined_permissions: declinedPermissions
         )
     }
 
@@ -346,7 +356,11 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                         userId:
                             loginResult.token?.userID
                             ?? AccessToken.current?.userID
-                            ?? ""
+                            ?? "",
+                        grantedPermissions:
+                            Array(loginResult.grantedPermissions).sorted(),
+                        declinedPermissions:
+                            Array(loginResult.declinedPermissions).sorted()
                     )
                 )
             }
@@ -726,7 +740,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 ]
         )
 
-        Profile.enableUpdatesOnAccessTokenChange(true)
+        Profile.isUpdatedWithAccessTokenChange = true
     }
 
     @objc public func onResume() {
