@@ -128,15 +128,27 @@ elseif(APPLE)
   if((CMAKE_OSX_SYSROOT MATCHES "iphone") OR (CMAKE_OSX_SYSROOT MATCHES "appletv"))
     # CocoaPods frameworks (Facebook SDK)
     if(CMAKE_OSX_SYSROOT MATCHES "iphone")
-      # Get the parent directory from the GameMaker xcodeproj path
-      if(EXT_GM_XCODEPROJ_OVERRIDE)
+      # Allow explicit Facebook Pods directory, or derive from EXT_GM_XCODEPROJ_OVERRIDE
+      set(FB_PODS_DIR "" CACHE PATH "Explicit path to CocoaPods Pods directory (optional)")
+
+      if(FB_PODS_DIR)
+        set(_FACEBOOK_XCFRAMEWORK_DIR "${FB_PODS_DIR}")
+      elseif(EXT_GM_XCODEPROJ_OVERRIDE)
         get_filename_component(_GM_PARENT_DIR "${EXT_GM_XCODEPROJ_OVERRIDE}" DIRECTORY)
         set(_FACEBOOK_XCFRAMEWORK_DIR "${_GM_PARENT_DIR}/Pods")
+      else()
+        set(_FACEBOOK_XCFRAMEWORK_DIR "")
+      endif()
 
-        # Check for Facebook Core SDK
+      if(_FACEBOOK_XCFRAMEWORK_DIR)
+        message(STATUS "[third_party] Looking for Facebook CocoaPods at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
+
+        # Check for Facebook Core SDK (framework or xcframework)
         set(_FACEBOOK_CORE_XCFRAMEWORK "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit/FBSDKCoreKit.xcframework")
+        set(_FACEBOOK_CORE_FRAMEWORK "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework")
+
         if(EXISTS "${_FACEBOOK_CORE_XCFRAMEWORK}")
-          message(STATUS "[third_party] Found Facebook CocoaPods at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
+          message(STATUS "[third_party] Found FBSDKCoreKit.xcframework at: ${_FACEBOOK_CORE_XCFRAMEWORK}")
 
           # Choose the correct slice based on SDK (device vs simulator)
           if(CMAKE_OSX_SYSROOT MATCHES "simulator")
@@ -149,6 +161,7 @@ elseif(APPLE)
           endif()
 
           if(EXISTS "${_FACEBOOK_SLICE_DIR}")
+            message(STATUS "[third_party] Using Facebook framework slice: ${_FACEBOOK_SLICE_DIR}")
             set(_FACEBOOK_FRAMEWORK_DIR "${_FACEBOOK_SLICE_DIR}/FBSDKCoreKit.framework")
 
             # Add framework search path for both compile and link (Objective-C and Swift)
@@ -175,9 +188,37 @@ elseif(APPLE)
           else()
             message(WARNING "[third_party] Could not find Facebook framework slice at: ${_FACEBOOK_SLICE_DIR}")
           endif()
+        elseif(EXISTS "${_FACEBOOK_CORE_FRAMEWORK}")
+          message(STATUS "[third_party] Found FBSDKCoreKit.framework (not xcframework) at: ${_FACEBOOK_CORE_FRAMEWORK}")
+
+          # Using .framework directly (not wrapped in xcframework)
+          set(_FACEBOOK_FRAMEWORK_DIR "${_FACEBOOK_CORE_FRAMEWORK}")
+
+          # Add framework search path for both compile and link (Objective-C and Swift)
+          target_compile_options(ext_third_party INTERFACE
+            "-F${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit"
+            "-I${_FACEBOOK_FRAMEWORK_DIR}/Headers"
+          )
+          target_link_options(ext_third_party INTERFACE "-F${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit")
+
+          # Link the Facebook framework
+          target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKCoreKit")
+
+          # Also set Xcode attributes for proper Swift module discovery
+          if(CMAKE_GENERATOR STREQUAL "Xcode")
+            set_target_properties(${EXT_MAIN_TARGET} PROPERTIES
+              XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit"
+              XCODE_ATTRIBUTE_HEADER_SEARCH_PATHS "${_FACEBOOK_FRAMEWORK_DIR}/Headers"
+            )
+          endif()
+        else()
+          message(WARNING "[third_party] Facebook SDK not found at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
+          message(STATUS "[third_party] Searched for: ${_FACEBOOK_CORE_XCFRAMEWORK}")
+          message(STATUS "[third_party] Or: ${_FACEBOOK_CORE_FRAMEWORK}")
+          message(STATUS "[third_party] To fix: set -DFB_PODS_DIR=/path/to/Pods when running cmake")
         endif()
       else()
-        message(STATUS "[third_party] EXT_GM_XCODEPROJ_OVERRIDE not set; skipping Facebook CocoaPods detection")
+        message(STATUS "[third_party] Facebook Pods path not determined; set -DFB_PODS_DIR=/path/to/Pods or ensure EXT_GM_XCODEPROJ_OVERRIDE is set")
       endif()
     endif()
 
