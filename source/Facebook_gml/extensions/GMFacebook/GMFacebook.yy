@@ -53,7 +53,9 @@
   "iosSystemFrameworkEntries":[
     {"$GMExtensionFrameworkEntry":"","%Name":"WebKit.framework","embed":0,"name":"WebKit.framework","resourceType":"GMExtensionFrameworkEntry","resourceVersion":"2.0","weakReference":false,},
   ],
-  "iosThirdPartyFrameworkEntries":[],
+  "iosThirdPartyFrameworkEntries":[
+    {"$GMExtensionFrameworkEntry":"","%Name":"GMFacebook.xcframework","embed":0,"name":"GMFacebook.xcframework","resourceType":"GMExtensionFrameworkEntry","resourceVersion":"2.0","weakReference":false,},
+  ],
   "license":"",
   "maccompilerflags":"",
   "maclinkerflags":"-ObjC",
@@ -72,7 +74,7 @@
   "packageId":"",
   "parent":{
     "name":"Extensions",
-    "path":"folders/FacebookAPI/Extensions.yy",
+    "path":"folders/Facebook/Extensions.yy",
   },
   "productId":"",
   "resourceType":"GMExtension",

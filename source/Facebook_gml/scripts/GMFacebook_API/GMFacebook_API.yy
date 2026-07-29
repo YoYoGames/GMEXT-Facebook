@@ -6,7 +6,7 @@
   "name":"GMFacebook_API",
   "parent":{
     "name":"Extensions",
-    "path":"folders/FacebookAPI/Extensions.yy",
+    "path":"folders/Facebook/Extensions.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

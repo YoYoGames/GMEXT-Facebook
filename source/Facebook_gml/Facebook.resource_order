@@ -3,7 +3,7 @@
     {"name":"ExtensionCore","order":3,"path":"folders/ExtensionCore.yy",},
     {"name":"FacebookAPI Demo","order":2,"path":"folders/FacebookAPI Demo.yy",},
     {"name":"Rooms","order":1,"path":"folders/FacebookAPI Demo/Rooms.yy",},
-    {"name":"FacebookAPI","order":1,"path":"folders/FacebookAPI.yy",},
+    {"name":"Facebook","order":1,"path":"folders/Facebook.yy",},
     {"name":"GM Extensions Assets","order":4,"path":"folders/GM Extensions Assets.yy",},
     {"name":"Font","order":1,"path":"folders/GM Extensions Assets/Font.yy",},
     {"name":"Objects","order":2,"path":"folders/GM Extensions Assets/Objects.yy",},
