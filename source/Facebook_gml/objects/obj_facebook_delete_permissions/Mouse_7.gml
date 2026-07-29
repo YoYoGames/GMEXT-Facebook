@@ -1,5 +1,27 @@
 event_inherited();
 
-//If the call is successful, 
-//any user access token for the person will be invalidated and they will have to log in again
-fb_graph_request("me/permissions", "DELETE", -1);
+// A successful request invalidates the current user access token.
+// The user must log in again afterward.
+fb_graph_request(
+    "me/permissions",
+    FacebookHttpMethod.Delete,
+    [],
+    function(result)
+    {
+        if (result.success)
+        {
+            show_debug_message(
+                "Facebook permissions deleted."
+            );
+
+            fb_logout();
+        }
+        else
+        {
+            show_message_async(
+                "Could not delete Facebook permissions:\n"
+                + result.error_message
+            );
+        }
+    }
+);

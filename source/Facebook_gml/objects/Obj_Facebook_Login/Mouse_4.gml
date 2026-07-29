@@ -1,17 +1,57 @@
-
 event_inherited();
 
-
-if(os_type == os_android or os_type == os_ios or os_browser != browser_not_a_browser)
+if (os_type == os_android || os_type == os_ios)
 {
-	var perms = ds_list_create();
-	ds_list_add(perms, "public_profile"/*, "user_friends"*/);
-	
-	fb_login(real(perms), FacebookExtension2_LOGIN_TYPE_SYSTEM_ACCOUNT);
-	ds_list_destroy(perms);
+    fb_login(
+        ["public_profile"],
+        function(result)
+        {
+            if (result.success)
+            {
+                show_debug_message(
+                    "Facebook login successful."
+                );
+
+                show_debug_message(
+                    "Facebook user: " + result.user_id
+                );
+
+                show_debug_message(
+                    "Facebook token: " + result.access_token
+                );
+
+                show_debug_message(
+                    "Granted permissions: "
+                    + json_stringify(result.granted_permissions)
+                );
+
+                show_debug_message(
+                    "Declined permissions: "
+                    + json_stringify(result.declined_permissions)
+                );
+            }
+            else if (
+                result.status
+                == FacebookOperationStatus.Cancelled
+            )
+            {
+                show_debug_message(
+                    "Facebook login cancelled."
+                );
+            }
+            else
+            {
+                show_message_async(
+                    "Facebook login failed:\n"
+                    + result.error_message
+                );
+            }
+        }
+    );
 }
 else
 {
-	instance_create_depth(0, 0, 0, obj_facebook_oauth)
+    show_message_async(
+        "The GMFacebook native extension supports Android and iOS."
+    );
 }
-

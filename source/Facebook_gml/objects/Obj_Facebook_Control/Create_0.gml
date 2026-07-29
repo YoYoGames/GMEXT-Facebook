@@ -1,14 +1,24 @@
-///@desc README
+/// @description Initialize GMFacebook
 
+facebook_initialized = false;
+facebook_initialization_error = "";
 
-/*
+fb_initialize(
+    function(result)
+    {
+        facebook_initialized = result.success;
+        facebook_initialization_error = result.error_message;
 
-Note that Facebook now insists you test/deploy using https, which is not the default for GMSs'2 micro webserver.
-Accordingly, you will need to test HTML5 builds after uploading to your own website, and bear this in mind 
-when deploying your final live website!
-
-For more info, see https://developers.facebook.com/blog/post/2018/06/08/enforce-https-facebook-login/
-*/
-
-fb_init()
-
+        if (result.success)
+        {
+            show_debug_message("Facebook SDK initialized.");
+        }
+        else
+        {
+            show_debug_message(
+                "Facebook initialization failed: "
+                + result.error_message
+            );
+        }
+    }
+);

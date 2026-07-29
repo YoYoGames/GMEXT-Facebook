@@ -1,34 +1,44 @@
 event_inherited();
 
+var parameters = [
+    new FacebookEventParameterValue(
+        FacebookAppEventParameter.ContentId,
+        "ContentIdTest",
+        0,
+        false
+    ),
 
-///////////////OLD WAY... (still working)
+    new FacebookEventParameterValue(
+        FacebookAppEventParameter.Currency,
+        "GBP",
+        0,
+        false
+    ),
 
-//// Set up parameters list
-//var paramList = ds_list_create();
-//ds_list_add(paramList, 
-//			FacebookExtension2_PARAM_CONTENT_ID, "ContentIdTest",
-//			FacebookExtension2_PARAM_CURRENCY, "GBP",
-//			FacebookExtension2_PARAM_NUM_ITEMS, 3);
+    new FacebookEventParameterValue(
+        FacebookAppEventParameter.NumItems,
+        "",
+        3,
+        true
+    )
+];
 
-//// Send our event
-//fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 123, real(paramList));
+// The current generated Android interface transports the enum as a list.
+var sent = fb_send_event(
+    [FacebookAppEvent.AddedToWishlist],
+    123,
+    parameters
+);
 
-//// Destroy parameters list
-//ds_list_destroy(paramList);
-
-
-
-///////////////NEW WAY!!! more events! check a///////////////NEW WAY!!! (more events! check FACEBOOK_EVENT_PARAM and and FACEBOOK_EVENT_PARAM
-
-var paramList = ds_list_create();
-ds_list_add(paramList, 
-			FACEBOOK_EVENT_PARAM.CONTENT_ID, "ContentIdTest",
-			FACEBOOK_EVENT_PARAM.CURRENCY, "GBP",
-			FACEBOOK_EVENT_PARAM.NUM_ITEMS, 3);
-
-// Send our event
-fb_send_event_string(FACEBOOK_EVENT_NAME.ADDED_TO_WISHLIST, 123, real(paramList));
-
-// Destroy parameters list
-ds_list_destroy(paramList);
-
+if (sent)
+{
+    show_debug_message(
+        "Facebook App Event sent."
+    );
+}
+else
+{
+    show_message_async(
+        "Facebook App Event could not be sent."
+    );
+}
