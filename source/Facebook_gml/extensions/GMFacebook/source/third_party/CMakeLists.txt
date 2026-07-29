@@ -126,6 +126,48 @@ elseif(APPLE)
   # iOS / tvOS (mobile)
   # ----------------------
   if((CMAKE_OSX_SYSROOT MATCHES "iphone") OR (CMAKE_OSX_SYSROOT MATCHES "appletv"))
+    # CocoaPods frameworks (Facebook SDK)
+    if(CMAKE_OSX_SYSROOT MATCHES "iphone")
+      # Get the parent directory from the GameMaker xcodeproj path
+      if(EXT_GM_XCODEPROJ_OVERRIDE)
+        get_filename_component(_GM_PARENT_DIR "${EXT_GM_XCODEPROJ_OVERRIDE}" DIRECTORY)
+        set(_FACEBOOK_XCFRAMEWORK_DIR "${_GM_PARENT_DIR}/Pods")
+
+        # Check for Facebook Core SDK
+        set(_FACEBOOK_CORE_XCFRAMEWORK "${_FACEBOOK_XCFRAMEWORK_DIR}/FBSDKCoreKit/FBSDKCoreKit.xcframework")
+        if(EXISTS "${_FACEBOOK_CORE_XCFRAMEWORK}")
+          message(STATUS "[third_party] Found Facebook CocoaPods at: ${_FACEBOOK_XCFRAMEWORK_DIR}")
+
+          # Choose the correct slice based on SDK (device vs simulator)
+          if(CMAKE_OSX_SYSROOT MATCHES "simulator")
+            set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64_x86_64-simulator")
+            if(NOT EXISTS "${_FACEBOOK_SLICE_DIR}")
+              set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64-simulator")
+            endif()
+          else()
+            set(_FACEBOOK_SLICE_DIR "${_FACEBOOK_CORE_XCFRAMEWORK}/ios-arm64")
+          endif()
+
+          if(EXISTS "${_FACEBOOK_SLICE_DIR}")
+            # Add framework search path for both compile and link
+            target_compile_options(ext_third_party INTERFACE "-F${_FACEBOOK_SLICE_DIR}")
+            target_link_options(ext_third_party INTERFACE "-F${_FACEBOOK_SLICE_DIR}")
+
+            # Link the Facebook framework
+            target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKCoreKit")
+
+            # Add other Facebook frameworks as needed
+            # target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKLoginKit")
+            # target_link_libraries(ext_third_party INTERFACE "-framework" "FBSDKShareKit")
+          else()
+            message(WARNING "[third_party] Could not find Facebook framework slice at: ${_FACEBOOK_SLICE_DIR}")
+          endif()
+        endif()
+      else()
+        message(STATUS "[third_party] EXT_GM_XCODEPROJ_OVERRIDE not set; skipping Facebook CocoaPods detection")
+      endif()
+    endif()
+
     # Choose either xcframework/framework or static .a for mobile
     option(EXT_TP_IOS_USE_XCFRAMEWORK
            "iOS/tvOS: link (XC)Framework via -F/-framework" OFF)
