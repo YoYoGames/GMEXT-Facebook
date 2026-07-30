@@ -124,22 +124,19 @@ open class GMFacebookInternalSwift
         // default stub for fb_dialog
     }
 
-    open func fb_send_event(event: FacebookAppEvent, value: Double, parameters: [FacebookEventParameterValue]) -> Bool
+    open func fb_send_event(event: FacebookAppEvent, value: Double, parameters: [FacebookEventParameterValue])
     {
         // default stub for fb_send_event
-        return false
     }
 
-    open func fb_send_custom_event(event_name: String, value: Double, parameters: [FacebookNamedValue]) -> Bool
+    open func fb_send_custom_event(event_name: String, value: Double, parameters: [FacebookNamedValue])
     {
         // default stub for fb_send_custom_event
-        return false
     }
 
-    open func fb_send_purchase(amount: Double, currency: String, parameters: [FacebookNamedValue]) -> Bool
+    open func fb_send_purchase(amount: Double, currency: String, parameters: [FacebookNamedValue])
     {
         // default stub for fb_send_purchase
-        return false
     }
 
     open func fb_flush_events()
@@ -447,8 +444,8 @@ open class GMFacebookInternalSwift
             // field: parameters, type: struct FacebookEventParameterValue[]
             let parameters: [FacebookEventParameterValue] = try __br.readRaw([FacebookEventParameterValue].self)
 
-            let __result = self.fb_send_event(event: event, value: value, parameters: parameters)
-            return __result ? 1.0 : 0.0
+            self.fb_send_event(event: event, value: value, parameters: parameters)
+            return 0.0
         }
         catch
         {
@@ -472,8 +469,8 @@ open class GMFacebookInternalSwift
             // field: parameters, type: struct FacebookNamedValue[]
             let parameters: [FacebookNamedValue] = try __br.readRaw([FacebookNamedValue].self)
 
-            let __result = self.fb_send_custom_event(event_name: event_name, value: value, parameters: parameters)
-            return __result ? 1.0 : 0.0
+            self.fb_send_custom_event(event_name: event_name, value: value, parameters: parameters)
+            return 0.0
         }
         catch
         {
@@ -497,8 +494,8 @@ open class GMFacebookInternalSwift
             // field: parameters, type: struct FacebookNamedValue[]
             let parameters: [FacebookNamedValue] = try __br.readRaw([FacebookNamedValue].self)
 
-            let __result = self.fb_send_purchase(amount: amount, currency: currency, parameters: parameters)
-            return __result ? 1.0 : 0.0
+            self.fb_send_purchase(amount: amount, currency: currency, parameters: parameters)
+            return 0.0
         }
         catch
         {

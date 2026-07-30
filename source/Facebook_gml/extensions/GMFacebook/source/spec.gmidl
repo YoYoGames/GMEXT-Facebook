@@ -216,21 +216,21 @@ function fb_send_event(
     [type_hint=`FacebookAppEvent`]event: gmval,
     value: real,
     [type_hint=`FacebookEventParameterValue[]`] parameters: gmval
-): bool;
+): unit;
 
 [global, bind = typed_gml]
 function fb_send_custom_event(
     event_name: string,
     value: real,
     [type_hint=`FacebookNamedValue[]`] parameters: gmval
-): bool;
+): unit;
 
 [global, bind = typed_gml]
 function fb_send_purchase(
     amount: real,
     currency: string,
     [type_hint=`FacebookNamedValue[]`] parameters: gmval
-): bool;
+): unit;
 
 [global, bind = typed_gml]
 function fb_flush_events(): unit;

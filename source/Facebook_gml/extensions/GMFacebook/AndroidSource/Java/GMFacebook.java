@@ -920,7 +920,7 @@ public class GMFacebook extends GMFacebookInternal
     }
 
     @Override
-    public boolean fb_send_event(
+    public void fb_send_event(
         FacebookAppEvent event,
         double value,
         List<FacebookEventParameterValue> parameters)
@@ -933,7 +933,8 @@ public class GMFacebook extends GMFacebookInternal
             || Double.isNaN(value)
             || Double.isInfinite(value))
         {
-            return false;
+            Log.w(TAG, "Ignoring invalid Facebook App Event request.");
+            return;
         }
 
         logger.logEvent(
@@ -941,11 +942,10 @@ public class GMFacebook extends GMFacebookInternal
             value,
             eventValuesToBundle(parameters)
         );
-
-        return true;
     }
 
-    public boolean fb_send_custom_event(
+    @Override
+    public void fb_send_custom_event(
         String eventName,
         double value,
         List<FacebookNamedValue> parameters)
@@ -958,7 +958,8 @@ public class GMFacebook extends GMFacebookInternal
             || Double.isNaN(value)
             || Double.isInfinite(value))
         {
-            return false;
+            Log.w(TAG, "Ignoring invalid custom Facebook App Event request.");
+            return;
         }
 
         logger.logEvent(
@@ -966,11 +967,10 @@ public class GMFacebook extends GMFacebookInternal
             value,
             namedValuesToBundle(parameters)
         );
-
-        return true;
     }
 
-    public boolean fb_send_purchase(
+    @Override
+    public void fb_send_purchase(
         double amount,
         String currency,
         List<FacebookNamedValue> parameters)
@@ -982,12 +982,16 @@ public class GMFacebook extends GMFacebookInternal
             || Double.isInfinite(amount)
             || amount < 0.0)
         {
-            return false;
+            Log.w(TAG, "Ignoring invalid Facebook purchase request.");
+            return;
         }
 
         String currencyCode = safe(currency).trim().toUpperCase(Locale.US);
         if (currencyCode.length() != 3)
-            return false;
+        {
+            Log.w(TAG, "Facebook purchase currency must be a 3-letter code.");
+            return;
+        }
 
         try
         {
@@ -996,12 +1000,10 @@ public class GMFacebook extends GMFacebookInternal
                 Currency.getInstance(currencyCode),
                 namedValuesToBundle(parameters)
             );
-            return true;
         }
         catch (Exception exception)
         {
             Log.e(TAG, "Could not log Facebook purchase.", exception);
-            return false;
         }
     }
 

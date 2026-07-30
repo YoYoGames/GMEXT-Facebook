@@ -138,7 +138,6 @@
  * @param {Enum.FacebookAppEvent} event
  * @param {Real} value
  * @param {Array[Struct.FacebookEventParameterValue]} parameters
- * @returns {Bool}
  * @function_end
  */
 
@@ -147,7 +146,6 @@
  * @param {String} event_name
  * @param {Real} value
  * @param {Array[Struct.FacebookNamedValue]} parameters
- * @returns {Bool}
  * @function_end
  */
 
@@ -156,7 +154,6 @@
  * @param {Real} amount
  * @param {String} currency
  * @param {Array[Struct.FacebookNamedValue]} parameters
- * @returns {Bool}
  * @function_end
  */
 

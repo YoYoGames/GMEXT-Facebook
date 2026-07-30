@@ -244,9 +244,9 @@ void fb_request_publish_permissions(const std::vector<std::string_view>& permiss
 void fb_refresh_access_token(const gm::wire::GMFunction& callback);
 void fb_graph_request(std::string_view graph_path, gm_enums::FacebookHttpMethod method, const std::vector<gm_structs::FacebookNamedValue>& parameters, const gm::wire::GMFunction& callback);
 void fb_dialog(std::string_view link_url, const gm::wire::GMFunction& callback);
-bool fb_send_event(gm_enums::FacebookAppEvent event, double value, const std::vector<gm_structs::FacebookEventParameterValue>& parameters);
-bool fb_send_custom_event(std::string_view event_name, double value, const std::vector<gm_structs::FacebookNamedValue>& parameters);
-bool fb_send_purchase(double amount, std::string_view currency, const std::vector<gm_structs::FacebookNamedValue>& parameters);
+void fb_send_event(gm_enums::FacebookAppEvent event, double value, const std::vector<gm_structs::FacebookEventParameterValue>& parameters);
+void fb_send_custom_event(std::string_view event_name, double value, const std::vector<gm_structs::FacebookNamedValue>& parameters);
+void fb_send_purchase(double amount, std::string_view currency, const std::vector<gm_structs::FacebookNamedValue>& parameters);
 void fb_flush_events();
 void fb_set_event_user_id(std::string_view user_id);
 std::string fb_get_event_user_id();

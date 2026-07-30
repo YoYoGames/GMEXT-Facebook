@@ -673,12 +673,12 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         event: FacebookAppEvent,
         value: Double,
         parameters: [FacebookEventParameterValue]
-    ) -> Bool {
+    ) {
         guard ready,
               value.isFinite,
               let eventName = standardEventName(event)
         else {
-            return false
+            return
         }
 
         AppEvents.shared.logEvent(
@@ -686,15 +686,13 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             valueToSum: value,
             parameters: eventValues(parameters)
         )
-
-        return true
     }
 
     public override func fb_send_custom_event(
         event_name: String,
         value: Double,
         parameters: [FacebookNamedValue]
-    ) -> Bool {
+    ) {
         let name = event_name.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -703,7 +701,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
               value.isFinite,
               !name.isEmpty
         else {
-            return false
+            return
         }
 
         AppEvents.shared.logEvent(
@@ -711,15 +709,13 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             valueToSum: value,
             parameters: namedEventValues(parameters)
         )
-
-        return true
     }
 
     public override func fb_send_purchase(
         amount: Double,
         currency: String,
         parameters: [FacebookNamedValue]
-    ) -> Bool {
+    ) {
         let currencyCode = currency.trimmingCharacters(
             in: .whitespacesAndNewlines
         ).uppercased()
@@ -729,7 +725,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
               amount >= 0,
               currencyCode.count == 3
         else {
-            return false
+            return
         }
 
         AppEvents.shared.logPurchase(
@@ -737,8 +733,6 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             currency: currencyCode,
             parameters: namedEventValues(parameters)
         )
-
-        return true
     }
 
     public override func fb_flush_events() {

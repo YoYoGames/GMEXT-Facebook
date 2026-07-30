@@ -30,9 +30,9 @@ public interface GMFacebookInterface {
     public void fb_refresh_access_token(GMFunction callback);
     public void fb_graph_request(String graph_path, FacebookHttpMethod method, java.util.List<FacebookNamedValue> parameters, GMFunction callback);
     public void fb_dialog(String link_url, GMFunction callback);
-    public boolean fb_send_event(FacebookAppEvent event, double value, java.util.List<FacebookEventParameterValue> parameters);
-    public boolean fb_send_custom_event(String event_name, double value, java.util.List<FacebookNamedValue> parameters);
-    public boolean fb_send_purchase(double amount, String currency, java.util.List<FacebookNamedValue> parameters);
+    public void fb_send_event(FacebookAppEvent event, double value, java.util.List<FacebookEventParameterValue> parameters);
+    public void fb_send_custom_event(String event_name, double value, java.util.List<FacebookNamedValue> parameters);
+    public void fb_send_purchase(double amount, String currency, java.util.List<FacebookNamedValue> parameters);
     public void fb_flush_events();
     public void fb_set_event_user_id(String user_id);
     public String fb_get_event_user_id();

@@ -241,20 +241,20 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
 
 - (double)__EXT_NATIVE__fb_send_event:(char*)__arg_buffer arg1:(double)__arg_buffer_length
 {
-    double __result = __impl->__EXT_SWIFT__fb_send_event(__arg_buffer, __arg_buffer_length);
-    return __result;
+    __impl->__EXT_SWIFT__fb_send_event(__arg_buffer, __arg_buffer_length);
+    return 0;
 }
 
 - (double)__EXT_NATIVE__fb_send_custom_event:(char*)__arg_buffer arg1:(double)__arg_buffer_length
 {
-    double __result = __impl->__EXT_SWIFT__fb_send_custom_event(__arg_buffer, __arg_buffer_length);
-    return __result;
+    __impl->__EXT_SWIFT__fb_send_custom_event(__arg_buffer, __arg_buffer_length);
+    return 0;
 }
 
 - (double)__EXT_NATIVE__fb_send_purchase:(char*)__arg_buffer arg1:(double)__arg_buffer_length
 {
-    double __result = __impl->__EXT_SWIFT__fb_send_purchase(__arg_buffer, __arg_buffer_length);
-    return __result;
+    __impl->__EXT_SWIFT__fb_send_purchase(__arg_buffer, __arg_buffer_length);
+    return 0;
 }
 
 - (double)__EXT_NATIVE__fb_flush_events

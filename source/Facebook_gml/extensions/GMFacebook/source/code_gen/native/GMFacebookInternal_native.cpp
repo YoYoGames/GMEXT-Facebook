@@ -227,8 +227,8 @@ GMEXPORT double __EXT_NATIVE__fb_send_event(char* __arg_buffer, double __arg_buf
     // field: parameters, type: struct FacebookEventParameterValue[]
     std::vector<gm_structs::FacebookEventParameterValue> parameters = gm::wire::codec::readVector<gm_structs::FacebookEventParameterValue>(__br);
 
-    auto&& __result = fb_send_event(event, value, parameters);
-    return static_cast<double>(__result);
+    fb_send_event(event, value, parameters);
+    return 0;
 }
 
 GMEXPORT double __EXT_NATIVE__fb_send_custom_event(char* __arg_buffer, double __arg_buffer_length)
@@ -244,8 +244,8 @@ GMEXPORT double __EXT_NATIVE__fb_send_custom_event(char* __arg_buffer, double __
     // field: parameters, type: struct FacebookNamedValue[]
     std::vector<gm_structs::FacebookNamedValue> parameters = gm::wire::codec::readVector<gm_structs::FacebookNamedValue>(__br);
 
-    auto&& __result = fb_send_custom_event(event_name, value, parameters);
-    return static_cast<double>(__result);
+    fb_send_custom_event(event_name, value, parameters);
+    return 0;
 }
 
 GMEXPORT double __EXT_NATIVE__fb_send_purchase(char* __arg_buffer, double __arg_buffer_length)
@@ -261,8 +261,8 @@ GMEXPORT double __EXT_NATIVE__fb_send_purchase(char* __arg_buffer, double __arg_
     // field: parameters, type: struct FacebookNamedValue[]
     std::vector<gm_structs::FacebookNamedValue> parameters = gm::wire::codec::readVector<gm_structs::FacebookNamedValue>(__br);
 
-    auto&& __result = fb_send_purchase(amount, currency, parameters);
-    return static_cast<double>(__result);
+    fb_send_purchase(amount, currency, parameters);
+    return 0;
 }
 
 GMEXPORT double __EXT_NATIVE__fb_flush_events()

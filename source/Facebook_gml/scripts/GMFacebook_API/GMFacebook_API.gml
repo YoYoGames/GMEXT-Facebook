@@ -733,7 +733,6 @@ function fb_dialog(_link_url, _callback)
  * @param {Enum.FacebookAppEvent} _event
  * @param {Real} _value
  * @param {Array[Struct.FacebookEventParameterValue]} _parameters
- * @returns {Bool}
  */
 function fb_send_event(_event, _value, _parameters)
 {
@@ -770,7 +769,6 @@ function fb_send_event(_event, _value, _parameters)
  * @param {String} _event_name
  * @param {Real} _value
  * @param {Array[Struct.FacebookNamedValue]} _parameters
- * @returns {Bool}
  */
 function fb_send_custom_event(_event_name, _value, _parameters)
 {
@@ -807,7 +805,6 @@ function fb_send_custom_event(_event_name, _value, _parameters)
  * @param {Real} _amount
  * @param {String} _currency
  * @param {Array[Struct.FacebookNamedValue]} _parameters
- * @returns {Bool}
  */
 function fb_send_purchase(_amount, _currency, _parameters)
 {

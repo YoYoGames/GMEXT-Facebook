@@ -230,8 +230,8 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: parameters, type: struct FacebookEventParameterValue[]
         java.util.List<FacebookEventParameterValue> parameters = GMExtWire.readList(__arg_buffer, bb -> FacebookEventParameterValueCodec.read(bb));
 
-        boolean __result = fb_send_event(event, value, parameters);
-        return __result ? 1.0 : 0.0;
+        fb_send_event(event, value, parameters);
+        return 0;
     }
 
     public double __EXT_NATIVE__fb_send_custom_event(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -247,8 +247,8 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: parameters, type: struct FacebookNamedValue[]
         java.util.List<FacebookNamedValue> parameters = GMExtWire.readList(__arg_buffer, bb -> FacebookNamedValueCodec.read(bb));
 
-        boolean __result = fb_send_custom_event(event_name, value, parameters);
-        return __result ? 1.0 : 0.0;
+        fb_send_custom_event(event_name, value, parameters);
+        return 0;
     }
 
     public double __EXT_NATIVE__fb_send_purchase(ByteBuffer __arg_buffer, double __arg_buffer_length)
@@ -264,8 +264,8 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: parameters, type: struct FacebookNamedValue[]
         java.util.List<FacebookNamedValue> parameters = GMExtWire.readList(__arg_buffer, bb -> FacebookNamedValueCodec.read(bb));
 
-        boolean __result = fb_send_purchase(amount, currency, parameters);
-        return __result ? 1.0 : 0.0;
+        fb_send_purchase(amount, currency, parameters);
+        return 0;
     }
 
     public double __EXT_NATIVE__fb_flush_events()

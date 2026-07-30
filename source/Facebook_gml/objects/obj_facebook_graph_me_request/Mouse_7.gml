@@ -18,14 +18,15 @@ if (!fb_is_logged_in())
     exit;
 }
 
-var parameters = [
-    new FacebookNamedValue(
-        "fields",
-        "id,name,picture",
-        0,
-        false
-    )
-];
+// Generated extension records use an empty constructor. Set each field
+// explicitly, then pass the record inside the parameter array.
+var parameter = new FacebookNamedValue();
+parameter.name = "fields";
+parameter.string_value = "id,name,picture";
+parameter.number_value = 0;
+parameter.use_number = false;
+
+var parameters = [parameter];
 
 fb_graph_request(
     "me",

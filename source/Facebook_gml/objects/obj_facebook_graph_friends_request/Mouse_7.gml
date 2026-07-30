@@ -18,14 +18,13 @@ if (!fb_is_logged_in())
     exit;
 }
 
-var parameters = [
-    new FacebookNamedValue(
-        "fields",
-        "id,name,picture",
-        0,
-        false
-    )
-];
+var parameter = new FacebookNamedValue();
+parameter.name = "fields";
+parameter.string_value = "id,name,picture";
+parameter.number_value = 0;
+parameter.use_number = false;
+
+var parameters = [parameter];
 
 fb_graph_request(
     "me/friends",
@@ -35,7 +34,8 @@ fb_graph_request(
     {
         if (result.success)
         {
-            // The endpoint only returns friends who also use this app.
+            // Only returns friends who also use this app
+            // and have granted the required permissions.
             show_debug_message(
                 "Facebook friends response: "
                 + result.response_text

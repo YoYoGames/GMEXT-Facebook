@@ -12,54 +12,46 @@ if (!fb_ready())
     exit;
 }
 
-var parameters = [
-    new FacebookEventParameterValue(
-        FacebookAppEventParameter.ContentId,
-        "wishlist_item_001",
-        0,
-        false
-    ),
+var parameters = [];
 
-    new FacebookEventParameterValue(
-        FacebookAppEventParameter.ContentType,
-        "product",
-        0,
-        false
-    ),
+var parameter = new FacebookEventParameterValue();
+parameter.key = FacebookAppEventParameter.ContentId;
+parameter.string_value = "wishlist_item_001";
+parameter.number_value = 0;
+parameter.use_number = false;
+array_push(parameters, parameter);
 
-    new FacebookEventParameterValue(
-        FacebookAppEventParameter.Currency,
-        "GBP",
-        0,
-        false
-    ),
+parameter = new FacebookEventParameterValue();
+parameter.key = FacebookAppEventParameter.ContentType;
+parameter.string_value = "product";
+parameter.number_value = 0;
+parameter.use_number = false;
+array_push(parameters, parameter);
 
-    new FacebookEventParameterValue(
-        FacebookAppEventParameter.NumItems,
-        "",
-        1,
-        true
-    )
-];
+parameter = new FacebookEventParameterValue();
+parameter.key = FacebookAppEventParameter.Currency;
+parameter.string_value = "GBP";
+parameter.number_value = 0;
+parameter.use_number = false;
+array_push(parameters, parameter);
 
-// FacebookAppEvent is now passed directly, not inside a one-element array.
-var sent = fb_send_event(
+parameter = new FacebookEventParameterValue();
+parameter.key = FacebookAppEventParameter.NumItems;
+parameter.string_value = "";
+parameter.number_value = 1;
+parameter.use_number = true;
+array_push(parameters, parameter);
+
+// Meta's native logEvent APIs return void. The wrapper now follows that
+// behavior instead of inventing a Boolean result.
+fb_send_event(
     FacebookAppEvent.AddedToWishlist,
     123.00,
     parameters
 );
 
-if (sent)
-{
-    // Useful in a test object. Production code normally lets the SDK batch.
-    fb_flush_events();
-    show_debug_message(
-        "Facebook App Event queued; an immediate flush was requested."
-    );
-}
-else
-{
-    show_message_async(
-        "Facebook App Event could not be sent."
-    );
-}
+// Useful in a test object. Production code normally lets the SDK batch.
+fb_flush_events();
+show_debug_message(
+    "Facebook App Event queued; an immediate flush was requested."
+);
