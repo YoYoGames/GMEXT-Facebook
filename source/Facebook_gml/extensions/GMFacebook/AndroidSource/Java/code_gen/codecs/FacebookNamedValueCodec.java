@@ -5,6 +5,7 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.records.*;
 
 public final class FacebookNamedValueCodec {
@@ -24,7 +25,7 @@ public final class FacebookNamedValueCodec {
         return new FacebookNamedValue(name, string_value, number_value, use_number);
     }
 
-    public static void write(ByteBuffer b, FacebookNamedValue obj)
+    public static void write(GMExtWire.IByteWriter b, FacebookNamedValue obj)
     {
         GMExtWire.writeString(b, obj.name());
 

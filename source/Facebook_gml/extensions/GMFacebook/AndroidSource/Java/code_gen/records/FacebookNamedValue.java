@@ -3,6 +3,7 @@
 package ${YYAndroidPackageName}.records;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.codecs.*;
 
 import java.nio.ByteBuffer;
@@ -11,7 +12,7 @@ public record FacebookNamedValue(String name, String string_value, double number
 {
     public static final int CODEC_ID = 1;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         FacebookNamedValueCodec.write(b, this);
     }

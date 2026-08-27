@@ -3,6 +3,7 @@
 package ${YYAndroidPackageName}.records;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.codecs.*;
 import ${YYAndroidPackageName}.enums.*;
 
@@ -12,7 +13,7 @@ public record FacebookEventParameterValue(FacebookAppEventParameter key, String 
 {
     public static final int CODEC_ID = 0;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         FacebookEventParameterValueCodec.write(b, this);
     }

@@ -5,6 +5,7 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
 
@@ -25,7 +26,7 @@ public final class FacebookEventParameterValueCodec {
         return new FacebookEventParameterValue(key, string_value, number_value, use_number);
     }
 
-    public static void write(ByteBuffer b, FacebookEventParameterValue obj)
+    public static void write(GMExtWire.IByteWriter b, FacebookEventParameterValue obj)
     {
         GMExtWire.writeI32(b, obj.key().value());
 

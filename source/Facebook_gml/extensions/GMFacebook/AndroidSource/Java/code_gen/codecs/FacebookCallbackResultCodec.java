@@ -5,6 +5,7 @@ package ${YYAndroidPackageName}.codecs;
 import java.nio.ByteBuffer;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import java.util.List;
 import ${YYAndroidPackageName}.enums.*;
 import ${YYAndroidPackageName}.records.*;
@@ -38,7 +39,7 @@ public final class FacebookCallbackResultCodec {
         return new FacebookCallbackResult(success, status, request_id, error_message, access_token, user_id, response_text, post_id, granted_permissions, declined_permissions);
     }
 
-    public static void write(ByteBuffer b, FacebookCallbackResult obj)
+    public static void write(GMExtWire.IByteWriter b, FacebookCallbackResult obj)
     {
         GMExtWire.writeBool(b, obj.success());
 

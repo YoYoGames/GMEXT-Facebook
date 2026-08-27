@@ -3,6 +3,7 @@
 package ${YYAndroidPackageName}.records;
 
 import ${YYAndroidPackageName}.GMExtWire;
+import ${YYAndroidPackageName}.GMExtWire.GMValue;
 import ${YYAndroidPackageName}.codecs.*;
 import ${YYAndroidPackageName}.enums.*;
 
@@ -13,7 +14,7 @@ public record FacebookCallbackResult(boolean success, FacebookOperationStatus st
 {
     public static final int CODEC_ID = 2;
     @Override
-    public void encode(ByteBuffer b)
+    public void encode(GMExtWire.IByteWriter b)
     {
         FacebookCallbackResultCodec.write(b, this);
     }

@@ -41,8 +41,9 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         FacebookLoginStatus __result = fb_status();
 
         GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
         // return: __result, type: enum FacebookLoginStatus
-        GMExtWire.writeI32(__ret_buffer, __result.value());
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
 
         return 0;
     }
