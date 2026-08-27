@@ -44,7 +44,6 @@
     {"id":{"name":"obj_facebook_graph_me_request","path":"objects/obj_facebook_graph_me_request/obj_facebook_graph_me_request.yy",},},
     {"id":{"name":"obj_facebook_login","path":"objects/obj_facebook_login/obj_facebook_login.yy",},},
     {"id":{"name":"obj_facebook_logout","path":"objects/obj_facebook_logout/obj_facebook_logout.yy",},},
-    {"id":{"name":"obj_facebook_oauth","path":"objects/obj_facebook_oauth/obj_facebook_oauth.yy",},},
     {"id":{"name":"obj_facebook_refresh_access_token","path":"objects/obj_facebook_refresh_access_token/obj_facebook_refresh_access_token.yy",},},
     {"id":{"name":"obj_facebook_request_read_permissions","path":"objects/obj_facebook_request_read_permissions/obj_facebook_request_read_permissions.yy",},},
     {"id":{"name":"obj_facebook_send_event","path":"objects/obj_facebook_send_event/obj_facebook_send_event.yy",},},

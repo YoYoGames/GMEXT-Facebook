@@ -19,7 +19,6 @@
     {"name":"obj_facebook_graph_me_request","order":6,"path":"objects/obj_facebook_graph_me_request/obj_facebook_graph_me_request.yy",},
     {"name":"obj_facebook_login","order":1,"path":"objects/obj_facebook_login/obj_facebook_login.yy",},
     {"name":"obj_facebook_logout","order":2,"path":"objects/obj_facebook_logout/obj_facebook_logout.yy",},
-    {"name":"obj_facebook_oauth","order":12,"path":"objects/obj_facebook_oauth/obj_facebook_oauth.yy",},
     {"name":"obj_facebook_refresh_access_token","order":3,"path":"objects/obj_facebook_refresh_access_token/obj_facebook_refresh_access_token.yy",},
     {"name":"obj_facebook_request_read_permissions","order":10,"path":"objects/obj_facebook_request_read_permissions/obj_facebook_request_read_permissions.yy",},
     {"name":"obj_facebook_send_event","order":7,"path":"objects/obj_facebook_send_event/obj_facebook_send_event.yy",},
