@@ -294,14 +294,24 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         )
     }
 
-    private func topViewController(
-        _ root: UIViewController? =
-            UIApplication.shared
+    // The scene API is iOS 13, and this extension deploys at 12.0 to match the
+    // runner's own target - so the pre-scene keyWindow lookup has to stay as
+    // the fallback rather than being assumed dead.
+    private static func keyWindowRoot() -> UIViewController? {
+        if #available(iOS 13.0, *) {
+            return UIApplication.shared
                 .connectedScenes
                 .compactMap { $0 as? UIWindowScene }
                 .flatMap(\.windows)
                 .first(where: \.isKeyWindow)?
                 .rootViewController
+        }
+
+        return UIApplication.shared.keyWindow?.rootViewController
+    }
+
+    private func topViewController(
+        _ root: UIViewController? = GMFacebookSwift.keyWindowRoot()
     ) -> UIViewController? {
         if let navigation = root as? UINavigationController {
             return topViewController(navigation.visibleViewController)

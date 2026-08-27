@@ -1,6 +1,16 @@
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 # =============================================================================
+# Deployment target
+# Unset elsewhere, so it defaults to the host's newest SDK - mismatches the
+# GameMaker app's own target and crashes the linker. Pin to the SDKs' floor:
+# every FBSDK 18.x pod this extension links declares ios.deployment_target 12.0,
+# and the runner's own project builds at 12.0 too.
+# =============================================================================
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "12.0")
+
+# =============================================================================
 # GameMaker iOS integration (optional)
 # =============================================================================
 set(EXT_GM_XCODEPROJ_OVERRIDE "~/GameMakerStudio2/GM_IOS/Facebook/Facebook/Facebook.xcodeproj" CACHE FILEPATH "" FORCE)
