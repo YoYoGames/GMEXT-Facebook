@@ -1,4 +1,4 @@
-{
+﻿{
   "$GMRoom":"v1",
   "%Name":"rm_facebook",
   "creationCodeFile":"",
@@ -13,7 +13,6 @@
     {"name":"inst_7BA0D69","path":"rooms/rm_facebook/rm_facebook.yy",},
     {"name":"inst_4434DEC8","path":"rooms/rm_facebook/rm_facebook.yy",},
     {"name":"inst_13D6BD03","path":"rooms/rm_facebook/rm_facebook.yy",},
-    {"name":"inst_781FE09E","path":"rooms/rm_facebook/rm_facebook.yy",},
     {"name":"inst_16707B88","path":"rooms/rm_facebook/rm_facebook.yy",},
     {"name":"inst_6C85DF25","path":"rooms/rm_facebook/rm_facebook.yy",},
     {"name":"inst_7F6EDAC6","path":"rooms/rm_facebook/rm_facebook.yy",},
@@ -28,7 +27,6 @@
         {"$GMRInstance":"v4","%Name":"inst_7BA0D69","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_7BA0D69","objectId":{"name":"obj_facebook_graph_friends_request","path":"objects/obj_facebook_graph_friends_request/obj_facebook_graph_friends_request.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":320.0,"y":672.0,},
         {"$GMRInstance":"v4","%Name":"inst_4434DEC8","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_4434DEC8","objectId":{"name":"obj_facebook_graph_me_request","path":"objects/obj_facebook_graph_me_request/obj_facebook_graph_me_request.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":320.0,"y":480.0,},
         {"$GMRInstance":"v4","%Name":"inst_13D6BD03","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_13D6BD03","objectId":{"name":"obj_facebook_logout","path":"objects/obj_facebook_logout/obj_facebook_logout.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":320.0,"y":384.0,},
-        {"$GMRInstance":"v4","%Name":"inst_781FE09E","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_781FE09E","objectId":{"name":"obj_facebook_request_publish_permissions","path":"objects/obj_facebook_request_publish_permissions/obj_facebook_request_publish_permissions.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":1024.0,"y":480.0,},
         {"$GMRInstance":"v4","%Name":"inst_16707B88","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_16707B88","objectId":{"name":"obj_facebook_request_read_permissions","path":"objects/obj_facebook_request_read_permissions/obj_facebook_request_read_permissions.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":1024.0,"y":576.0,},
         {"$GMRInstance":"v4","%Name":"inst_6C85DF25","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_6C85DF25","objectId":{"name":"obj_facebook_send_event","path":"objects/obj_facebook_send_event/obj_facebook_send_event.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":5.0,"scaleY":1.0,"x":1024.0,"y":384.0,},
         {"$GMRInstance":"v4","%Name":"inst_7F6EDAC6","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_7F6EDAC6","objectId":{"name":"obj_facebook_control","path":"objects/obj_facebook_control/obj_facebook_control.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":32.0,"y":96.0,},
