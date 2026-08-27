@@ -684,6 +684,8 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             let text: String? = self.responseText(value)
             callback.call(GMFacebookSwift.successResult(), text as Any)
         }
+
+        return .Ok
     }
 
     public override func fb_dialog(
