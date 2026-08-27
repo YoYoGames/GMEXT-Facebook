@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Getting Started - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Getting Started";
+        var mkdocs_page_input_path = "getting_started.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Getting Started</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#0-guard-for-unsupported-targets">0. Guard for unsupported targets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-set-your-privacy-switches-optional-before-initialization">1. Set your privacy switches (optional, before initialization)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-initialize">2. Initialize</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-log-the-player-in">3. Log the player in</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-do-something-with-the-session">4. Do something with the session</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-handling-responses">5. Handling responses</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-cleanup">6. Cleanup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#testing-notes">Testing notes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Guides</li>
+      <li class="breadcrumb-item active">Getting Started</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/getting_started.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="getting-started">Getting Started</h1>
+<p>This guide walks through the recommended call order for the Facebook extension, from initialization to
+your first Graph API request. See <a href="setup.html">Setup</a> first if you have not yet created your app on Meta's
+dashboard or installed the extension, and <a href="extension_options.html">Extension Options</a> for what each option does.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>An app on the Meta developer dashboard, with the Android and/or iOS platform registered against it
+(<a href="setup.html">Setup</a>).</li>
+<li>The extension's <strong>App ID</strong>, <strong>Display Name</strong> and <strong>Client Token</strong> options filled in
+(<a href="extension_options.html">Extension Options</a>).</li>
+<li>An Android or iOS build. The SDK is native, so none of this works in the IDE.</li>
+</ul>
+<h2 id="0-guard-for-unsupported-targets">0. Guard for unsupported targets</h2>
+<p>This extension is Android and iOS only. If your project also builds for other targets, gate every call
+behind an <code>os_type</code> check:</p>
+<div class="highlight"><pre><span></span><code>facebook_supported = (os_type == os_android || os_type == os_ios);
+</code></pre></div>
+<h2 id="1-set-your-privacy-switches-optional-before-initialization">1. Set your privacy switches (optional, before initialization)</h2>
+<p>If your consent flow requires the player to opt in before anything is reported to Meta, turn the
+automatic logging off <em>before</em> initializing - the SDK logs an activation event as soon as it starts up:</p>
+<div class="highlight"><pre><span></span><code>fb_set_auto_log_app_events_enabled(false);
+fb_set_advertiser_id_collection_enabled(false);
+</code></pre></div>
+<p>Turn them back on once the player has consented. See <a href="settings.html">Privacy Settings</a> for the full set, including
+Meta's Limited Data Use options.</p>
+<h2 id="2-initialize">2. Initialize</h2>
+<p>Do this once, from a persistent controller object created in the very first room. Most of this
+extension is asynchronous, so a single long-lived object that owns the callbacks is much easier to
+reason about than callbacks scattered across the buttons that started them.</p>
+<div class="highlight"><pre><span></span><code>/// Create event of a persistent controller object
+facebook_initialized = false;
+
+var _error = fb_initialize(function(_result)
+{
+    facebook_initialized = _result.success;
+
+    if (!_result.success)
+        show_debug_message(&quot;Facebook initialization failed: &quot; + (_result.error_message ?? &quot;Unknown error.&quot;));
+});
+
+if (_error != FacebookError.Ok)
+    show_debug_message(&quot;Facebook initialization rejected: &quot; + string(_error));
+</code></pre></div>
+<p>You can also poll <a href="general.html#fb_ready">fb_ready</a> at any time instead of tracking the flag yourself.</p>
+<h2 id="3-log-the-player-in">3. Log the player in</h2>
+<p>Nothing that needs a user - the Graph API, the token, the user ID - works until the player has logged
+in. Do this from a button the player presses, not automatically on startup.</p>
+<div class="highlight"><pre><span></span><code>if (!fb_ready())
+    exit;
+
+var _error = fb_login([&quot;public_profile&quot;], function(_result, _login_info)
+{
+    if (_result.success)
+    {
+        show_debug_message(&quot;Logged in as &quot; + _login_info.user_id);
+        show_debug_message(&quot;Granted: &quot; + json_stringify(_login_info.permissions));
+        show_debug_message(&quot;Declined: &quot; + json_stringify(_login_info.declined_permissions));
+    }
+    else if (_result.status == FacebookOperationStatus.Cancelled)
+    {
+        show_debug_message(&quot;Facebook login cancelled.&quot;);
+    }
+    else
+    {
+        show_debug_message(&quot;Facebook login failed: &quot; + (_result.error_message ?? &quot;Unknown error.&quot;));
+    }
+});
+
+if (_error == FacebookError.LoginInProgress)
+    show_debug_message(&quot;A Facebook login is already running.&quot;);
+</code></pre></div>
+<p>Ask for the smallest set of permissions you actually need, and ask for extra ones later - at the point
+where the player does the thing that requires them - rather than all at once on the first login. Check
+what you already hold with <a href="login.html#fb_check_permission">fb_check_permission</a>, and note that the player can decline: a
+permission you asked for appearing in <code>declined_permissions</code> is a normal outcome, not an error.</p>
+<h2 id="4-do-something-with-the-session">4. Do something with the session</h2>
+<div class="highlight"><pre><span></span><code>var _parameter = new FacebookNamedValue();
+_parameter.name = &quot;fields&quot;;
+_parameter.string_value = &quot;id,name&quot;;
+_parameter.number_value = 0;
+_parameter.use_number = false;
+
+fb_graph_request(&quot;me&quot;, FacebookHttpMethod.Get, [_parameter], function(_result, _response_text)
+{
+    if (!_result.success)
+        return;
+
+    var _profile = json_parse(_response_text);
+    show_debug_message(&quot;Hello, &quot; + _profile.name);
+});
+</code></pre></div>
+<p>The other things you can do with a session are <a href="graph.html#fb_dialog">fb_dialog</a> (open Meta's share dialog on a
+link) and the App Events in <a href="app_events.html">App Events</a> - which, unlike everything else here, do <strong>not</strong>
+require a login.</p>
+<h2 id="5-handling-responses">5. Handling responses</h2>
+<p>Every asynchronous function in this extension reports failure in one of two places, and they are not
+interchangeable:</p>
+<ol>
+<li><strong>The synchronous return value.</strong> Anything rejected before Meta's SDK is reached - the SDK is not
+initialized, no user is logged in, an argument is empty, a request of the same kind is already in
+flight - comes back immediately as a <a href="general.html#facebookerror">FacebookError</a>. <strong>When this is not <code>Ok</code>, your callback
+never runs</strong>, so if you only handle the callback you will never hear about these at all.</li>
+<li><strong>The callback's <code>result</code> argument.</strong> Everything Meta itself reports arrives here as a
+<a href="general.html#facebookresult">FacebookResult</a>. Check <code>result.success</code> first. On a failure, <code>result.status</code> separates a user
+cancellation (<a href="general.html#facebookoperationstatus">FacebookOperationStatus</a>.Cancelled, which is not an error and carries no
+message) from a real failure, <code>result.error_message</code> carries Meta's text, and <code>result.sdk_error_code</code>
+carries Meta's own numeric code when there was one.</li>
+</ol>
+<p>Where a callback has a payload it always arrives as a <strong>second</strong> argument, and it is only present on
+success. Guard it with <code>is_undefined</code> if you use it outside the <code>result.success</code> branch - a successful
+<a href="graph.html#fb_dialog">fb_dialog</a> legitimately has no <code>post_id</code> unless your app holds publish permissions.</p>
+<h2 id="6-cleanup">6. Cleanup</h2>
+<p>There is nothing to destroy or free - the extension holds no handles. Two functions matter at the end
+of a session:</p>
+<ul>
+<li><a href="general.html#fb_logout">fb_logout</a> clears the access token when the player signs out. It does not sign them out of
+the Facebook app itself.</li>
+<li><a href="general.html#fb_reset_pending">fb_reset_pending</a> is a recovery hatch, not part of the normal flow. Call it if a login or
+share screen was dismissed in a way Meta's SDK never reported, leaving every later call rejected with
+<code>LoginInProgress</code> or <code>ShareInProgress</code>. It fires the stuck callbacks with a <code>Cancelled</code> result.</li>
+</ul>
+<p>If you use App Events, consider a <a href="app_events.html#fb_flush_events">fb_flush_events</a> at a point where the app may be killed,
+so queued events are not lost.</p>
+<h2 id="testing-notes">Testing notes</h2>
+<ul>
+<li>Until your app passes App Review, only accounts with a role on the app can log in, and only with
+<code>public_profile</code>, <code>email</code> and <code>user_friends</code> - see <a href="dashboard.html">Meta App Dashboard</a>.</li>
+<li>A login that fails immediately on Android with no visible dialog almost always means the <strong>Key Hash</strong>
+on the dashboard does not match the keystore that signed the build. Both the debug and the release
+keystore hash need to be registered.</li>
+<li>A login that fails on iOS almost always means the <strong>Bundle ID</strong> on the dashboard does not match the
+one in the iOS Game Options.</li>
+<li>App Events are batched. Call <a href="app_events.html#fb_flush_events">fb_flush_events</a> to see them in the Events Manager within
+seconds instead of minutes.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="dashboard.html" class="btn btn-neutral float-left" title="Meta App Dashboard"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="extension_options.html" class="btn btn-neutral float-right" title="Extension Options">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="dashboard.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="extension_options.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

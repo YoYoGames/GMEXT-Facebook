@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Login and Permissions - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Login and Permissions";
+        var mkdocs_page_input_path = "login.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Login and Permissions</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#structs">Structs</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Modules</li>
+      <li class="breadcrumb-item active">Login and Permissions</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/login.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a id="top"></a></p>
+<h1 id="login-and-permissions"><strong>Login and Permissions</strong></h1>
+<p>Signing the user in, keeping the session fresh, and checking what the session is allowed to
+do.</p>
+<h2 id="functions">Functions</h2>
+<p>Login and permission functions.</p>
+<ul>
+<li><a href="login.html#fb_login">fb_login</a></li>
+<li><a href="login.html#fb_refresh_access_token">fb_refresh_access_token</a></li>
+<li><a href="login.html#fb_check_permission">fb_check_permission</a></li>
+</ul>
+<h2 id="structs">Structs</h2>
+<p>Login data types.</p>
+<ul>
+<li><a href="login.html#facebooklogininfo">FacebookLoginInfo</a></li>
+</ul>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_check_permission">fb_check_permission</h1>
+<p>Checks whether the current session already holds a given permission, without going anywhere
+near the network. Use it before a call that needs one, so you can ask for it with
+<a href="login.html#fb_login">fb_login</a> rather than letting the request fail.</p>
+<p>The answer reflects the permissions attached to the live access token, so it is only as fresh as
+that token - call <a href="login.html#fb_refresh_access_token">fb_refresh_access_token</a> first if the user may have revoked something
+from Facebook's own settings while your game was running.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_check_permission(permission)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>permission</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The permission name to check, e.g. <code>"email"</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
+</blockquote>
+<p><code>true</code> if a live token holds that permission, <code>false</code> otherwise (including when no
+user is logged in).</p>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>if (!fb_check_permission(&quot;email&quot;))
+{
+    fb_login([&quot;email&quot;], function(_result, _login_info)
+    {
+        // Handle the new session here.
+    });
+}
+</code></pre></div>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_login">fb_login</h1>
+<p>Starts Meta's login flow, asking the user for the permissions you list. If the Facebook app
+is installed the flow happens there, otherwise it falls back to a Custom Tab / web view.</p>
+<p>Only one login can be in flight at a time - a second call while the first is still waiting on the
+user returns <a href="general.html#facebookerror">FacebookError</a>.LoginInProgress. Passing an empty array asks for
+<code>"public_profile"</code> only.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Anything beyond <code>"public_profile"</code>, <code>"email"</code> and <code>"user_friends"</code> has to be approved by
+Meta through App Review before it works for anyone other than the app's own testers.</p>
+</div>
+<p>This function operates asynchronously, which means that it does not immediately return the requested result. Instead, upon completion of the task, it will trigger the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_login(permissions, callback)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>permissions</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Arrays.htm">Array</a> of <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The permissions to request, e.g. <code>["public_profile", "email"]</code>.</td>
+</tr>
+<tr>
+<td>callback</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Script_Functions.htm">Function</a></td>
+<td>The function to call once the login completes, fails or is cancelled.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a></p>
+</blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a>.Ok if the login was started, or
+NotInitialized / ActivityNull / LoginInProgress if it was rejected up front. The callback does
+<strong>not</strong> fire when a value other than Ok is returned.</p>
+<p><br></p>
+<p><strong>Triggers:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a></p>
+</blockquote>
+<p>Fires once, when the user finishes with Meta's login screen.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="general.html#facebookresult">FacebookResult</a></td>
+<td>The login outcome. A user who backed out of the login screen<br>reports <code>status</code> as <a href="general.html#facebookoperationstatus">FacebookOperationStatus</a>.Cancelled rather than as an error.</td>
+</tr>
+<tr>
+<td>login_info</td>
+<td><a href="login.html#facebooklogininfo">FacebookLoginInfo</a></td>
+<td>The new session. Only present on success.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>var _error = fb_login([&quot;public_profile&quot;], function(_result, _login_info)
+{
+    if (_result.success)
+    {
+        show_debug_message(&quot;Facebook user: &quot; + _login_info.user_id);
+        show_debug_message(&quot;Permissions: &quot; + json_stringify(_login_info.permissions));
+    }
+    else if (_result.status == FacebookOperationStatus.Cancelled)
+    {
+        show_debug_message(&quot;Facebook login cancelled.&quot;);
+    }
+    else
+    {
+        show_debug_message(&quot;Facebook login failed: &quot; + (_result.error_message ?? &quot;Unknown error.&quot;));
+    }
+});
+
+if (_error != FacebookError.Ok)
+    show_debug_message(&quot;Facebook login could not be started (error &quot; + string(_error) + &quot;).&quot;);
+</code></pre></div>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_refresh_access_token">fb_refresh_access_token</h1>
+<p>Asks Meta to refresh the current access token, returning an up-to-date
+<a href="login.html#facebooklogininfo">FacebookLoginInfo</a> - including the permission lists, which is the point of calling it: a
+user can revoke a permission from Facebook's own settings at any time, and only a refresh will tell
+you.</p>
+<p>There is no need to call this on a timer. Meta's SDK extends a healthy token on its own; this is
+for the cases where you want the refreshed permission lists, or want to confirm the session is
+still valid after a long time in the background.</p>
+<p>This function operates asynchronously, which means that it does not immediately return the requested result. Instead, upon completion of the task, it will trigger the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_refresh_access_token(callback)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>callback</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Script_Functions.htm">Function</a></td>
+<td>The function to call once the refresh completes or fails.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a></p>
+</blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a>.Ok if the refresh was started,
+NotInitialized if the SDK is not up, or NotLoggedIn if there is no live token to refresh. The
+callback does <strong>not</strong> fire when a value other than Ok is returned.</p>
+<p><br></p>
+<p><strong>Triggers:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a></p>
+</blockquote>
+<p>Fires once, when Meta answers.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="general.html#facebookresult">FacebookResult</a></td>
+<td>The refresh outcome.</td>
+</tr>
+<tr>
+<td>login_info</td>
+<td><a href="login.html#facebooklogininfo">FacebookLoginInfo</a></td>
+<td>The refreshed session. Only present on success.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>var _error = fb_refresh_access_token(function(_result, _login_info)
+{
+    if (!_result.success)
+    {
+        show_debug_message(&quot;Facebook token refresh failed: &quot; + (_result.error_message ?? &quot;Unknown error.&quot;));
+        return;
+    }
+
+    show_debug_message(&quot;Permissions now granted: &quot; + json_stringify(_login_info.permissions));
+});
+</code></pre></div>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="facebooklogininfo">FacebookLoginInfo</h1>
+<p>The session payload delivered as the second argument of the <a href="login.html#fb_login">fb_login</a> and
+<a href="login.html#fb_refresh_access_token">fb_refresh_access_token</a> callbacks. Only present on success - on a failure or a
+cancellation the argument is <code>undefined</code>.</p>
+<p>This struct is referenced by the following functions:</p>
+<ul>
+<li><a href="login.html#fb_login">fb_login</a></li>
+<li><a href="login.html#fb_refresh_access_token">fb_refresh_access_token</a></li>
+</ul>
+<p><br></p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>access_token</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The access token for the new session. Treat it as a credential.</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The app-scoped Facebook user ID.</td>
+</tr>
+<tr>
+<td>permissions</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Arrays.htm">Array</a> of <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The permissions the user actually granted.</td>
+</tr>
+<tr>
+<td>declined_permissions</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Arrays.htm">Array</a> of <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The permissions the user was asked for and refused.<br>Asking again for a declined permission is only worth doing once you have explained why you need it.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="general.html" class="btn btn-neutral float-left" title="General"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="graph.html" class="btn btn-neutral float-right" title="Graph API and Sharing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="general.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="graph.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

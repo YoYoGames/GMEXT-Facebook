@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Graph API and Sharing - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Graph API and Sharing";
+        var mkdocs_page_input_path = "graph.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Graph API and Sharing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Modules</li>
+      <li class="breadcrumb-item active">Graph API and Sharing</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/graph.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a id="top"></a></p>
+<h1 id="graph-api-and-sharing"><strong>Graph API and Sharing</strong></h1>
+<p>Reaching Meta's Graph API directly, and opening the share dialog on a link.</p>
+<h2 id="functions">Functions</h2>
+<p>Graph API and sharing functions.</p>
+<ul>
+<li><a href="graph.html#fb_graph_request">fb_graph_request</a></li>
+<li><a href="graph.html#fb_dialog">fb_dialog</a></li>
+</ul>
+<h2 id="constants">Constants</h2>
+<p>Graph API constants.</p>
+<ul>
+<li><a href="graph.html#facebookhttpmethod">FacebookHttpMethod</a></li>
+</ul>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_graph_request">fb_graph_request</h1>
+<p>Sends a request to Meta's <a href="https://developers.facebook.com/docs/graph-api">Graph API</a> using
+the current access token, and hands the raw response body back as a string. This is the general
+escape hatch: anything Meta exposes over the Graph API and this extension does not wrap explicitly
+can be reached through here.</p>
+<p>The response is <strong>not</strong> parsed for you - it arrives exactly as Meta sent it, so run it through
+<code>json_parse</code> yourself. Requires a live session (see <a href="login.html#fb_login">fb_login</a>), and the endpoint you are
+calling still has to be covered by a permission the session actually holds.</p>
+<p>This function operates asynchronously, which means that it does not immediately return the requested result. Instead, upon completion of the task, it will trigger the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_graph_request(graph_path, method, parameters, callback)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>graph_path</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The Graph API path, without a leading slash, e.g. <code>"me"</code> or<br><code>"me/friends"</code>.</td>
+</tr>
+<tr>
+<td>method</td>
+<td><a href="graph.html#facebookhttpmethod">FacebookHttpMethod</a></td>
+<td>The HTTP method to use.</td>
+</tr>
+<tr>
+<td>parameters</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Arrays.htm">Array</a> of <a href="general.html#facebooknamedvalue">FacebookNamedValue</a></td>
+<td>The query parameters to send. Pass an empty<br>array for none.</td>
+</tr>
+<tr>
+<td>callback</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Script_Functions.htm">Function</a></td>
+<td>The function to call once the request completes or fails.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a></p>
+</blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a>.Ok if the request was sent, NotInitialized
+if the SDK is not up, NotLoggedIn if there is no live token, or InvalidArgument if <code>graph_path</code> is
+empty. The callback does <strong>not</strong> fire when a value other than Ok is returned.</p>
+<p><br></p>
+<p><strong>Triggers:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a></p>
+</blockquote>
+<p>Fires once, when Meta answers.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="general.html#facebookresult">FacebookResult</a></td>
+<td>The request outcome. On a Graph API error,<br><a href="general.html#facebookresult">FacebookResult</a>.sdk_error_code carries Meta's own numeric error code.</td>
+</tr>
+<tr>
+<td>response_text</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The raw response body. Only present on success.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>var _parameter = new FacebookNamedValue();
+_parameter.name = &quot;fields&quot;;
+_parameter.string_value = &quot;id,name,picture&quot;;
+_parameter.number_value = 0;
+_parameter.use_number = false;
+
+var _error = fb_graph_request(&quot;me&quot;, FacebookHttpMethod.Get, [_parameter],
+    function(_result, _response_text)
+    {
+        if (_result.success)
+        {
+            var _profile = json_parse(_response_text);
+            show_debug_message(&quot;Facebook name: &quot; + _profile.name);
+        }
+        else
+        {
+            show_debug_message(&quot;Graph request failed: &quot; + (_result.error_message ?? &quot;Unknown error.&quot;));
+        }
+    });
+
+if (_error != FacebookError.Ok)
+    show_debug_message(&quot;Graph request could not be started (error &quot; + string(_error) + &quot;).&quot;);
+</code></pre></div>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_dialog">fb_dialog</h1>
+<p>Opens Meta's share dialog on a link, letting the user post it to their feed with whatever
+comment they choose. If the Facebook app is installed the dialog opens there, otherwise it falls
+back to a web dialog.</p>
+<p>The user does <strong>not</strong> need to be logged in through <a href="login.html#fb_login">fb_login</a> for this - Meta's share
+dialog handles its own account. What the login state does change is the payload: Meta only returns
+a post id when your app holds publish permissions, so <code>post_id</code> being <code>undefined</code> on success is the
+normal case, not a failure.</p>
+<p>Only one share can be in flight at a time - a second call while the first is still open returns
+<a href="general.html#facebookerror">FacebookError</a>.ShareInProgress.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Meta does not allow an app to pre-fill the message, the title or the image of a share. Only
+the link is yours to set; everything the post says comes from the user, or from the Open Graph tags
+on the page you linked to.</p>
+</div>
+<p>This function operates asynchronously, which means that it does not immediately return the requested result. Instead, upon completion of the task, it will trigger the <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_dialog(link_url, callback)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>link_url</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The URL to share. Must include a scheme, e.g. <code>"https://example.com"</code>.</td>
+</tr>
+<tr>
+<td>callback</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Script_Functions.htm">Function</a></td>
+<td>The function to call once the dialog closes.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a></p>
+</blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a>.Ok if the dialog was opened, or
+NotInitialized / ActivityNull / InvalidArgument / ShareInProgress if it was rejected up front. The
+callback does <strong>not</strong> fire when a value other than Ok is returned.</p>
+<p><br></p>
+<p><strong>Triggers:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Method_Variables.htm">Callback</a></p>
+</blockquote>
+<p>Fires once, when the user finishes with or dismisses the share dialog.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="general.html#facebookresult">FacebookResult</a></td>
+<td>The share outcome. A user who dismissed the dialog reports<br><code>status</code> as <a href="general.html#facebookoperationstatus">FacebookOperationStatus</a>.Cancelled rather than as an error.</td>
+</tr>
+<tr>
+<td>post_id</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The id of the created post. Only present when the app holds publish<br>permissions - a successful share with no post id is normal.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>var _error = fb_dialog(&quot;https://gamemaker.io&quot;, function(_result, _post_id)
+{
+    if (_result.success)
+    {
+        if (!is_undefined(_post_id))
+            show_debug_message(&quot;Facebook post ID: &quot; + _post_id);
+        else
+            show_debug_message(&quot;Facebook share completed.&quot;);
+    }
+    else if (_result.status == FacebookOperationStatus.Cancelled)
+    {
+        show_debug_message(&quot;Facebook share cancelled.&quot;);
+    }
+});
+
+if (_error == FacebookError.ShareInProgress)
+    show_debug_message(&quot;A Facebook share dialog is already open.&quot;);
+</code></pre></div>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="facebookhttpmethod">FacebookHttpMethod</h1>
+<p>The HTTP method used by <a href="graph.html#fb_graph_request">fb_graph_request</a>. Mirrors the three methods Meta's Graph
+API accepts.</p>
+<p>These constants are referenced by the following functions:</p>
+<ul>
+<li><a href="graph.html#fb_graph_request">fb_graph_request</a></li>
+</ul>
+<p><br></p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Get</code></td>
+<td>Read data.</td>
+</tr>
+<tr>
+<td><code>Post</code></td>
+<td>Create or update data.</td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>Remove data.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="login.html" class="btn btn-neutral float-left" title="Login and Permissions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="app_events.html" class="btn btn-neutral float-right" title="App Events">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="login.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="app_events.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

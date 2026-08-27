@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Meta App Dashboard - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Meta App Dashboard";
+        var mkdocs_page_input_path = "dashboard.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Meta App Dashboard</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-create-the-app">1. Create the app</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-collect-the-three-values">2. Collect the three values</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-register-your-platforms">3. Register your platforms</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-decide-who-can-log-in">4. Decide who can log in</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-understand-permissions-and-access-levels">5. Understand permissions and access levels</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-publish">6. Publish</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-keep-it-alive">7. Keep it alive</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#everything-above-in-one-list">Everything above, in one list</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Guides</li>
+      <li class="breadcrumb-item active">Meta App Dashboard</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/dashboard.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="meta-app-dashboard">Meta App Dashboard</h1>
+<p>Everything on Meta's side of a Facebook integration lives in the
+<a href="https://developers.facebook.com/apps">App Dashboard</a> - creating the app, holding the three values this
+extension needs, deciding who is allowed to log in, and keeping the whole thing alive after launch.</p>
+<p><strong>This page is a map, not a tutorial.</strong> Meta documents its own dashboard, that dashboard changes, and a
+second-hand copy of their instructions goes stale silently. So what follows is the route through
+<em>their</em> documentation, in the order a GameMaker project actually needs it, with a note on each step
+saying what it means for your game. Follow the links for the actual steps.</p>
+<p>See <a href="setup.html">Setup</a> for the GameMaker side, which is where the values you collect here get used.</p>
+<h2 id="1-create-the-app">1. Create the app</h2>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/create-an-app">Create an App</a></p>
+</blockquote>
+<p>Meta's creation flow is <strong>use-case based</strong>: you pick what the app is for and it enables the right
+products and permissions. For this extension the relevant use case is authenticating people with
+Facebook Login and reading data with the Graph API; add sharing and App Events if your game uses
+<a href="graph.html#fb_dialog">fb_dialog</a> or <a href="app_events.html">App Events</a>.</p>
+<p>Creating an app may require connecting it to a <strong>business portfolio</strong>, and some of what the Publish
+section below covers requires that business to be verified. Worth knowing before you start rather than
+halfway through App Review.</p>
+<p>What you leave this step with is an <strong>App ID</strong>. That is the first of the three values <a href="setup.html">Setup</a>
+asks for.</p>
+<h2 id="2-collect-the-three-values">2. Collect the three values</h2>
+<p>Only three things from the dashboard ever reach your GameMaker project, and all three go into the
+extension's options - see <a href="extension_options.html">Extension Options</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Where it lives</th>
+<th>Meta's page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>App ID</strong></td>
+<td>Settings -&gt; Basic</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings">Basic settings</a></td>
+</tr>
+<tr>
+<td><strong>Display Name</strong></td>
+<td>Settings -&gt; Basic</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings">Basic settings</a></td>
+</tr>
+<tr>
+<td><strong>Client Token</strong></td>
+<td>Settings -&gt; Advanced -&gt; Security</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/advanced-settings">Advanced settings</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <strong>App Secret</strong>, on that same Basic settings page, is a server-side credential. It is not
+one of the three, this extension never asks for it, and anything shipped inside a game can be
+extracted from it. See Meta's
+<a href="https://developers.facebook.com/docs/facebook-login/security">login security guide</a>.</p>
+</div>
+<h2 id="3-register-your-platforms">3. Register your platforms</h2>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings">Platform Settings</a></p>
+</blockquote>
+<p>Meta refuses traffic from a build it does not recognise, so the iOS and Android platforms have to be
+added to the app and filled in. The values themselves come out of GameMaker rather than out of Meta's
+documentation, so the mapping is in <a href="setup.html">Setup</a> step 2 - Bundle ID for iOS, and Package Name, Class
+Name and Key Hash for Android.</p>
+<p>Meta's own platform guides are worth a read if something does not work, particularly the key hash:</p>
+<ul>
+<li><a href="https://developers.facebook.com/docs/facebook-login/android">Facebook Login for Android</a></li>
+<li><a href="https://developers.facebook.com/docs/facebook-login/ios">Facebook Login for iOS</a></li>
+<li><a href="https://developers.facebook.com/docs/android/getting-started">Getting started on Android</a> - includes
+generating the key hash</li>
+</ul>
+<h2 id="4-decide-who-can-log-in">4. Decide who can log in</h2>
+<p>A new app is in <strong>development mode</strong>, and that is the single most common source of "login just fails on
+my tester's phone".</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/build-and-test/app-modes">App modes</a></p>
+</blockquote>
+<p>In development mode only people with a role on the app can log in at all. Give your testers one:</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/build-and-test/app-roles">App roles</a></p>
+</blockquote>
+<p>Or use accounts Meta creates for the purpose, which need no real Facebook account and can be given
+permissions directly:</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/build-and-test/test-users">Test users</a></p>
+</blockquote>
+<h2 id="5-understand-permissions-and-access-levels">5. Understand permissions and access levels</h2>
+<p>Every permission you pass to <a href="login.html#fb_login">fb_login</a> is defined by Meta, and each one has an access level
+that decides whether it works for the public or only for your own testers.</p>
+<ul>
+<li><a href="https://developers.facebook.com/docs/permissions">Permissions reference</a> - what each permission
+grants, and what it requires</li>
+<li><a href="https://developers.facebook.com/docs/graph-api/overview/access-levels">Access levels</a> - standard
+versus advanced access, and what each means in practice</li>
+</ul>
+<p>The short version, and the part that shapes how you write the code: <code>public_profile</code>, <code>email</code> and
+<code>user_friends</code> work out of the box for people with a role on the app. Anything else - and anything at
+all for the general public - needs App Review. <a href="login.html#fb_check_permission">fb_check_permission</a> tells you at runtime
+what you actually hold.</p>
+<h2 id="6-publish">6. Publish</h2>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/release">Publish</a></p>
+</blockquote>
+<p>Three things gate a public launch, and they are not quick, so start them well before you ship:</p>
+<ul>
+<li><a href="https://developers.facebook.com/docs/app-review">App Review</a> - Meta reviews each permission and
+feature you request beyond the defaults. You submit a written justification and usually a screen
+recording of the flow in your game.</li>
+<li><a href="https://developers.facebook.com/docs/development/release/business-verification">Business verification</a></li>
+<li>Meta verifies the business behind the app. Required for some permissions and features.</li>
+<li><strong>Going live</strong> - switching the app out of development mode, from the dashboard's Publish section.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Releasing a new version of an already-live game does not need a new review unless it uses
+permissions the app has not been approved for. Meta covers this under
+<a href="https://developers.facebook.com/docs/app-review">App Review for live apps</a>.</p>
+</div>
+<h2 id="7-keep-it-alive">7. Keep it alive</h2>
+<p>The step that catches people, because nothing in your game breaks at build time - the app simply stops
+working one day for players who were fine yesterday.</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/maintaining-data-access">Maintaining data access</a></p>
+</blockquote>
+<ul>
+<li><strong>Data Use Checkup</strong> is an <strong>annual</strong> certification that your app still uses Meta's APIs the way its
+permissions allow. An app admin has to complete it. Miss it and API access is restricted.</li>
+<li><strong>Inactive apps.</strong> An app with no logins, no Graph or Marketing API calls and no webhook activity for
+<strong>90 days</strong> can be flagged inactive: tokens are invalidated and API access is blocked. An admin can
+restore it from the dashboard, but every player has to log in again, and lapsed permissions go back
+through App Review. This is a real risk for a game between releases, or for a second app you keep
+around for testing.</li>
+<li><strong>Data Protection Assessment</strong> applies to apps holding advanced permissions - a questionnaire on how
+you use, share and protect the data.</li>
+<li><strong>API version upgrades.</strong> Graph API versions are deprecated on a schedule; the dashboard's Settings -&gt; Advanced
+page shows which version your app calls. This matters directly to <a href="graph.html#fb_graph_request">fb_graph_request</a>,
+which talks to the Graph API by path.</li>
+</ul>
+<blockquote>
+<p>Meta emails app admins about all of the above, so make sure the notification address on
+the app is one somebody reads. It is under Settings -&gt; Advanced -&gt; Security.</p>
+</blockquote>
+<h2 id="everything-above-in-one-list">Everything above, in one list</h2>
+<p>Every link on this page, in the order it appears. All of them are Meta's own documentation.</p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Meta's documentation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create an app</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app">developers.facebook.com/docs/development/create-an-app</a></td>
+</tr>
+<tr>
+<td>App Dashboard</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard">developers.facebook.com/docs/development/create-an-app/app-dashboard</a></td>
+</tr>
+<tr>
+<td>Basic settings - App ID, Display Name</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings">developers.facebook.com/docs/development/create-an-app/app-dashboard/basic-settings</a></td>
+</tr>
+<tr>
+<td>Advanced settings - Client Token</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/advanced-settings">developers.facebook.com/docs/development/create-an-app/app-dashboard/advanced-settings</a></td>
+</tr>
+<tr>
+<td>Platform settings</td>
+<td><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings">developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings</a></td>
+</tr>
+<tr>
+<td>App modes</td>
+<td><a href="https://developers.facebook.com/docs/development/build-and-test/app-modes">developers.facebook.com/docs/development/build-and-test/app-modes</a></td>
+</tr>
+<tr>
+<td>App roles</td>
+<td><a href="https://developers.facebook.com/docs/development/build-and-test/app-roles">developers.facebook.com/docs/development/build-and-test/app-roles</a></td>
+</tr>
+<tr>
+<td>Test users</td>
+<td><a href="https://developers.facebook.com/docs/development/build-and-test/test-users">developers.facebook.com/docs/development/build-and-test/test-users</a></td>
+</tr>
+<tr>
+<td>Permissions reference</td>
+<td><a href="https://developers.facebook.com/docs/permissions">developers.facebook.com/docs/permissions</a></td>
+</tr>
+<tr>
+<td>Access levels</td>
+<td><a href="https://developers.facebook.com/docs/graph-api/overview/access-levels">developers.facebook.com/docs/graph-api/overview/access-levels</a></td>
+</tr>
+<tr>
+<td>Publish</td>
+<td><a href="https://developers.facebook.com/docs/development/release">developers.facebook.com/docs/development/release</a></td>
+</tr>
+<tr>
+<td>App Review</td>
+<td><a href="https://developers.facebook.com/docs/app-review">developers.facebook.com/docs/app-review</a></td>
+</tr>
+<tr>
+<td>Business verification</td>
+<td><a href="https://developers.facebook.com/docs/development/release/business-verification">developers.facebook.com/docs/development/release/business-verification</a></td>
+</tr>
+<tr>
+<td>Maintaining data access</td>
+<td><a href="https://developers.facebook.com/docs/development/maintaining-data-access">developers.facebook.com/docs/development/maintaining-data-access</a></td>
+</tr>
+<tr>
+<td>Login security</td>
+<td><a href="https://developers.facebook.com/docs/facebook-login/security">developers.facebook.com/docs/facebook-login/security</a></td>
+</tr>
+<tr>
+<td>Graph API</td>
+<td><a href="https://developers.facebook.com/docs/graph-api">developers.facebook.com/docs/graph-api</a></td>
+</tr>
+<tr>
+<td>App Events</td>
+<td><a href="https://developers.facebook.com/docs/app-events">developers.facebook.com/docs/app-events</a></td>
+</tr>
+<tr>
+<td>Sharing</td>
+<td><a href="https://developers.facebook.com/docs/sharing">developers.facebook.com/docs/sharing</a></td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="setup.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="getting_started.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
