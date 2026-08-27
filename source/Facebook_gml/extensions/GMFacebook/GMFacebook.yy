@@ -14,7 +14,7 @@
   "copyToTargets":12,
   "description":"",
   "exportToGame":true,
-  "extensionVersion":"0.0.1",
+  "extensionVersion":"2.1.2",
   "files":[
     {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":-1,"filename":"GMFacebook.ext","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"__fb_initialize","argCount":2,"args":[1,2,],"documentation":"@param {Pointer} _arg_buffer\r\n@param {Real} _arg_buffer_length\r\n@returns {Real}","externalName":"__EXT_NATIVE__fb_initialize","help":"","hidden":true,"kind":4,"name":"__fb_initialize","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
