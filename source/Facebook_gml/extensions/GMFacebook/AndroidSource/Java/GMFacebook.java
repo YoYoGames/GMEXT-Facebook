@@ -386,13 +386,21 @@ public class GMFacebook extends GMFacebookInternal
     {
         try
         {
-            LoginManager.getInstance().logOut();
+            LoginManager manager =
+                loginManager != null
+                    ? loginManager
+                    : LoginManager.getInstance();
+
+            manager.logOut();
         }
         catch (Exception exception)
         {
             Log.e(TAG, "Could not log out from Facebook.", exception);
         }
 
+        // Deliberately not gated on ready: clearing loginStatus here is the
+        // only way out of a login that was left pending, and the try/catch
+        // already covers calling the SDK before initialization.
         loginStatus = FacebookLoginStatus.Idle;
     }
 
@@ -432,28 +440,40 @@ public class GMFacebook extends GMFacebookInternal
 
     public void fb_set_event_data_usage_limited(boolean enabled)
     {
-        Activity currentActivity = activity();
+        // The SDK's own application context, not the activity's: iOS applies
+        // this through Settings.shared whatever the app is doing, and tying it
+        // to a live activity made it a silent no-op while backgrounded.
+        if (!FacebookSdk.isInitialized())
+        {
+            Log.w(
+                TAG,
+                "fb_set_event_data_usage_limited ignored: SDK not initialized."
+            );
+            return;
+        }
 
-        if (currentActivity != null && FacebookSdk.isInitialized())
+        try
         {
             FacebookSdk.setLimitEventAndDataUsage(
-                currentActivity.getApplicationContext(),
+                FacebookSdk.getApplicationContext(),
                 enabled
             );
+        }
+        catch (Exception exception)
+        {
+            Log.e(TAG, "Could not set event data usage limit.", exception);
         }
     }
 
     public boolean fb_event_data_usage_limited()
     {
-        Activity currentActivity = activity();
-
-        if (currentActivity == null || !FacebookSdk.isInitialized())
+        if (!FacebookSdk.isInitialized())
             return false;
 
         try
         {
             return FacebookSdk.getLimitEventAndDataUsage(
-                currentActivity.getApplicationContext()
+                FacebookSdk.getApplicationContext()
             );
         }
         catch (Exception exception)
