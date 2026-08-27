@@ -41,22 +41,24 @@ if (array_length(permissions) == 0)
     exit;
 }
 
-fb_request_read_permissions(
+// fb_login is also how additional read permissions are requested on an
+// existing session - Meta's SDK handles both cases through the same call.
+var _error = fb_login(
     permissions,
-    function(result)
+    function(result, login_info)
     {
         if (result.success)
         {
-            // These arrays describe this permission request, not the token's
-            // complete historical permission set.
+            // These are the token's full permission sets, not just what this
+            // one request changed.
             show_debug_message("Facebook read permissions updated.");
             show_debug_message(
-                "Granted: "
-                + json_stringify(result.granted_permissions)
+                "Permissions: "
+                + json_stringify(login_info.permissions)
             );
             show_debug_message(
                 "Declined: "
-                + json_stringify(result.declined_permissions)
+                + json_stringify(login_info.declined_permissions)
             );
         }
         else if (result.status == FacebookOperationStatus.Cancelled)
@@ -67,8 +69,21 @@ fb_request_read_permissions(
         {
             show_message_async(
                 "Facebook permission request failed:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+if (_error == FacebookError.LoginInProgress)
+{
+    show_debug_message("A Facebook login request is already running.");
+}
+else if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook permission request could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}

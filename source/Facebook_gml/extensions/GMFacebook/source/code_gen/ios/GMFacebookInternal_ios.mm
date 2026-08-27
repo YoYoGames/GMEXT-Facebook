@@ -120,10 +120,10 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     }
     return self;
 }
-- (double)__EXT_NATIVE__fb_initialize:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+- (double)__EXT_NATIVE__fb_initialize:(char*)__arg_buffer arg1:(double)__arg_buffer_length arg2:(char*)__ret_buffer arg3:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_initialize(__arg_buffer, __arg_buffer_length);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_initialize(__arg_buffer, __arg_buffer_length, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
 - (double)__EXT_NATIVE__fb_ready
@@ -164,6 +164,12 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     return 0;
 }
 
+- (double)__EXT_NATIVE__fb_reset_pending
+{
+    __impl->__EXT_SWIFT__fb_reset_pending();
+    return 0;
+}
+
 - (double)__EXT_NATIVE__fb_set_auto_log_app_events_enabled:(double)enabled
 {
     __impl->__EXT_SWIFT__fb_set_auto_log_app_events_enabled(enabled);
@@ -188,10 +194,10 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     return __result;
 }
 
-- (double)__EXT_NATIVE__fb_set_event_data_usage_limited:(double)enabled
+- (double)__EXT_NATIVE__fb_set_event_data_usage_limited:(double)enabled arg1:(char*)__ret_buffer arg2:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_set_event_data_usage_limited(enabled);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_set_event_data_usage_limited(enabled, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
 - (double)__EXT_NATIVE__fb_event_data_usage_limited
@@ -212,40 +218,28 @@ static void GMInjectSelectorsIntoSubclass(Class subclass, Class base)
     return __result;
 }
 
-- (double)__EXT_NATIVE__fb_login:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+- (double)__EXT_NATIVE__fb_login:(char*)__arg_buffer arg1:(double)__arg_buffer_length arg2:(char*)__ret_buffer arg3:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_login(__arg_buffer, __arg_buffer_length);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_login(__arg_buffer, __arg_buffer_length, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
-- (double)__EXT_NATIVE__fb_request_read_permissions:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+- (double)__EXT_NATIVE__fb_refresh_access_token:(char*)__arg_buffer arg1:(double)__arg_buffer_length arg2:(char*)__ret_buffer arg3:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_request_read_permissions(__arg_buffer, __arg_buffer_length);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_refresh_access_token(__arg_buffer, __arg_buffer_length, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
-- (double)__EXT_NATIVE__fb_request_publish_permissions:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+- (double)__EXT_NATIVE__fb_graph_request:(char*)__arg_buffer arg1:(double)__arg_buffer_length arg2:(char*)__ret_buffer arg3:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_request_publish_permissions(__arg_buffer, __arg_buffer_length);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_graph_request(__arg_buffer, __arg_buffer_length, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
-- (double)__EXT_NATIVE__fb_refresh_access_token:(char*)__arg_buffer arg1:(double)__arg_buffer_length
+- (double)__EXT_NATIVE__fb_dialog:(char*)__arg_buffer arg1:(double)__arg_buffer_length arg2:(char*)__ret_buffer arg3:(double)__ret_buffer_length
 {
-    __impl->__EXT_SWIFT__fb_refresh_access_token(__arg_buffer, __arg_buffer_length);
-    return 0;
-}
-
-- (double)__EXT_NATIVE__fb_graph_request:(char*)__arg_buffer arg1:(double)__arg_buffer_length
-{
-    __impl->__EXT_SWIFT__fb_graph_request(__arg_buffer, __arg_buffer_length);
-    return 0;
-}
-
-- (double)__EXT_NATIVE__fb_dialog:(char*)__arg_buffer arg1:(double)__arg_buffer_length
-{
-    __impl->__EXT_SWIFT__fb_dialog(__arg_buffer, __arg_buffer_length);
-    return 0;
+    double __result = __impl->__EXT_SWIFT__fb_dialog(__arg_buffer, __arg_buffer_length, __ret_buffer, __ret_buffer_length);
+    return __result;
 }
 
 - (double)__EXT_NATIVE__fb_send_event:(char*)__arg_buffer arg1:(double)__arg_buffer_length

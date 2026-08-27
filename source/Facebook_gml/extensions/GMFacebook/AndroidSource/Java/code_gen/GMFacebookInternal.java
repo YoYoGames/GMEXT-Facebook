@@ -19,14 +19,20 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return __dispatch_queue.fetch(__ret_buffer);
     }
 
-    public double __EXT_NATIVE__fb_initialize(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__fb_initialize(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        fb_initialize(callback);
+        FacebookError __result = fb_initialize(callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
@@ -72,6 +78,12 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return 0;
     }
 
+    public double __EXT_NATIVE__fb_reset_pending()
+    {
+        fb_reset_pending();
+        return 0;
+    }
+
     public double __EXT_NATIVE__fb_set_auto_log_app_events_enabled(double enabled)
     {
         fb_set_auto_log_app_events_enabled(enabled != 0);
@@ -96,9 +108,15 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return __result ? 1.0 : 0.0;
     }
 
-    public double __EXT_NATIVE__fb_set_event_data_usage_limited(double enabled)
+    public double __EXT_NATIVE__fb_set_event_data_usage_limited(double enabled, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
-        fb_set_event_data_usage_limited(enabled != 0);
+        FacebookError __result = fb_set_event_data_usage_limited(enabled != 0);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
@@ -131,7 +149,7 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         return __result ? 1.0 : 0.0;
     }
 
-    public double __EXT_NATIVE__fb_login(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__fb_login(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -141,50 +159,34 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        fb_login(permissions, callback);
+        FacebookError __result = fb_login(permissions, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
-    public double __EXT_NATIVE__fb_request_read_permissions(ByteBuffer __arg_buffer, double __arg_buffer_length)
-    {
-        GMExtWire.order(__arg_buffer);
-
-        // field: permissions, type: String[]
-        java.util.List<String> permissions = GMExtWire.readList(__arg_buffer, bb -> GMExtWire.readString(bb));
-
-        // field: callback, type: Function
-        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
-
-        fb_request_read_permissions(permissions, callback);
-        return 0;
-    }
-
-    public double __EXT_NATIVE__fb_request_publish_permissions(ByteBuffer __arg_buffer, double __arg_buffer_length)
-    {
-        GMExtWire.order(__arg_buffer);
-
-        // field: permissions, type: String[]
-        java.util.List<String> permissions = GMExtWire.readList(__arg_buffer, bb -> GMExtWire.readString(bb));
-
-        // field: callback, type: Function
-        GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
-
-        fb_request_publish_permissions(permissions, callback);
-        return 0;
-    }
-
-    public double __EXT_NATIVE__fb_refresh_access_token(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__fb_refresh_access_token(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        fb_refresh_access_token(callback);
+        FacebookError __result = fb_refresh_access_token(callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
-    public double __EXT_NATIVE__fb_graph_request(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__fb_graph_request(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -200,11 +202,17 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        fb_graph_request(graph_path, method, parameters, callback);
+        FacebookError __result = fb_graph_request(graph_path, method, parameters, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 
-    public double __EXT_NATIVE__fb_dialog(ByteBuffer __arg_buffer, double __arg_buffer_length)
+    public double __EXT_NATIVE__fb_dialog(ByteBuffer __arg_buffer, double __arg_buffer_length, ByteBuffer __ret_buffer, double __ret_buffer_length)
     {
         GMExtWire.order(__arg_buffer);
 
@@ -214,7 +222,13 @@ public abstract class GMFacebookInternal extends RunnerSocial implements GMFaceb
         // field: callback, type: Function
         GMFunction callback = GMExtWire.readGMFunction(__arg_buffer, __dispatch_queue);
 
-        fb_dialog(link_url, callback);
+        FacebookError __result = fb_dialog(link_url, callback);
+
+        GMExtWire.order(__ret_buffer);
+        GMExtWire.IByteWriter __ret_buffer_writer = new GMExtWire.GMBufferWriter(__ret_buffer);
+        // return: __result, type: enum FacebookError
+        GMExtWire.writeI32(__ret_buffer_writer, __result.value());
+
         return 0;
     }
 

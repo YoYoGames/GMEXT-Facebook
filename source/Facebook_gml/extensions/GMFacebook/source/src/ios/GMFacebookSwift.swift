@@ -6,19 +6,19 @@ import FBSDKCoreKit
 import FBSDKLoginKit
 import FBSDKShareKit
 
+// Every path here takes the pending callback through `take` before firing it,
+// so a delivery for a request fb_reset_pending already abandoned finds nothing
+// and is dropped rather than firing the GML callback a second time.
 private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
     let requestId: Int32
-    let callback: GMFunction
-    let complete: () -> Void
+    let take: (Int32) -> GMFunction?
 
     init(
         requestId: Int32,
-        callback: GMFunction,
-        complete: @escaping () -> Void
+        take: @escaping (Int32) -> GMFunction?
     ) {
         self.requestId = requestId
-        self.callback = callback
-        self.complete = complete
+        self.take = take
         super.init()
     }
 
@@ -26,71 +26,43 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
         _ sharer: Sharing,
         didCompleteWithResults results: [String: Any]
     ) {
-        let postId =
+        guard let callback = take(requestId) else {
+            return
+        }
+
+        // Meta only returns a post id when the app holds publish permissions,
+        // so absent is the normal case rather than a failure to report.
+        let raw =
             (results["postId"] as? String)
             ?? (results["post_id"] as? String)
-            ?? ""
+        let postId: String? = (raw?.isEmpty == false) ? raw : nil
 
-        let token = AccessToken.current
-        let activeToken = token?.isExpired == false ? token : nil
-
-        callback.call(
-            FacebookCallbackResult(
-                success: true,
-                status: FacebookOperationStatus.Success,
-                request_id: requestId,
-                error_message: "",
-                access_token: activeToken?.tokenString ?? "",
-                user_id: activeToken?.userID ?? "",
-                response_text: "",
-                post_id: postId,
-                granted_permissions: [],
-                declined_permissions: []
-            )
-        )
-
-        complete()
+        callback.call(GMFacebookSwift.successResult(), postId as Any)
     }
 
     func sharer(
         _ sharer: Sharing,
         didFailWithError error: Error
     ) {
-        callback.call(
-            FacebookCallbackResult(
-                success: false,
-                status: FacebookOperationStatus.Error,
-                request_id: requestId,
-                error_message: error.localizedDescription,
-                access_token: "",
-                user_id: "",
-                response_text: "",
-                post_id: "",
-                granted_permissions: [],
-                declined_permissions: []
-            )
-        )
+        guard let callback = take(requestId) else {
+            return
+        }
 
-        complete()
+        callback.call(
+            GMFacebookSwift.failureResult(error.localizedDescription),
+            GMFacebookSwift.noPayload
+        )
     }
 
     func sharerDidCancel(_ sharer: Sharing) {
-        callback.call(
-            FacebookCallbackResult(
-                success: false,
-                status: FacebookOperationStatus.Cancelled,
-                request_id: requestId,
-                error_message: "",
-                access_token: "",
-                user_id: "",
-                response_text: "",
-                post_id: "",
-                granted_permissions: [],
-                declined_permissions: []
-            )
-        )
+        guard let callback = take(requestId) else {
+            return
+        }
 
-        complete()
+        callback.call(
+            GMFacebookSwift.cancelledResult(),
+            GMFacebookSwift.noPayload
+        )
     }
 }
 
@@ -101,9 +73,19 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
  Social Async DS-map events were replaced by per-function GMFunction callbacks.
  */
 public final class GMFacebookSwift: GMFacebookInternalSwift {
+    private struct PendingCall {
+        let requestId: Int32
+        let callback: GMFunction
+    }
+
+    // ShareDialog holds its delegate weakly, so this is the only strong
+    // reference keeping a pending share alive. Both are filled in after the
+    // slot is claimed, which is why they are optional rather than let.
     private struct ShareSession {
-        let dialog: ShareDialog
-        let delegate: GMFacebookShareDelegate
+        let requestId: Int32
+        let callback: GMFunction
+        var dialog: ShareDialog?
+        var delegate: GMFacebookShareDelegate?
     }
 
     // Everything below is written from the main queue and from SDK completion
@@ -115,7 +97,8 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     private var _ready = false
     private var _loginStatus = FacebookLoginStatus.Idle
     private var _nextRequestId: Int32 = 1
-    private var _shareSessions: [Int32: ShareSession] = [:]
+    private var _pendingLogin: PendingCall?
+    private var _pendingShare: ShareSession?
 
     private let loginManager = LoginManager()
 
@@ -149,51 +132,109 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         }
     }
 
-    private func newRequestId() -> Int32 {
+    // Claims the login slot and allocates the request id in one critical
+    // section. Doing it in two took the lock twice, so a second caller could
+    // pass the Processing check before the first had written it.
+    private func beginLogin(_ callback: GMFunction) -> Int32? {
         stateLock.lock()
         defer { stateLock.unlock() }
 
-        let value = _nextRequestId
-        _nextRequestId += 1
-        return value
-    }
-
-    // Claims the login slot only when nothing is running. Reading loginStatus
-    // and then assigning Processing takes the lock twice, so a second caller
-    // can pass the check before the first has written its state.
-    private func beginLoginIfIdle() -> Bool {
-        stateLock.lock()
-        defer { stateLock.unlock() }
-
-        guard _loginStatus != .Processing else {
-            return false
+        guard _pendingLogin == nil else {
+            return nil
         }
 
+        let requestId = _nextRequestId
+        _nextRequestId += 1
+        _pendingLogin = PendingCall(requestId: requestId, callback: callback)
         _loginStatus = .Processing
-        return true
+        return requestId
     }
 
-    // Share sessions are keyed by request id. ShareDialog holds its delegate
-    // weakly, so this dictionary is the only strong reference keeping a
-    // pending share alive; a single field would let a second fb_dialog drop
-    // the first one's callback.
-    private func addShareSession(
+    // Returns the held callback only when the ids match, so a delivery for a
+    // request fb_reset_pending already abandoned finds nothing and is dropped
+    // instead of firing a second time.
+    private func takePendingLogin(_ requestId: Int32) -> GMFunction? {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        guard let pending = _pendingLogin,
+              pending.requestId == requestId
+        else {
+            return nil
+        }
+
+        _pendingLogin = nil
+        return pending.callback
+    }
+
+    private func takeAnyPendingLogin() -> GMFunction? {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        let pending = _pendingLogin
+        _pendingLogin = nil
+        return pending?.callback
+    }
+
+    // One share at a time - a second fb_dialog is rejected synchronously, so
+    // the dialog and delegate the previous keyed dictionary existed to hold
+    // apart now fit in a single slot claimed here.
+    private func beginShare(_ callback: GMFunction) -> Int32? {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        guard _pendingShare == nil else {
+            return nil
+        }
+
+        let requestId = _nextRequestId
+        _nextRequestId += 1
+        _pendingShare = ShareSession(
+            requestId: requestId,
+            callback: callback,
+            dialog: nil,
+            delegate: nil
+        )
+        return requestId
+    }
+
+    private func attachShareDialog(
         _ requestId: Int32,
         dialog: ShareDialog,
         delegate: GMFacebookShareDelegate
     ) {
         stateLock.lock()
         defer { stateLock.unlock() }
-        _shareSessions[requestId] = ShareSession(
-            dialog: dialog,
-            delegate: delegate
-        )
+
+        guard _pendingShare?.requestId == requestId else {
+            return
+        }
+
+        _pendingShare?.dialog = dialog
+        _pendingShare?.delegate = delegate
     }
 
-    private func removeShareSession(_ requestId: Int32) {
+    private func takePendingShare(_ requestId: Int32) -> GMFunction? {
         stateLock.lock()
         defer { stateLock.unlock() }
-        _shareSessions.removeValue(forKey: requestId)
+
+        guard let pending = _pendingShare,
+              pending.requestId == requestId
+        else {
+            return nil
+        }
+
+        _pendingShare = nil
+        return pending.callback
+    }
+
+    private func takeAnyPendingShare() -> GMFunction? {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        let pending = _pendingShare
+        _pendingShare = nil
+        return pending?.callback
     }
 
     private var activeAccessToken: AccessToken? {
@@ -206,69 +247,51 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         return token
     }
 
-    private func result(
-        success: Bool,
-        status: FacebookOperationStatus,
-        requestId: Int32,
-        errorMessage: String = "",
-        accessToken: String = "",
-        userId: String = "",
-        responseText: String = "",
-        postId: String = "",
-        grantedPermissions: [String] = [],
-        declinedPermissions: [String] = []
-    ) -> FacebookCallbackResult {
-        return FacebookCallbackResult(
-            success: success,
-            status: status,
-            request_id: requestId,
-            error_message: errorMessage,
-            access_token: accessToken,
-            user_id: userId,
-            response_text: responseText,
-            post_id: postId,
-            granted_permissions: grantedPermissions,
-            declined_permissions: declinedPermissions
-        )
-    }
+    // GMFunction.call takes Any..., where a bare nil has no contextual type.
+    // A boxed empty optional is what reaches GML as undefined.
+    static let noPayload: Any = Optional<String>.none as Any
 
-    private func success(_ requestId: Int32) -> FacebookCallbackResult {
-        return result(
+    static func successResult() -> FacebookResult {
+        return FacebookResult(
             success: true,
             status: .Success,
-            requestId: requestId,
-            accessToken: fb_access_token(),
-            userId: fb_user_id()
+            error_message: nil,
+            sdk_error_code: nil
         )
     }
 
-    private func failure(
-        _ requestId: Int32,
-        _ message: String
-    ) -> FacebookCallbackResult {
-        return result(
+    // Backing out of a dialog is not an error, so no message is attached.
+    static func cancelledResult() -> FacebookResult {
+        return FacebookResult(
+            success: false,
+            status: .Cancelled,
+            error_message: nil,
+            sdk_error_code: nil
+        )
+    }
+
+    static func failureResult(
+        _ message: String,
+        sdkErrorCode: Int32? = nil
+    ) -> FacebookResult {
+        return FacebookResult(
             success: false,
             status: .Error,
-            requestId: requestId,
-            errorMessage: message
+            error_message: message,
+            sdk_error_code: sdkErrorCode
         )
     }
 
-    private func requireReady(
-        _ callback: GMFunction,
-        _ requestId: Int32
-    ) -> Bool {
-        guard ready else {
-            callback.call(
-                failure(
-                    requestId,
-                    "Facebook SDK is not initialized."
-                )
-            )
-            return false
-        }
-
-        return true
+    private func loginInfo(_ token: AccessToken) -> FacebookLoginInfo {
+        return FacebookLoginInfo(
+            access_token: token.tokenString,
+            user_id: token.userID,
+            // AccessToken's Swift overlay returns Set<Permission>, not the
+            // Set<String> that LoginManagerLoginResult's own permission sets
+            // use - hence .name here and a bare Array(...) there.
+            permissions: token.permissions.map(\.name).sorted(),
+            declined_permissions: token.declinedPermissions.map(\.name).sorted()
+        )
     }
 
     private func topViewController(
@@ -295,10 +318,10 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         return root
     }
 
-    public override func fb_initialize(callback: GMFunction) {
+    public override func fb_initialize(callback: GMFunction) -> FacebookError {
         DispatchQueue.main.async {
             if self.ready {
-                callback.call(self.success(0))
+                callback.call(GMFacebookSwift.successResult())
                 return
             }
 
@@ -312,7 +335,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !appId.isEmpty else {
-                callback.call(self.failure(0, "FacebookAppID is empty."))
+                callback.call(
+                    GMFacebookSwift.failureResult("FacebookAppID is empty.")
+                )
                 return
             }
 
@@ -321,7 +346,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
             guard !clientToken.isEmpty else {
                 callback.call(
-                    self.failure(0, "FacebookClientToken is empty.")
+                    GMFacebookSwift.failureResult(
+                        "FacebookClientToken is empty."
+                    )
                 )
                 return
             }
@@ -332,8 +359,12 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                     ? .Authorised
                     : .Idle
 
-            callback.call(self.success(0))
+            callback.call(GMFacebookSwift.successResult())
         }
+
+        // iOS has no activity to be missing; the configuration check above is a
+        // project-setup outcome and stays in the callback, matching Android.
+        return .Ok
     }
 
     public override func fb_ready() -> Bool {
@@ -371,7 +402,35 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
     public override func fb_logout() {
         loginManager.logOut()
-        loginStatus = .Idle
+
+        // A login still in flight is left alone - reporting Idle while its
+        // callback is still held would contradict the LoginInProgress the next
+        // fb_login would return. Abandoning one is fb_reset_pending's job.
+        stateLock.lock()
+        if _pendingLogin == nil {
+            _loginStatus = .Idle
+        }
+        stateLock.unlock()
+    }
+
+    public override func fb_reset_pending() {
+        // Both takes complete before either callback fires - stateLock must
+        // never be held across a callback.call(...).
+        let login = takeAnyPendingLogin()
+        let share = takeAnyPendingShare()
+
+        if let login {
+            loginStatus = .Idle
+            login.call(
+                GMFacebookSwift.cancelledResult(),
+                GMFacebookSwift.noPayload
+            )
+        }
+
+        share?.call(
+            GMFacebookSwift.cancelledResult(),
+            GMFacebookSwift.noPayload
+        )
     }
 
     public override func fb_set_auto_log_app_events_enabled(
@@ -396,8 +455,11 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
     public override func fb_set_event_data_usage_limited(
         enabled: Bool
-    ) {
+    ) -> FacebookError {
+        // Settings.shared applies whatever the app is doing, so unlike Android
+        // there is no initialization state that can make this fail.
         Settings.shared.isEventDataUsageLimited = enabled
+        return .Ok
     }
 
     public override func fb_event_data_usage_limited() -> Bool {
@@ -435,41 +497,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
     public override func fb_login(
         permissions: [String],
         callback: GMFunction
-    ) {
-        requestReadPermissions(
-            permissions: permissions,
-            callback: callback
-        )
-    }
-
-    public override func fb_request_read_permissions(
-        permissions: [String],
-        callback: GMFunction
-    ) {
-        requestReadPermissions(
-            permissions: permissions,
-            callback: callback
-        )
-    }
-
-    private func requestReadPermissions(
-        permissions: [String],
-        callback: GMFunction
-    ) {
-        let requestId = newRequestId()
-
-        guard requireReady(callback, requestId) else {
-            return
-        }
-
-        guard beginLoginIfIdle() else {
-            callback.call(
-                failure(
-                    requestId,
-                    "A Facebook login request is already in progress."
-                )
-            )
-            return
+    ) -> FacebookError {
+        guard ready else {
+            return .NotInitialized
         }
 
         let requested =
@@ -477,41 +507,46 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 ? ["public_profile"]
                 : permissions
 
+        guard let requestId = beginLogin(callback) else {
+            return .LoginInProgress
+        }
+
         DispatchQueue.main.async {
             self.loginManager.logIn(
                 permissions: requested,
                 from: self.topViewController()
             ) { loginResult, error in
+                guard let pending = self.takePendingLogin(requestId) else {
+                    return
+                }
+
                 if let error {
                     self.loginStatus = .Failed
-                    callback.call(
-                        self.failure(
-                            requestId,
+                    pending.call(
+                        GMFacebookSwift.failureResult(
                             error.localizedDescription
-                        )
+                        ),
+                        GMFacebookSwift.noPayload
                     )
                     return
                 }
 
                 guard let loginResult else {
                     self.loginStatus = .Failed
-                    callback.call(
-                        self.failure(
-                            requestId,
+                    pending.call(
+                        GMFacebookSwift.failureResult(
                             "Facebook login returned no result."
-                        )
+                        ),
+                        GMFacebookSwift.noPayload
                     )
                     return
                 }
 
                 if loginResult.isCancelled {
                     self.loginStatus = .Idle
-                    callback.call(
-                        self.result(
-                            success: false,
-                            status: .Cancelled,
-                            requestId: requestId
-                        )
+                    pending.call(
+                        GMFacebookSwift.cancelledResult(),
+                        GMFacebookSwift.noPayload
                     )
                     return
                 }
@@ -522,59 +557,34 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                       !token.isExpired
                 else {
                     self.loginStatus = .Failed
-                    callback.call(
-                        self.failure(
-                            requestId,
+                    pending.call(
+                        GMFacebookSwift.failureResult(
                             "Facebook login returned no active access token."
-                        )
+                        ),
+                        GMFacebookSwift.noPayload
                     )
                     return
                 }
 
                 self.loginStatus = .Authorised
 
-                callback.call(
-                    self.result(
-                        success: true,
-                        status: .Success,
-                        requestId: requestId,
-                        accessToken: token.tokenString,
-                        userId: token.userID,
-                        grantedPermissions:
-                            Array(loginResult.grantedPermissions).sorted(),
-                        declinedPermissions:
-                            Array(loginResult.declinedPermissions).sorted()
-                    )
-                )
+                let info: FacebookLoginInfo? = self.loginInfo(token)
+                pending.call(GMFacebookSwift.successResult(), info as Any)
             }
         }
-    }
 
-    public override func fb_request_publish_permissions(
-        permissions: [String],
-        callback: GMFunction
-    ) {
-        callback.call(
-            failure(
-                newRequestId(),
-                "Facebook publish permissions are not supported by the current extension API."
-            )
-        )
+        return .Ok
     }
 
     public override func fb_refresh_access_token(
         callback: GMFunction
-    ) {
-        let requestId = newRequestId()
+    ) -> FacebookError {
+        guard ready else {
+            return .NotInitialized
+        }
 
         guard activeAccessToken != nil else {
-            callback.call(
-                failure(
-                    requestId,
-                    "A logged-in Facebook user is required before refreshing the access token."
-                )
-            )
-            return
+            return .NotLoggedIn
         }
 
         AccessToken.refreshCurrentAccessToken {
@@ -583,10 +593,10 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             if let error {
                 self.loginStatus = .Failed
                 callback.call(
-                    self.failure(
-                        requestId,
+                    GMFacebookSwift.failureResult(
                         error.localizedDescription
-                    )
+                    ),
+                    GMFacebookSwift.noPayload
                 )
                 return
             }
@@ -594,26 +604,21 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             guard let token = self.activeAccessToken else {
                 self.loginStatus = .Failed
                 callback.call(
-                    self.failure(
-                        requestId,
+                    GMFacebookSwift.failureResult(
                         "Facebook returned no active access token."
-                    )
+                    ),
+                    GMFacebookSwift.noPayload
                 )
                 return
             }
 
             self.loginStatus = .Authorised
 
-            callback.call(
-                self.result(
-                    success: true,
-                    status: .Success,
-                    requestId: requestId,
-                    accessToken: token.tokenString,
-                    userId: token.userID
-                )
-            )
+            let info: FacebookLoginInfo? = self.loginInfo(token)
+            callback.call(GMFacebookSwift.successResult(), info as Any)
         }
+
+        return .Ok
     }
 
     public override func fb_graph_request(
@@ -621,21 +626,13 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         method: FacebookHttpMethod,
         parameters: [FacebookNamedValue],
         callback: GMFunction
-    ) {
-        let requestId = newRequestId()
-
-        guard requireReady(callback, requestId) else {
-            return
+    ) -> FacebookError {
+        guard ready else {
+            return .NotInitialized
         }
 
         guard activeAccessToken != nil else {
-            callback.call(
-                failure(
-                    requestId,
-                    "Facebook user is not logged in."
-                )
-            )
-            return
+            return .NotLoggedIn
         }
 
         let trimmedPath = graph_path.trimmingCharacters(
@@ -643,10 +640,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         )
 
         guard !trimmedPath.isEmpty else {
-            callback.call(
-                failure(requestId, "Graph path is empty.")
-            )
-            return
+            return .InvalidArgument
         }
 
         let httpMethod: HTTPMethod
@@ -667,36 +661,37 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
         request.start { _, value, error in
             if let error {
+                // Meta's own documented Graph error number, the same value
+                // Android reads from FacebookRequestError.getErrorCode().
+                // Deliberately not (error as NSError).code, which is FBSDK's
+                // own error-domain numbering and would only look like it.
+                // Absent when the failure was not a Graph API error.
+                let graphCode =
+                    (error as NSError)
+                        .userInfo[GraphRequestErrorGraphErrorCodeKey]
+                        as? Int
+
                 callback.call(
-                    self.failure(
-                        requestId,
-                        error.localizedDescription
-                    )
+                    GMFacebookSwift.failureResult(
+                        error.localizedDescription,
+                        sdkErrorCode: graphCode.map(Int32.init)
+                    ),
+                    GMFacebookSwift.noPayload
                 )
                 return
             }
 
-            callback.call(
-                self.result(
-                    success: true,
-                    status: .Success,
-                    requestId: requestId,
-                    accessToken: self.fb_access_token(),
-                    userId: self.fb_user_id(),
-                    responseText: self.responseText(value)
-                )
-            )
+            let text: String? = self.responseText(value)
+            callback.call(GMFacebookSwift.successResult(), text as Any)
         }
     }
 
     public override func fb_dialog(
         link_url: String,
         callback: GMFunction
-    ) {
-        let requestId = newRequestId()
-
-        guard requireReady(callback, requestId) else {
-            return
+    ) -> FacebookError {
+        guard ready else {
+            return .NotInitialized
         }
 
         let trimmedURL = link_url.trimmingCharacters(
@@ -706,10 +701,11 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         guard let url = URL(string: trimmedURL),
               url.scheme != nil
         else {
-            callback.call(
-                failure(requestId, "Invalid share URL.")
-            )
-            return
+            return .InvalidArgument
+        }
+
+        guard let requestId = beginShare(callback) else {
+            return .ShareInProgress
         }
 
         DispatchQueue.main.async {
@@ -717,10 +713,9 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             content.contentURL = url
 
             let delegate = GMFacebookShareDelegate(
-                requestId: requestId,
-                callback: callback
-            ) { [weak self] in
-                self?.removeShareSession(requestId)
+                requestId: requestId
+            ) { [weak self] id in
+                self?.takePendingShare(id)
             }
 
             let dialog = ShareDialog(
@@ -729,23 +724,27 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 delegate: delegate
             )
 
-            self.addShareSession(
+            self.attachShareDialog(
                 requestId,
                 dialog: dialog,
                 delegate: delegate
             )
 
             if !dialog.show() {
-                callback.call(
-                    self.failure(
-                        requestId,
-                        "Facebook ShareDialog could not be shown."
-                    )
-                )
+                guard let pending = self.takePendingShare(requestId) else {
+                    return
+                }
 
-                self.removeShareSession(requestId)
+                pending.call(
+                    GMFacebookSwift.failureResult(
+                        "Facebook ShareDialog could not be shown."
+                    ),
+                    GMFacebookSwift.noPayload
+                )
             }
         }
+
+        return .Ok
     }
 
     public override func fb_send_event(

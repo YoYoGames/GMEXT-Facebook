@@ -12,19 +12,19 @@ if (!fb_ready())
     exit;
 }
 
-fb_dialog(
+var _error = fb_dialog(
     "https://developers.facebook.com/docs/sharing/",
-    function(result)
+    function(result, post_id)
     {
         if (result.success)
         {
             show_debug_message("Facebook share dialog completed.");
 
-            if (result.post_id != "")
+            // Meta only returns a post id when the app holds publish
+            // permissions, so undefined here is the normal case.
+            if (!is_undefined(post_id))
             {
-                show_debug_message(
-                    "Facebook post ID: " + result.post_id
-                );
+                show_debug_message("Facebook post ID: " + post_id);
             }
         }
         else if (result.status == FacebookOperationStatus.Cancelled)
@@ -35,8 +35,21 @@ fb_dialog(
         {
             show_message_async(
                 "Facebook share dialog failed:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+if (_error == FacebookError.ShareInProgress)
+{
+    show_debug_message("A Facebook share dialog is already open.");
+}
+else if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook share dialog could not be opened (error "
+        + string(_error)
+        + ")."
+    );
+}

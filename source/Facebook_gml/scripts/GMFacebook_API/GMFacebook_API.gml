@@ -23,6 +23,17 @@ enum FacebookOperationStatus
     Error = 2
 }
 
+enum FacebookError
+{
+    Ok = 0,
+    NotInitialized = -1,
+    ActivityNull = -2,
+    NotLoggedIn = -3,
+    InvalidArgument = -4,
+    LoginInProgress = -5,
+    ShareInProgress = -6
+}
+
 enum FacebookHttpMethod
 {
     Get = 0,
@@ -115,25 +126,37 @@ function FacebookNamedValue() constructor
 }
 
 /**
- * @returns {Struct.FacebookCallbackResult}
+ * @returns {Struct.FacebookResult}
  */
-function FacebookCallbackResult() constructor
+function FacebookResult() constructor
 {
     /**
      * Internally generated hash for quick validation
      * @ignore
      */
-    static __uid = 4206203691;
+    static __uid = 2958459872;
 
     self.success = undefined;
     self.status = undefined;
-    self.request_id = undefined;
     self.error_message = undefined;
+    self.sdk_error_code = undefined;
+
+}
+
+/**
+ * @returns {Struct.FacebookLoginInfo}
+ */
+function FacebookLoginInfo() constructor
+{
+    /**
+     * Internally generated hash for quick validation
+     * @ignore
+     */
+    static __uid = 382281878;
+
     self.access_token = undefined;
     self.user_id = undefined;
-    self.response_text = undefined;
-    self.post_id = undefined;
-    self.granted_permissions = undefined;
+    self.permissions = undefined;
     self.declined_permissions = undefined;
 
 }
@@ -276,14 +299,14 @@ function __FacebookNamedValue_decode(_buffer, _offset)
 }
 
 /**
- * @func __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where)
- * @param {Struct.FacebookCallbackResult} _inst
+ * @func __FacebookResult_encode(_inst, _buffer, _offset, _where)
+ * @param {Struct.FacebookResult} _inst
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
  * @param {String} _where
  * @ignore
  */
-function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
+function __FacebookResult_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
 {
     buffer_seek(_buffer, buffer_seek_start, _offset);
     with (_inst)
@@ -297,15 +320,93 @@ function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFU
         if (!is_numeric(self.status)) show_error($"{_where} :: self.status expected number", true);
         buffer_write(_buffer, buffer_s32, self.status);
 
-        // field: request_id, type: Int32
-        if (!is_numeric(self.request_id)) show_error($"{_where} :: self.request_id expected number", true);
-        buffer_write(_buffer, buffer_s32, self.request_id);
+        // field: error_message, type: optional<String>
+        if (is_undefined(self.error_message))
+        {
+            buffer_write(_buffer, buffer_bool, false);
+        }
+        else
+        {
+            buffer_write(_buffer, buffer_bool, true);
+            if (!is_string(self.error_message)) show_error($"{_where} :: self.error_message expected string", true);
+            buffer_write(_buffer, buffer_u32, string_byte_length(self.error_message));
+            buffer_write(_buffer, buffer_string, self.error_message);
+        }
 
-        // field: error_message, type: String
-        if (!is_string(self.error_message)) show_error($"{_where} :: self.error_message expected string", true);
-        buffer_write(_buffer, buffer_u32, string_byte_length(self.error_message));
-        buffer_write(_buffer, buffer_string, self.error_message);
+        // field: sdk_error_code, type: optional<Int32>
+        if (is_undefined(self.sdk_error_code))
+        {
+            buffer_write(_buffer, buffer_bool, false);
+        }
+        else
+        {
+            buffer_write(_buffer, buffer_bool, true);
+            if (!is_numeric(self.sdk_error_code)) show_error($"{_where} :: self.sdk_error_code expected number", true);
+            buffer_write(_buffer, buffer_s32, self.sdk_error_code);
+        }
 
+    }
+}
+
+/**
+ * @func __FacebookResult_decode(_buffer, _offset)
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @returns {Struct.FacebookResult}
+ * @ignore
+ */
+function __FacebookResult_decode(_buffer, _offset)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+
+    _inst = new FacebookResult();
+    with (_inst)
+    {
+        // field: success, type: Bool
+        self.success = buffer_read(_buffer, buffer_bool);
+
+        // field: status, type: enum FacebookOperationStatus
+        self.status = buffer_read(_buffer, buffer_s32);
+
+        // field: error_message, type: optional<String>
+        if (buffer_read(_buffer, buffer_bool))
+        {
+            buffer_read(_buffer, buffer_u32);
+            self.error_message = buffer_read(_buffer, buffer_string);
+        }
+        else
+        {
+            self.error_message = undefined;
+        }
+
+        // field: sdk_error_code, type: optional<Int32>
+        if (buffer_read(_buffer, buffer_bool))
+        {
+            self.sdk_error_code = buffer_read(_buffer, buffer_s32);
+        }
+        else
+        {
+            self.sdk_error_code = undefined;
+        }
+
+    }
+
+    return _inst;
+}
+
+/**
+ * @func __FacebookLoginInfo_encode(_inst, _buffer, _offset, _where)
+ * @param {Struct.FacebookLoginInfo} _inst
+ * @param {Id.Buffer} _buffer
+ * @param {Real} _offset
+ * @param {String} _where
+ * @ignore
+ */
+function __FacebookLoginInfo_encode(_inst, _buffer, _offset, _where = _GMFUNCTION_)
+{
+    buffer_seek(_buffer, buffer_seek_start, _offset);
+    with (_inst)
+    {
         // field: access_token, type: String
         if (!is_string(self.access_token)) show_error($"{_where} :: self.access_token expected string", true);
         buffer_write(_buffer, buffer_u32, string_byte_length(self.access_token));
@@ -316,25 +417,15 @@ function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFU
         buffer_write(_buffer, buffer_u32, string_byte_length(self.user_id));
         buffer_write(_buffer, buffer_string, self.user_id);
 
-        // field: response_text, type: String
-        if (!is_string(self.response_text)) show_error($"{_where} :: self.response_text expected string", true);
-        buffer_write(_buffer, buffer_u32, string_byte_length(self.response_text));
-        buffer_write(_buffer, buffer_string, self.response_text);
-
-        // field: post_id, type: String
-        if (!is_string(self.post_id)) show_error($"{_where} :: self.post_id expected string", true);
-        buffer_write(_buffer, buffer_u32, string_byte_length(self.post_id));
-        buffer_write(_buffer, buffer_string, self.post_id);
-
-        // field: granted_permissions, type: String[]
-        if (!is_array(self.granted_permissions)) show_error($"{_where} :: self.granted_permissions expected array", true);
-        var __length__ = array_length(self.granted_permissions);
+        // field: permissions, type: String[]
+        if (!is_array(self.permissions)) show_error($"{_where} :: self.permissions expected array", true);
+        var __length__ = array_length(self.permissions);
         buffer_write(_buffer, buffer_u32, __length__);
         for (var _i = 0; _i < __length__; ++_i)
         {
-            if (!is_string(self.granted_permissions[_i])) show_error($"{_where} :: self.granted_permissions[_i] expected string", true);
-            buffer_write(_buffer, buffer_u32, string_byte_length(self.granted_permissions[_i]));
-            buffer_write(_buffer, buffer_string, self.granted_permissions[_i]);
+            if (!is_string(self.permissions[_i])) show_error($"{_where} :: self.permissions[_i] expected string", true);
+            buffer_write(_buffer, buffer_u32, string_byte_length(self.permissions[_i]));
+            buffer_write(_buffer, buffer_string, self.permissions[_i]);
         }
 
         // field: declined_permissions, type: String[]
@@ -352,32 +443,19 @@ function __FacebookCallbackResult_encode(_inst, _buffer, _offset, _where = _GMFU
 }
 
 /**
- * @func __FacebookCallbackResult_decode(_buffer, _offset)
+ * @func __FacebookLoginInfo_decode(_buffer, _offset)
  * @param {Id.Buffer} _buffer
  * @param {Real} _offset
- * @returns {Struct.FacebookCallbackResult}
+ * @returns {Struct.FacebookLoginInfo}
  * @ignore
  */
-function __FacebookCallbackResult_decode(_buffer, _offset)
+function __FacebookLoginInfo_decode(_buffer, _offset)
 {
     buffer_seek(_buffer, buffer_seek_start, _offset);
 
-    _inst = new FacebookCallbackResult();
+    _inst = new FacebookLoginInfo();
     with (_inst)
     {
-        // field: success, type: Bool
-        self.success = buffer_read(_buffer, buffer_bool);
-
-        // field: status, type: enum FacebookOperationStatus
-        self.status = buffer_read(_buffer, buffer_s32);
-
-        // field: request_id, type: Int32
-        self.request_id = buffer_read(_buffer, buffer_s32);
-
-        // field: error_message, type: String
-        buffer_read(_buffer, buffer_u32);
-        self.error_message = buffer_read(_buffer, buffer_string);
-
         // field: access_token, type: String
         buffer_read(_buffer, buffer_u32);
         self.access_token = buffer_read(_buffer, buffer_string);
@@ -386,21 +464,13 @@ function __FacebookCallbackResult_decode(_buffer, _offset)
         buffer_read(_buffer, buffer_u32);
         self.user_id = buffer_read(_buffer, buffer_string);
 
-        // field: response_text, type: String
-        buffer_read(_buffer, buffer_u32);
-        self.response_text = buffer_read(_buffer, buffer_string);
-
-        // field: post_id, type: String
-        buffer_read(_buffer, buffer_u32);
-        self.post_id = buffer_read(_buffer, buffer_string);
-
-        // field: granted_permissions, type: String[]
+        // field: permissions, type: String[]
         var __length__ = buffer_read(_buffer, buffer_u32);
-        self.granted_permissions = array_create(__length__);
+        self.permissions = array_create(__length__);
         for (var _i = 0; _i < __length__; ++_i)
         {
             buffer_read(_buffer, buffer_u32);
-            self.granted_permissions[_i] = buffer_read(_buffer, buffer_string);
+            self.permissions[_i] = buffer_read(_buffer, buffer_string);
         }
 
         // field: declined_permissions, type: String[]
@@ -423,6 +493,7 @@ function __FacebookCallbackResult_decode(_buffer, _offset)
 
 /**
  * @param {Function} _callback
+ * @returns {Enum.FacebookError}
  */
 function fb_initialize(_callback)
 {
@@ -438,9 +509,13 @@ function fb_initialize(_callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer__, buffer_u64, _callback_handle);
 
-    var __return_value__ = __fb_initialize(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __fb_initialize(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__), buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
 }
 
 // Skipping function fb_ready (no wrapper is required)
@@ -475,6 +550,9 @@ function fb_status()
 // Skipping function fb_logout (no wrapper is required)
 
 
+// Skipping function fb_reset_pending (no wrapper is required)
+
+
 // Skipping function fb_set_auto_log_app_events_enabled (no wrapper is required)
 
 
@@ -487,8 +565,23 @@ function fb_status()
 // Skipping function fb_advertiser_id_collection_enabled (no wrapper is required)
 
 
-// Skipping function fb_set_event_data_usage_limited (no wrapper is required)
+/**
+ * @param {Bool} _enabled
+ * @returns {Enum.FacebookError}
+ */
+function fb_set_event_data_usage_limited(_enabled)
+{
+    var __available__ = __GMFacebook_is_available();
+    if (!__available__) return;
 
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
+
+    var __return_value__ = __fb_set_event_data_usage_limited(_enabled, buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
+}
 
 // Skipping function fb_event_data_usage_limited (no wrapper is required)
 
@@ -535,6 +628,7 @@ function fb_set_data_processing_options(_options, _country, _state)
 /**
  * @param {Array[String]} _permissions
  * @param {Function} _callback
+ * @returns {Enum.FacebookError}
  */
 function fb_login(_permissions, _callback)
 {
@@ -561,81 +655,18 @@ function fb_login(_permissions, _callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer__, buffer_u64, _callback_handle);
 
-    var __return_value__ = __fb_login(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
 
-    return __return_value__;
-}
+    var __return_value__ = __fb_login(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__), buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
 
-/**
- * @param {Array[String]} _permissions
- * @param {Function} _callback
- */
-function fb_request_read_permissions(_permissions, _callback)
-{
-    var __available__ = __GMFacebook_is_available();
-    if (!__available__) return;
-
-    var __dispatcher__ = __GMFacebook_get_dispatcher();
-
-    var __args_buffer__ = __ext_core_get_args_buffer();
-
-    // param: _permissions, type: String[]
-    if (!is_array(_permissions)) show_error($"{_GMFUNCTION_} :: _permissions expected array", true);
-    var __length__ = array_length(_permissions);
-    buffer_write(__args_buffer__, buffer_u32, __length__);
-    for (var _i = 0; _i < __length__; ++_i)
-    {
-        if (!is_string(_permissions[_i])) show_error($"{_GMFUNCTION_} :: _permissions[_i] expected string", true);
-        buffer_write(__args_buffer__, buffer_u32, string_byte_length(_permissions[_i]));
-        buffer_write(__args_buffer__, buffer_string, _permissions[_i]);
-    }
-
-    // param: _callback, type: Function
-    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
-    buffer_write(__args_buffer__, buffer_u64, _callback_handle);
-
-    var __return_value__ = __fb_request_read_permissions(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
-
-    return __return_value__;
-}
-
-/**
- * @param {Array[String]} _permissions
- * @param {Function} _callback
- */
-function fb_request_publish_permissions(_permissions, _callback)
-{
-    var __available__ = __GMFacebook_is_available();
-    if (!__available__) return;
-
-    var __dispatcher__ = __GMFacebook_get_dispatcher();
-
-    var __args_buffer__ = __ext_core_get_args_buffer();
-
-    // param: _permissions, type: String[]
-    if (!is_array(_permissions)) show_error($"{_GMFUNCTION_} :: _permissions expected array", true);
-    var __length__ = array_length(_permissions);
-    buffer_write(__args_buffer__, buffer_u32, __length__);
-    for (var _i = 0; _i < __length__; ++_i)
-    {
-        if (!is_string(_permissions[_i])) show_error($"{_GMFUNCTION_} :: _permissions[_i] expected string", true);
-        buffer_write(__args_buffer__, buffer_u32, string_byte_length(_permissions[_i]));
-        buffer_write(__args_buffer__, buffer_string, _permissions[_i]);
-    }
-
-    // param: _callback, type: Function
-    if (!is_callable(_callback)) show_error($"{_GMFUNCTION_} :: _callback expected callable type", true);
-    var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
-    buffer_write(__args_buffer__, buffer_u64, _callback_handle);
-
-    var __return_value__ = __fb_request_publish_permissions(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
-
-    return __return_value__;
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
 }
 
 /**
  * @param {Function} _callback
+ * @returns {Enum.FacebookError}
  */
 function fb_refresh_access_token(_callback)
 {
@@ -651,9 +682,13 @@ function fb_refresh_access_token(_callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer__, buffer_u64, _callback_handle);
 
-    var __return_value__ = __fb_refresh_access_token(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __fb_refresh_access_token(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__), buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
 }
 
 /**
@@ -661,6 +696,7 @@ function fb_refresh_access_token(_callback)
  * @param {Enum.FacebookHttpMethod} _method
  * @param {Array[Struct.FacebookNamedValue]} _parameters
  * @param {Function} _callback
+ * @returns {Enum.FacebookError}
  */
 function fb_graph_request(_graph_path, _method, _parameters, _callback)
 {
@@ -696,14 +732,19 @@ function fb_graph_request(_graph_path, _method, _parameters, _callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer__, buffer_u64, _callback_handle);
 
-    var __return_value__ = __fb_graph_request(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __fb_graph_request(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__), buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
 }
 
 /**
  * @param {String} _link_url
  * @param {Function} _callback
+ * @returns {Enum.FacebookError}
  */
 function fb_dialog(_link_url, _callback)
 {
@@ -724,9 +765,13 @@ function fb_dialog(_link_url, _callback)
     var _callback_handle = __ext_core_function_register(_callback, __dispatcher__);
     buffer_write(__args_buffer__, buffer_u64, _callback_handle);
 
-    var __return_value__ = __fb_dialog(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__));
+    var __ret_buffer__ = __ext_core_get_ret_buffer();
 
-    return __return_value__;
+    var __return_value__ = __fb_dialog(buffer_get_address(__args_buffer__), buffer_tell(__args_buffer__), buffer_get_address(__ret_buffer__), buffer_get_size(__ret_buffer__));
+
+    var __result__ = undefined;
+    __result__ = buffer_read(__ret_buffer__, buffer_s32);
+    return __result__;
 }
 
 /**
@@ -855,7 +900,8 @@ function __GMFacebook_get_decoders()
     static __decoders__ = [
         __FacebookEventParameterValue_decode,
         __FacebookNamedValue_decode,
-        __FacebookCallbackResult_decode
+        __FacebookResult_decode,
+        __FacebookLoginInfo_decode
     ];
     return __decoders__;
 }

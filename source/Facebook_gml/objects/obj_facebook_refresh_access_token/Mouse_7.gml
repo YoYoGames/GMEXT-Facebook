@@ -18,24 +18,33 @@ if (!fb_is_logged_in())
     exit;
 }
 
-fb_refresh_access_token(
-    function(result)
+var _error = fb_refresh_access_token(
+    function(result, login_info)
     {
         if (result.success)
         {
             show_debug_message("Facebook access token refreshed.");
-            show_debug_message("Facebook user: " + result.user_id);
+            show_debug_message("Facebook user: " + login_info.user_id);
             show_debug_message(
                 "Access token received: "
-                + string(result.access_token != "")
+                + string(login_info.access_token != "")
             );
         }
         else
         {
             show_message_async(
                 "Facebook token refresh failed:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook token refresh could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}

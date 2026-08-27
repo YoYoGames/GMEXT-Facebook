@@ -15,6 +15,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookRequestError;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -40,7 +42,9 @@ import java.util.Set;
  *
  * Meta Android SDK target: 18.2.3.
  * Social Async DS-map events were replaced by per-function GMFunction callbacks.
- * Callback payloads use the generated FacebookCallbackResult record.
+ * Anything that can fail before Meta's SDK is reached returns a FacebookError
+ * synchronously and never fires the callback; the callback then delivers a
+ * generated FacebookResult record plus that call's own payload.
  */
 public class GMFacebook extends GMFacebookInternal
 {
@@ -52,6 +56,25 @@ public class GMFacebook extends GMFacebookInternal
     private CallbackManager callbackManager;
     private LoginManager loginManager;
     private int nextRequestId = 1;
+
+    // At most one login and one share are in flight at a time; a second call is
+    // rejected synchronously before the SDK is touched. Holding the callback
+    // here rather than only in the SDK listener is what lets a late delivery be
+    // recognised and dropped, and what gives fb_reset_pending something to fire.
+    private PendingCall pendingLogin;
+    private PendingCall pendingShare;
+
+    private static final class PendingCall
+    {
+        final int requestId;
+        final GMFunction callback;
+
+        PendingCall(int requestId, GMFunction callback)
+        {
+            this.requestId = requestId;
+            this.callback = callback;
+        }
+    }
 
     private static Activity activity()
     {
@@ -66,30 +89,6 @@ public class GMFacebook extends GMFacebookInternal
     private synchronized int nextRequestId()
     {
         return nextRequestId++;
-    }
-
-    private static GMExtWire.StructStream streamStruct()
-    {
-        return new GMExtWire.StructStream(8192);
-    }
-
-    private static GMExtWire.ArrayStream streamArray()
-    {
-        return new GMExtWire.ArrayStream(8192);
-    }
-
-    private static GMExtWire.ArrayStream stringArray(
-        List<String> values)
-    {
-        GMExtWire.ArrayStream output = streamArray();
-
-        if (values != null)
-        {
-            for (String value : values)
-                output.add(safe(value));
-        }
-
-        return output;
     }
 
     private static List<String> sortedStrings(Set<String> values)
@@ -133,75 +132,64 @@ public class GMFacebook extends GMFacebookInternal
         }
     }
 
-    private GMExtWire.StructStream result(
-        boolean success,
-        FacebookOperationStatus status,
-        int requestId,
-        String errorMessage,
-        String accessToken,
-        String userId,
-        String responseText,
-        String postId,
-        List<String> granted,
-        List<String> declined)
+    private static FacebookResult success()
     {
-        return streamStruct()
-            .kv("success", success)
-            .kv("status", status.value())
-            .kv("request_id", requestId)
-            .kv("error_message", safe(errorMessage))
-            .kv("access_token", safe(accessToken))
-            .kv("user_id", safe(userId))
-            .kv("response_text", safe(responseText))
-            .kv("post_id", safe(postId))
-            .kv("granted_permissions", stringArray(granted))
-            .kv("declined_permissions", stringArray(declined));
-    }
-
-    private GMExtWire.StructStream success(int requestId)
-    {
-        return result(
+        return new FacebookResult(
             true,
             FacebookOperationStatus.Success,
-            requestId,
-            "",
-            fb_access_token(),
-            fb_user_id(),
-            "",
-            "",
-            Collections.emptyList(),
-            Collections.emptyList()
+            Optional.empty(),
+            Optional.empty()
         );
     }
 
-    private GMExtWire.StructStream failure(
-        int requestId,
-        String errorMessage)
+    private static FacebookResult cancelled()
     {
-        return result(
+        // Backing out of a dialog is not an error, so no message is attached.
+        return new FacebookResult(
+            false,
+            FacebookOperationStatus.Cancelled,
+            Optional.empty(),
+            Optional.empty()
+        );
+    }
+
+    private static FacebookResult failure(String errorMessage)
+    {
+        return failure(errorMessage, Optional.empty());
+    }
+
+    // sdkErrorCode carries Meta's own documented Graph API error number, so it
+    // is only ever present on a failure that came back from a Graph request.
+    private static FacebookResult failure(
+        String errorMessage,
+        Optional<Integer> sdkErrorCode)
+    {
+        return new FacebookResult(
             false,
             FacebookOperationStatus.Error,
-            requestId,
-            errorMessage,
-            "",
-            "",
-            "",
-            "",
-            Collections.emptyList(),
-            Collections.emptyList()
+            Optional.of(safe(errorMessage)),
+            sdkErrorCode
         );
     }
 
-    private void call(
-        GMFunction callback,
-        GMExtWire.StructStream value)
+    private static FacebookLoginInfo loginInfo(AccessToken token)
+    {
+        return new FacebookLoginInfo(
+            safe(token.getToken()),
+            safe(token.getUserId()),
+            sortedStrings(token.getPermissions()),
+            sortedStrings(token.getDeclinedPermissions())
+        );
+    }
+
+    private void call(GMFunction callback, Object... args)
     {
         if (callback == null)
             return;
 
         try
         {
-            callback.call(value);
+            callback.call(args);
         }
         catch (Exception exception)
         {
@@ -209,13 +197,72 @@ public class GMFacebook extends GMFacebookInternal
         }
     }
 
-    private boolean requireReady(GMFunction callback, int requestId)
+    private FacebookError readyError()
     {
-        if (ready && callbackManager != null && loginManager != null)
-            return true;
+        return ready && callbackManager != null && loginManager != null
+            ? FacebookError.Ok
+            : FacebookError.NotInitialized;
+    }
 
-        call(callback, failure(requestId, "Facebook SDK is not initialized."));
-        return false;
+    // Claims the login slot and allocates the request id in one critical
+    // section. Doing it in two took the lock twice, so a second caller could
+    // pass the Processing check before the first had written it.
+    private synchronized int beginLogin(GMFunction callback)
+    {
+        if (pendingLogin != null)
+            return -1;
+
+        int requestId = nextRequestId();
+        pendingLogin = new PendingCall(requestId, callback);
+        loginStatus = FacebookLoginStatus.Processing;
+        return requestId;
+    }
+
+    private synchronized int beginShare(GMFunction callback)
+    {
+        if (pendingShare != null)
+            return -1;
+
+        int requestId = nextRequestId();
+        pendingShare = new PendingCall(requestId, callback);
+        return requestId;
+    }
+
+    // Returns the held callback only when the ids match, so a delivery for a
+    // request that fb_reset_pending already abandoned finds nothing and is
+    // dropped instead of firing a second time.
+    private synchronized GMFunction takePendingLogin(int requestId)
+    {
+        if (pendingLogin == null || pendingLogin.requestId != requestId)
+            return null;
+
+        GMFunction callback = pendingLogin.callback;
+        pendingLogin = null;
+        return callback;
+    }
+
+    private synchronized GMFunction takePendingShare(int requestId)
+    {
+        if (pendingShare == null || pendingShare.requestId != requestId)
+            return null;
+
+        GMFunction callback = pendingShare.callback;
+        pendingShare = null;
+        return callback;
+    }
+
+    private synchronized PendingCall takeAnyPendingLogin()
+    {
+        PendingCall pending = pendingLogin;
+        pendingLogin = null;
+        return pending;
+    }
+
+    private synchronized PendingCall takeAnyPendingShare()
+    {
+        PendingCall pending = pendingShare;
+        pendingShare = null;
+        return pending;
     }
 
     @SuppressWarnings("deprecation")
@@ -242,21 +289,18 @@ public class GMFacebook extends GMFacebookInternal
         );
     }
 
-    public void fb_initialize(final GMFunction callback)
+    public FacebookError fb_initialize(final GMFunction callback)
     {
         final Activity currentActivity = activity();
 
         if (currentActivity == null)
-        {
-            call(callback, failure(0, "RunnerActivity.CurrentActivity is null."));
-            return;
-        }
+            return FacebookError.ActivityNull;
 
         currentActivity.runOnUiThread(() ->
         {
             if (ready)
             {
-                call(callback, success(0));
+                call(callback, success());
                 return;
             }
 
@@ -269,13 +313,13 @@ public class GMFacebook extends GMFacebookInternal
 
                 if (appId.isEmpty())
                 {
-                    call(callback, failure(0, "facebook_app_id is empty."));
+                    call(callback, failure("facebook_app_id is empty."));
                     return;
                 }
 
                 if (clientToken.isEmpty())
                 {
-                    call(callback, failure(0, "facebook_client_token is empty."));
+                    call(callback, failure("facebook_client_token is empty."));
                     return;
                 }
 
@@ -296,13 +340,13 @@ public class GMFacebook extends GMFacebookInternal
                                     ? FacebookLoginStatus.Authorised
                                     : FacebookLoginStatus.Idle;
 
-                            call(callback, success(0));
+                            call(callback, success());
                         }
                         catch (Exception exception)
                         {
                             ready = false;
                             loginStatus = FacebookLoginStatus.Failed;
-                            call(callback, failure(0, errorMessage(exception)));
+                            call(callback, failure(errorMessage(exception)));
                         }
                     }
                 );
@@ -311,9 +355,11 @@ public class GMFacebook extends GMFacebookInternal
             {
                 ready = false;
                 loginStatus = FacebookLoginStatus.Failed;
-                call(callback, failure(0, errorMessage(exception)));
+                call(callback, failure(errorMessage(exception)));
             }
         });
+
+        return FacebookError.Ok;
     }
 
     public boolean fb_ready()
@@ -398,10 +444,34 @@ public class GMFacebook extends GMFacebookInternal
             Log.e(TAG, "Could not log out from Facebook.", exception);
         }
 
-        // Deliberately not gated on ready: clearing loginStatus here is the
-        // only way out of a login that was left pending, and the try/catch
-        // already covers calling the SDK before initialization.
-        loginStatus = FacebookLoginStatus.Idle;
+        // Deliberately not gated on ready: the try/catch already covers calling
+        // the SDK before initialization. But a login that is still in flight is
+        // left alone - reporting Idle while its callback is still held would
+        // contradict the LoginInProgress the next fb_login would return.
+        // Abandoning one is fb_reset_pending's job.
+        synchronized (this)
+        {
+            if (pendingLogin == null)
+                loginStatus = FacebookLoginStatus.Idle;
+        }
+    }
+
+    public void fb_reset_pending()
+    {
+        PendingCall login = takeAnyPendingLogin();
+        PendingCall share = takeAnyPendingShare();
+
+        // Both takes complete before either callback fires: the fields are
+        // guarded by this instance's monitor and a GML callback must never run
+        // while it is held.
+        if (login != null)
+        {
+            loginStatus = FacebookLoginStatus.Idle;
+            call(login.callback, cancelled(), Optional.empty());
+        }
+
+        if (share != null)
+            call(share.callback, cancelled(), Optional.empty());
     }
 
     public void fb_set_auto_log_app_events_enabled(boolean enabled)
@@ -438,19 +508,13 @@ public class GMFacebook extends GMFacebookInternal
         }
     }
 
-    public void fb_set_event_data_usage_limited(boolean enabled)
+    public FacebookError fb_set_event_data_usage_limited(boolean enabled)
     {
         // The SDK's own application context, not the activity's: iOS applies
         // this through Settings.shared whatever the app is doing, and tying it
         // to a live activity made it a silent no-op while backgrounded.
         if (!FacebookSdk.isInitialized())
-        {
-            Log.w(
-                TAG,
-                "fb_set_event_data_usage_limited ignored: SDK not initialized."
-            );
-            return;
-        }
+            return FacebookError.NotInitialized;
 
         try
         {
@@ -462,7 +526,10 @@ public class GMFacebook extends GMFacebookInternal
         catch (Exception exception)
         {
             Log.e(TAG, "Could not set event data usage limit.", exception);
+            return FacebookError.NotInitialized;
         }
+
+        return FacebookError.Ok;
     }
 
     public boolean fb_event_data_usage_limited()
@@ -508,51 +575,26 @@ public class GMFacebook extends GMFacebookInternal
             && token.getPermissions().contains(requestedPermission);
     }
 
-    public void fb_login(
+    public FacebookError fb_login(
         List<String> permissions,
         final GMFunction callback)
     {
-        requestReadPermissions(permissions, callback);
-    }
-
-    public void fb_request_read_permissions(
-        List<String> permissions,
-        final GMFunction callback)
-    {
-        requestReadPermissions(permissions, callback);
-    }
-
-    private void requestReadPermissions(
-        List<String> permissions,
-        final GMFunction callback)
-    {
-        final int requestId = nextRequestId();
-
-        if (!requireReady(callback, requestId))
-            return;
-
-        if (loginStatus == FacebookLoginStatus.Processing)
-        {
-            call(
-                callback,
-                failure(requestId, "A Facebook login request is already in progress.")
-            );
-            return;
-        }
+        FacebookError readyError = readyError();
+        if (readyError != FacebookError.Ok)
+            return readyError;
 
         final Activity currentActivity = activity();
         if (currentActivity == null)
-        {
-            call(callback, failure(requestId, "Activity is null."));
-            return;
-        }
+            return FacebookError.ActivityNull;
 
         final List<String> requested =
             permissions == null || permissions.isEmpty()
                 ? Collections.singletonList("public_profile")
                 : new ArrayList<>(permissions);
 
-        loginStatus = FacebookLoginStatus.Processing;
+        final int requestId = beginLogin(callback);
+        if (requestId < 0)
+            return FacebookError.LoginInProgress;
 
         currentActivity.runOnUiThread(() ->
         {
@@ -565,6 +607,10 @@ public class GMFacebook extends GMFacebookInternal
                         @Override
                         public void onSuccess(LoginResult loginResult)
                         {
+                            GMFunction pending = takePendingLogin(requestId);
+                            if (pending == null)
+                                return;
+
                             AccessToken token =
                                 loginResult != null
                                     ? loginResult.getAccessToken()
@@ -574,68 +620,47 @@ public class GMFacebook extends GMFacebookInternal
                             {
                                 loginStatus = FacebookLoginStatus.Failed;
                                 call(
-                                    callback,
+                                    pending,
                                     failure(
-                                        requestId,
                                         "Facebook login returned no active access token."
-                                    )
+                                    ),
+                                    Optional.empty()
                                 );
                                 return;
                             }
 
                             loginStatus = FacebookLoginStatus.Authorised;
 
-                            Set<String> grantedSet =
-                                loginResult.getRecentlyGrantedPermissions();
-                            Set<String> declinedSet =
-                                loginResult.getRecentlyDeniedPermissions();
-
                             call(
-                                callback,
-                                result(
-                                    true,
-                                    FacebookOperationStatus.Success,
-                                    requestId,
-                                    "",
-                                    safe(token.getToken()),
-                                    safe(token.getUserId()),
-                                    "",
-                                    "",
-                                    sortedStrings(grantedSet),
-                                    sortedStrings(declinedSet)
-                                )
+                                pending,
+                                success(),
+                                Optional.of(loginInfo(token))
                             );
                         }
 
                         @Override
                         public void onCancel()
                         {
-                            loginStatus = FacebookLoginStatus.Idle;
+                            GMFunction pending = takePendingLogin(requestId);
+                            if (pending == null)
+                                return;
 
-                            call(
-                                callback,
-                                result(
-                                    false,
-                                    FacebookOperationStatus.Cancelled,
-                                    requestId,
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    Collections.emptyList(),
-                                    Collections.emptyList()
-                                )
-                            );
+                            loginStatus = FacebookLoginStatus.Idle;
+                            call(pending, cancelled(), Optional.empty());
                         }
 
                         @Override
                         public void onError(FacebookException exception)
                         {
+                            GMFunction pending = takePendingLogin(requestId);
+                            if (pending == null)
+                                return;
+
                             loginStatus = FacebookLoginStatus.Failed;
                             call(
-                                callback,
-                                failure(requestId, errorMessage(exception))
+                                pending,
+                                failure(errorMessage(exception)),
+                                Optional.empty()
                             );
                         }
                     }
@@ -648,43 +673,32 @@ public class GMFacebook extends GMFacebookInternal
             }
             catch (Exception exception)
             {
+                GMFunction pending = takePendingLogin(requestId);
+                if (pending == null)
+                    return;
+
                 loginStatus = FacebookLoginStatus.Failed;
-                call(callback, failure(requestId, errorMessage(exception)));
+                call(
+                    pending,
+                    failure(errorMessage(exception)),
+                    Optional.empty()
+                );
             }
         });
+
+        return FacebookError.Ok;
     }
 
-    public void fb_request_publish_permissions(
-        List<String> permissions,
-        final GMFunction callback)
+    public FacebookError fb_refresh_access_token(final GMFunction callback)
     {
-        int requestId = nextRequestId();
+        FacebookError readyError = readyError();
+        if (readyError != FacebookError.Ok)
+            return readyError;
 
-        call(
-            callback,
-            failure(
-                requestId,
-                "Facebook publish permissions are not supported by the current extension API."
-            )
-        );
-    }
-
-    public void fb_refresh_access_token(final GMFunction callback)
-    {
-        final int requestId = nextRequestId();
         AccessToken current = AccessToken.getCurrentAccessToken();
 
         if (current == null || current.isExpired())
-        {
-            call(
-                callback,
-                failure(
-                    requestId,
-                    "A logged-in Facebook user is required before refreshing the access token."
-                )
-            );
-            return;
-        }
+            return FacebookError.NotLoggedIn;
 
         AccessToken.refreshCurrentAccessTokenAsync(
             new AccessToken.AccessTokenRefreshCallback()
@@ -697,10 +711,8 @@ public class GMFacebook extends GMFacebookInternal
                         loginStatus = FacebookLoginStatus.Failed;
                         call(
                             callback,
-                            failure(
-                                requestId,
-                                "Facebook returned no active access token."
-                            )
+                            failure("Facebook returned no active access token."),
+                            Optional.empty()
                         );
                         return;
                     }
@@ -709,18 +721,8 @@ public class GMFacebook extends GMFacebookInternal
 
                     call(
                         callback,
-                        result(
-                            true,
-                            FacebookOperationStatus.Success,
-                            requestId,
-                            "",
-                            safe(token.getToken()),
-                            safe(token.getUserId()),
-                            "",
-                            "",
-                            Collections.emptyList(),
-                            Collections.emptyList()
-                        )
+                        success(),
+                        Optional.of(loginInfo(token))
                     );
                 }
 
@@ -729,38 +731,34 @@ public class GMFacebook extends GMFacebookInternal
                     FacebookException exception)
                 {
                     loginStatus = FacebookLoginStatus.Failed;
-                    call(callback, failure(requestId, errorMessage(exception)));
+                    call(
+                        callback,
+                        failure(errorMessage(exception)),
+                        Optional.empty()
+                    );
                 }
             }
         );
+
+        return FacebookError.Ok;
     }
 
-    public void fb_graph_request(
+    public FacebookError fb_graph_request(
         String graphPath,
         FacebookHttpMethod method,
         List<FacebookNamedValue> parameters,
         final GMFunction callback)
     {
-        final int requestId = nextRequestId();
-
-        if (!requireReady(callback, requestId))
-            return;
+        FacebookError readyError = readyError();
+        if (readyError != FacebookError.Ok)
+            return readyError;
 
         if (graphPath == null || graphPath.trim().isEmpty())
-        {
-            call(callback, failure(requestId, "Graph path is empty."));
-            return;
-        }
+            return FacebookError.InvalidArgument;
 
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null || token.isExpired())
-        {
-            call(
-                callback,
-                failure(requestId, "Facebook user is not logged in.")
-            );
-            return;
-        }
+            return FacebookError.NotLoggedIn;
 
         final Bundle bundle = namedValuesToBundle(parameters);
         final HttpMethod httpMethod;
@@ -795,78 +793,72 @@ public class GMFacebook extends GMFacebookInternal
                 {
                     call(
                         callback,
-                        failure(requestId, "Facebook Graph response is null.")
+                        failure("Facebook Graph response is null."),
+                        Optional.empty()
                     );
                     return;
                 }
 
-                if (response.getError() != null)
+                FacebookRequestError error = response.getError();
+
+                if (error != null)
                 {
+                    // Meta's own documented Graph error number - the same value
+                    // on both platforms, unlike an SDK-domain NSError code.
                     call(
                         callback,
                         failure(
-                            requestId,
-                            safe(response.getError().getErrorMessage())
-                        )
+                            safe(error.getErrorMessage()),
+                            Optional.of(error.getErrorCode())
+                        ),
+                        Optional.empty()
                     );
                     return;
                 }
 
                 call(
                     callback,
-                    result(
-                        true,
-                        FacebookOperationStatus.Success,
-                        requestId,
-                        "",
-                        fb_access_token(),
-                        fb_user_id(),
-                        safe(response.getRawResponse()),
-                        "",
-                        Collections.emptyList(),
-                        Collections.emptyList()
-                    )
+                    success(),
+                    Optional.of(safe(response.getRawResponse()))
                 );
             }
         );
 
         request.executeAsync();
+        return FacebookError.Ok;
     }
 
-    public void fb_dialog(
+    public FacebookError fb_dialog(
         String linkUrl,
         final GMFunction callback)
     {
-        final int requestId = nextRequestId();
-
-        if (!requireReady(callback, requestId))
-            return;
+        FacebookError readyError = readyError();
+        if (readyError != FacebookError.Ok)
+            return readyError;
 
         final Activity currentActivity = activity();
         if (currentActivity == null)
-        {
-            call(callback, failure(requestId, "Activity is null."));
-            return;
-        }
+            return FacebookError.ActivityNull;
 
         if (linkUrl == null || linkUrl.trim().isEmpty())
-        {
-            call(callback, failure(requestId, "Share URL is empty."));
-            return;
-        }
+            return FacebookError.InvalidArgument;
+
+        // Uri.parse needs no UI thread, so the URL is validated here rather than
+        // inside the post - a malformed URL is a caller error and belongs in the
+        // synchronous return like every other one.
+        final Uri contentUri = Uri.parse(linkUrl.trim());
+
+        if (contentUri.getScheme() == null)
+            return FacebookError.InvalidArgument;
+
+        final int requestId = beginShare(callback);
+        if (requestId < 0)
+            return FacebookError.ShareInProgress;
 
         currentActivity.runOnUiThread(() ->
         {
             try
             {
-                Uri contentUri = Uri.parse(linkUrl.trim());
-
-                if (contentUri.getScheme() == null)
-                {
-                    call(callback, failure(requestId, "Share URL has no scheme."));
-                    return;
-                }
-
                 ShareLinkContent content =
                     new ShareLinkContent.Builder()
                         .setContentUrl(contentUri)
@@ -880,51 +872,48 @@ public class GMFacebook extends GMFacebookInternal
                         @Override
                         public void onSuccess(Sharer.Result shareResult)
                         {
+                            GMFunction pending = takePendingShare(requestId);
+                            if (pending == null)
+                                return;
+
+                            // Meta only returns a post id when the app holds
+                            // publish permissions, so absent is the normal case
+                            // rather than a failure to report.
+                            String postId =
+                                shareResult != null
+                                    ? shareResult.getPostId()
+                                    : null;
+
                             call(
-                                callback,
-                                result(
-                                    true,
-                                    FacebookOperationStatus.Success,
-                                    requestId,
-                                    "",
-                                    fb_access_token(),
-                                    fb_user_id(),
-                                    "",
-                                    shareResult != null
-                                        ? safe(shareResult.getPostId())
-                                        : "",
-                                    Collections.emptyList(),
-                                    Collections.emptyList()
-                                )
+                                pending,
+                                success(),
+                                postId != null && !postId.isEmpty()
+                                    ? Optional.of(postId)
+                                    : Optional.empty()
                             );
                         }
 
                         @Override
                         public void onCancel()
                         {
-                            call(
-                                callback,
-                                result(
-                                    false,
-                                    FacebookOperationStatus.Cancelled,
-                                    requestId,
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    Collections.emptyList(),
-                                    Collections.emptyList()
-                                )
-                            );
+                            GMFunction pending = takePendingShare(requestId);
+                            if (pending == null)
+                                return;
+
+                            call(pending, cancelled(), Optional.empty());
                         }
 
                         @Override
                         public void onError(FacebookException exception)
                         {
+                            GMFunction pending = takePendingShare(requestId);
+                            if (pending == null)
+                                return;
+
                             call(
-                                callback,
-                                failure(requestId, errorMessage(exception))
+                                pending,
+                                failure(errorMessage(exception)),
+                                Optional.empty()
                             );
                         }
                     }
@@ -934,9 +923,19 @@ public class GMFacebook extends GMFacebookInternal
             }
             catch (Exception exception)
             {
-                call(callback, failure(requestId, errorMessage(exception)));
+                GMFunction pending = takePendingShare(requestId);
+                if (pending == null)
+                    return;
+
+                call(
+                    pending,
+                    failure(errorMessage(exception)),
+                    Optional.empty()
+                );
             }
         });
+
+        return FacebookError.Ok;
     }
 
     @Override

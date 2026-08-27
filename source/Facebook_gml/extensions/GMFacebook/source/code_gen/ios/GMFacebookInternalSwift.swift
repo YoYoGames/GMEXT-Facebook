@@ -10,9 +10,10 @@ open class GMFacebookInternalSwift
     {
     }
 
-    open func fb_initialize(callback: GMFunction)
+    open func fb_initialize(callback: GMFunction) -> FacebookError
     {
         // default stub for fb_initialize
+        return FacebookError(rawValue: 0)!
     }
 
     open func fb_ready() -> Bool
@@ -50,6 +51,11 @@ open class GMFacebookInternalSwift
         // default stub for fb_logout
     }
 
+    open func fb_reset_pending()
+    {
+        // default stub for fb_reset_pending
+    }
+
     open func fb_set_auto_log_app_events_enabled(enabled: Bool)
     {
         // default stub for fb_set_auto_log_app_events_enabled
@@ -72,9 +78,10 @@ open class GMFacebookInternalSwift
         return false
     }
 
-    open func fb_set_event_data_usage_limited(enabled: Bool)
+    open func fb_set_event_data_usage_limited(enabled: Bool) -> FacebookError
     {
         // default stub for fb_set_event_data_usage_limited
+        return FacebookError(rawValue: 0)!
     }
 
     open func fb_event_data_usage_limited() -> Bool
@@ -94,34 +101,28 @@ open class GMFacebookInternalSwift
         return false
     }
 
-    open func fb_login(permissions: [String], callback: GMFunction)
+    open func fb_login(permissions: [String], callback: GMFunction) -> FacebookError
     {
         // default stub for fb_login
+        return FacebookError(rawValue: 0)!
     }
 
-    open func fb_request_read_permissions(permissions: [String], callback: GMFunction)
-    {
-        // default stub for fb_request_read_permissions
-    }
-
-    open func fb_request_publish_permissions(permissions: [String], callback: GMFunction)
-    {
-        // default stub for fb_request_publish_permissions
-    }
-
-    open func fb_refresh_access_token(callback: GMFunction)
+    open func fb_refresh_access_token(callback: GMFunction) -> FacebookError
     {
         // default stub for fb_refresh_access_token
+        return FacebookError(rawValue: 0)!
     }
 
-    open func fb_graph_request(graph_path: String, method: FacebookHttpMethod, parameters: [FacebookNamedValue], callback: GMFunction)
+    open func fb_graph_request(graph_path: String, method: FacebookHttpMethod, parameters: [FacebookNamedValue], callback: GMFunction) -> FacebookError
     {
         // default stub for fb_graph_request
+        return FacebookError(rawValue: 0)!
     }
 
-    open func fb_dialog(link_url: String, callback: GMFunction)
+    open func fb_dialog(link_url: String, callback: GMFunction) -> FacebookError
     {
         // default stub for fb_dialog
+        return FacebookError(rawValue: 0)!
     }
 
     open func fb_send_event(event: FacebookAppEvent, value: Double, parameters: [FacebookEventParameterValue])
@@ -160,7 +161,7 @@ open class GMFacebookInternalSwift
         // default stub for fb_clear_event_user_id
     }
 
-    public func __EXT_SWIFT__fb_initialize(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    public func __EXT_SWIFT__fb_initialize(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double, arg2 __ret_buffer: UnsafeMutablePointer<CChar>?, arg3 __ret_buffer_length: Double) -> Double
     {
         do
         {
@@ -169,7 +170,11 @@ open class GMFacebookInternalSwift
             // field: callback, type: Function
             let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
 
-            self.fb_initialize(callback: callback)
+            let __result = self.fb_initialize(callback: callback)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
             return 0.0
         }
         catch
@@ -227,6 +232,12 @@ open class GMFacebookInternalSwift
         return 0.0
     }
 
+    public func __EXT_SWIFT__fb_reset_pending() -> Double
+    {
+        self.fb_reset_pending()
+        return 0.0
+    }
+
     public func __EXT_SWIFT__fb_set_auto_log_app_events_enabled(_ enabled: Double) -> Double
     {
         self.fb_set_auto_log_app_events_enabled(enabled: enabled != 0)
@@ -251,10 +262,22 @@ open class GMFacebookInternalSwift
         return __result ? 1.0 : 0.0
     }
 
-    public func __EXT_SWIFT__fb_set_event_data_usage_limited(_ enabled: Double) -> Double
+    public func __EXT_SWIFT__fb_set_event_data_usage_limited(_ enabled: Double, arg1 __ret_buffer: UnsafeMutablePointer<CChar>?, arg2 __ret_buffer_length: Double) -> Double
     {
-        self.fb_set_event_data_usage_limited(enabled: enabled != 0)
-        return 0.0
+        do
+        {
+            let __result = self.fb_set_event_data_usage_limited(enabled: enabled != 0)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
+            return 0.0
+        }
+        catch
+        {
+            os_log("Corrupted buffer when calling 'fb_set_event_data_usage_limited'", log: .default, type: .error)
+            return -1
+        }
     }
 
     public func __EXT_SWIFT__fb_event_data_usage_limited() -> Double
@@ -294,7 +317,7 @@ open class GMFacebookInternalSwift
         return __result ? 1.0 : 0.0
     }
 
-    public func __EXT_SWIFT__fb_login(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    public func __EXT_SWIFT__fb_login(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double, arg2 __ret_buffer: UnsafeMutablePointer<CChar>?, arg3 __ret_buffer_length: Double) -> Double
     {
         do
         {
@@ -306,7 +329,11 @@ open class GMFacebookInternalSwift
             // field: callback, type: Function
             let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
 
-            self.fb_login(permissions: permissions, callback: callback)
+            let __result = self.fb_login(permissions: permissions, callback: callback)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
             return 0.0
         }
         catch
@@ -316,51 +343,7 @@ open class GMFacebookInternalSwift
         }
     }
 
-    public func __EXT_SWIFT__fb_request_read_permissions(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
-    {
-        do
-        {
-            var __br = BufferReader(base: UnsafeRawPointer(__arg_buffer!), size: Int(__arg_buffer_length))
-
-            // field: permissions, type: String[]
-            let permissions: [String] = try __br.readRaw([String].self)
-
-            // field: callback, type: Function
-            let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
-
-            self.fb_request_read_permissions(permissions: permissions, callback: callback)
-            return 0.0
-        }
-        catch
-        {
-            os_log("Corrupted buffer when calling 'fb_request_read_permissions'", log: .default, type: .error)
-            return -1
-        }
-    }
-
-    public func __EXT_SWIFT__fb_request_publish_permissions(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
-    {
-        do
-        {
-            var __br = BufferReader(base: UnsafeRawPointer(__arg_buffer!), size: Int(__arg_buffer_length))
-
-            // field: permissions, type: String[]
-            let permissions: [String] = try __br.readRaw([String].self)
-
-            // field: callback, type: Function
-            let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
-
-            self.fb_request_publish_permissions(permissions: permissions, callback: callback)
-            return 0.0
-        }
-        catch
-        {
-            os_log("Corrupted buffer when calling 'fb_request_publish_permissions'", log: .default, type: .error)
-            return -1
-        }
-    }
-
-    public func __EXT_SWIFT__fb_refresh_access_token(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    public func __EXT_SWIFT__fb_refresh_access_token(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double, arg2 __ret_buffer: UnsafeMutablePointer<CChar>?, arg3 __ret_buffer_length: Double) -> Double
     {
         do
         {
@@ -369,7 +352,11 @@ open class GMFacebookInternalSwift
             // field: callback, type: Function
             let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
 
-            self.fb_refresh_access_token(callback: callback)
+            let __result = self.fb_refresh_access_token(callback: callback)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
             return 0.0
         }
         catch
@@ -379,7 +366,7 @@ open class GMFacebookInternalSwift
         }
     }
 
-    public func __EXT_SWIFT__fb_graph_request(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    public func __EXT_SWIFT__fb_graph_request(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double, arg2 __ret_buffer: UnsafeMutablePointer<CChar>?, arg3 __ret_buffer_length: Double) -> Double
     {
         do
         {
@@ -397,7 +384,11 @@ open class GMFacebookInternalSwift
             // field: callback, type: Function
             let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
 
-            self.fb_graph_request(graph_path: graph_path, method: method, parameters: parameters, callback: callback)
+            let __result = self.fb_graph_request(graph_path: graph_path, method: method, parameters: parameters, callback: callback)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
             return 0.0
         }
         catch
@@ -407,7 +398,7 @@ open class GMFacebookInternalSwift
         }
     }
 
-    public func __EXT_SWIFT__fb_dialog(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double) -> Double
+    public func __EXT_SWIFT__fb_dialog(_ __arg_buffer: UnsafeMutablePointer<CChar>?, arg1 __arg_buffer_length: Double, arg2 __ret_buffer: UnsafeMutablePointer<CChar>?, arg3 __ret_buffer_length: Double) -> Double
     {
         do
         {
@@ -419,7 +410,11 @@ open class GMFacebookInternalSwift
             // field: callback, type: Function
             let callback: GMFunction = try __br.readGMFunction(__dispatch_queue)
 
-            self.fb_dialog(link_url: link_url, callback: callback)
+            let __result = self.fb_dialog(link_url: link_url, callback: callback)
+            var __bw = BufferWriter(base: UnsafeMutableRawPointer(__ret_buffer!), size: Int(__ret_buffer_length))
+
+            // return: __result, type: enum FacebookError
+            try __bw.writeRaw(__result.rawValue)
             return 0.0
         }
         catch

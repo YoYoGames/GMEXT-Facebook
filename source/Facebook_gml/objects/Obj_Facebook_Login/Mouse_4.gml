@@ -28,25 +28,25 @@ if (fb_is_logged_in())
     exit;
 }
 
-fb_login(
+var _error = fb_login(
     ["public_profile"],
-    function(result)
+    function(result, login_info)
     {
         if (result.success)
         {
             show_debug_message("Facebook login successful.");
-            show_debug_message("Facebook user: " + result.user_id);
+            show_debug_message("Facebook user: " + login_info.user_id);
             show_debug_message(
                 "Access token received: "
-                + string(result.access_token != "")
+                + string(login_info.access_token != "")
             );
             show_debug_message(
-                "Granted permissions: "
-                + json_stringify(result.granted_permissions)
+                "Permissions: "
+                + json_stringify(login_info.permissions)
             );
             show_debug_message(
                 "Declined permissions: "
-                + json_stringify(result.declined_permissions)
+                + json_stringify(login_info.declined_permissions)
             );
         }
         else if (result.status == FacebookOperationStatus.Cancelled)
@@ -56,8 +56,20 @@ fb_login(
         else
         {
             show_message_async(
-                "Facebook login failed:\n" + result.error_message
+                "Facebook login failed:\n"
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+// The callback never runs when the call is rejected up front, so this is the
+// only place a pre-flight failure can be reported.
+if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook login could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}

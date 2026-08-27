@@ -13,6 +13,17 @@ public enum FacebookOperationStatus: Int32
     case Error = 2
 }
 
+public enum FacebookError: Int32
+{
+    case Ok = 0
+    case NotInitialized = -1
+    case ActivityNull = -2
+    case NotLoggedIn = -3
+    case InvalidArgument = -4
+    case LoginInProgress = -5
+    case ShareInProgress = -6
+}
+
 public enum FacebookHttpMethod: Int32
 {
     case Get = 0
@@ -80,17 +91,19 @@ public struct FacebookNamedValue: ITypedStruct
     public var use_number: Bool
 }
 
-public struct FacebookCallbackResult: ITypedStruct
+public struct FacebookResult: ITypedStruct
 {
     public var success: Bool
     public var status: FacebookOperationStatus
-    public var request_id: Int32
-    public var error_message: String
+    public var error_message: String?
+    public var sdk_error_code: Int32?
+}
+
+public struct FacebookLoginInfo: ITypedStruct
+{
     public var access_token: String
     public var user_id: String
-    public var response_text: String
-    public var post_id: String
-    public var granted_permissions: [String]
+    public var permissions: [String]
     public var declined_permissions: [String]
 }
 
@@ -136,7 +149,7 @@ extension FacebookNamedValue
     }
 }
 
-extension FacebookCallbackResult
+extension FacebookResult
 {
     public static let codecID: UInt32 = 2
 
@@ -144,27 +157,36 @@ extension FacebookCallbackResult
     {
         self.success = try r.readRaw(Bool.self)
         self.status = (FacebookOperationStatus(rawValue: try r.readRaw(Int32.self))!)
-        self.request_id = try r.readRaw(Int32.self)
-        self.error_message = try r.readRaw(String.self)
-        self.access_token = try r.readRaw(String.self)
-        self.user_id = try r.readRaw(String.self)
-        self.response_text = try r.readRaw(String.self)
-        self.post_id = try r.readRaw(String.self)
-        self.granted_permissions = try r.readRaw([String].self)
-        self.declined_permissions = try r.readRaw([String].self)
+        self.error_message = try r.readRawOptional(String.self)
+        self.sdk_error_code = try r.readRawOptional(Int32.self)
     }
 
     public func encode<W: IByteWriter>(_ w: inout W) throws
     {
         try w.writeRaw(self.success)
         try w.writeRaw(self.status.rawValue)
-        try w.writeRaw(self.request_id)
         try w.writeRaw(self.error_message)
+        try w.writeRaw(self.sdk_error_code)
+    }
+}
+
+extension FacebookLoginInfo
+{
+    public static let codecID: UInt32 = 3
+
+    public init<R: IByteReader>(_ r: inout R) throws
+    {
+        self.access_token = try r.readRaw(String.self)
+        self.user_id = try r.readRaw(String.self)
+        self.permissions = try r.readRaw([String].self)
+        self.declined_permissions = try r.readRaw([String].self)
+    }
+
+    public func encode<W: IByteWriter>(_ w: inout W) throws
+    {
         try w.writeRaw(self.access_token)
         try w.writeRaw(self.user_id)
-        try w.writeRaw(self.response_text)
-        try w.writeRaw(self.post_id)
-        try w.writeRawList(self.granted_permissions)
+        try w.writeRawList(self.permissions)
         try w.writeRawList(self.declined_permissions)
     }
 }

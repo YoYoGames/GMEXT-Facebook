@@ -28,24 +28,37 @@ parameter.use_number = false;
 
 var parameters = [parameter];
 
-fb_graph_request(
+var _error = fb_graph_request(
     "me",
     FacebookHttpMethod.Get,
     parameters,
-    function(result)
+    function(result, response_text)
     {
         if (result.success)
         {
-            show_debug_message(
-                "Facebook /me response: " + result.response_text
-            );
+            show_debug_message("Facebook /me response: " + response_text);
         }
         else
         {
+            // sdk_error_code is Meta's own Graph error number when the failure
+            // came back from the API, and undefined otherwise.
             show_message_async(
                 "Facebook /me request failed:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
+                + (is_undefined(result.sdk_error_code)
+                    ? ""
+                    : "\nGraph error code: "
+                        + string(result.sdk_error_code))
             );
         }
     }
 );
+
+if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook /me request could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}

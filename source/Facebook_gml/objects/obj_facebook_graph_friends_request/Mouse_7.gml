@@ -26,27 +26,35 @@ parameter.use_number = false;
 
 var parameters = [parameter];
 
-fb_graph_request(
+var _error = fb_graph_request(
     "me/friends",
     FacebookHttpMethod.Get,
     parameters,
-    function(result)
+    function(result, response_text)
     {
         if (result.success)
         {
             // Only returns friends who also use this app
             // and have granted the required permissions.
             show_debug_message(
-                "Facebook friends response: "
-                + result.response_text
+                "Facebook friends response: " + response_text
             );
         }
         else
         {
             show_message_async(
                 "Facebook friends request failed:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook friends request could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}

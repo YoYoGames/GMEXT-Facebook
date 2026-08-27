@@ -33,22 +33,37 @@ if (!facebook_supported)
     exit;
 }
 
-fb_initialize(
+var _error = fb_initialize(
     function(result)
     {
         facebook_initialized = result.success;
-        facebook_initialization_error = result.error_message;
 
         if (result.success)
         {
+            facebook_initialization_error = "";
             show_debug_message("Facebook SDK initialized.");
         }
         else
         {
+            // error_message is only present on a failure, and is absent even
+            // then when the user simply cancelled.
+            facebook_initialization_error =
+                result.error_message ?? "Unknown Facebook error.";
+
             show_debug_message(
                 "Facebook initialization failed: "
-                + result.error_message
+                + facebook_initialization_error
             );
         }
     }
 );
+
+// Anything that fails before Meta's SDK is reached is reported here instead,
+// and the callback above never runs.
+if (_error != FacebookError.Ok)
+{
+    facebook_initialization_error =
+        "Facebook initialization rejected: " + string(_error);
+
+    show_debug_message(facebook_initialization_error);
+}

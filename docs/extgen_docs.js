@@ -1,6 +1,7 @@
 /**
  * @function_partial fb_initialize
  * @param {Function} callback
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
@@ -40,6 +41,11 @@
  */
 
 /**
+ * @function_partial fb_reset_pending
+ * @function_end
+ */
+
+/**
  * @function_partial fb_set_auto_log_app_events_enabled
  * @param {Bool} enabled
  * @function_end
@@ -66,6 +72,7 @@
 /**
  * @function_partial fb_set_event_data_usage_limited
  * @param {Bool} enabled
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
@@ -94,26 +101,14 @@
  * @function_partial fb_login
  * @param {Array[String]} permissions
  * @param {Function} callback
- * @function_end
- */
-
-/**
- * @function_partial fb_request_read_permissions
- * @param {Array[String]} permissions
- * @param {Function} callback
- * @function_end
- */
-
-/**
- * @function_partial fb_request_publish_permissions
- * @param {Array[String]} permissions
- * @param {Function} callback
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
 /**
  * @function_partial fb_refresh_access_token
  * @param {Function} callback
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
@@ -123,6 +118,7 @@
  * @param {Enum.FacebookHttpMethod} method
  * @param {Array[Struct.FacebookNamedValue]} parameters
  * @param {Function} callback
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
@@ -130,6 +126,7 @@
  * @function_partial fb_dialog
  * @param {String} link_url
  * @param {Function} callback
+ * @returns {Enum.FacebookError}
  * @function_end
  */
 
@@ -198,16 +195,19 @@
  */
 
 /**
- * @struct_partial FacebookCallbackResult
+ * @struct_partial FacebookResult
  * @member {Bool} success
  * @member {Enum.FacebookOperationStatus} status
- * @member {Real} request_id
- * @member {String} error_message
+ * @member {String} [error_message]
+ * @member {Real} [sdk_error_code]
+ * @struct_end
+ */
+
+/**
+ * @struct_partial FacebookLoginInfo
  * @member {String} access_token
  * @member {String} user_id
- * @member {String} response_text
- * @member {String} post_id
- * @member {Array[String]} granted_permissions
+ * @member {Array[String]} permissions
  * @member {Array[String]} declined_permissions
  * @struct_end
  */
@@ -226,6 +226,18 @@
  * @member Success
  * @member Cancelled
  * @member Error
+ * @enum_end
+ */
+
+/**
+ * @enum_partial FacebookError
+ * @member Ok
+ * @member NotInitialized
+ * @member ActivityNull
+ * @member NotLoggedIn
+ * @member InvalidArgument
+ * @member LoginInProgress
+ * @member ShareInProgress
  * @enum_end
  */
 

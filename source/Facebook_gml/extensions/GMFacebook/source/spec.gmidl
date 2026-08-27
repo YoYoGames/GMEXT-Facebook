@@ -18,6 +18,20 @@ enum FacebookOperationStatus:int32 {
     Error = 2,
 }
 
+// Returned by the calling function itself for anything that fails before Meta's
+// SDK is reached. On any value other than Ok the callback is never invoked, so
+// the caller does not have to wait a frame for a rejection it could be told
+// about immediately.
+enum FacebookError:int32 {
+    Ok = 0,
+    NotInitialized = -1,
+    ActivityNull = -2,
+    NotLoggedIn = -3,
+    InvalidArgument = -4,
+    LoginInProgress = -5,
+    ShareInProgress = -6,
+}
+
 enum FacebookHttpMethod:int32 {
     Get = 0,
     Post = 1,
@@ -88,27 +102,40 @@ class `[[FacebookNamedValue]]` prototype Object
     [field] property use_number : bool { get; set; }
 }
 
+// The status envelope every async callback in this extension delivers as its
+// first argument. error_message is absent on success and on cancellation -
+// backing out of a dialog is not an error. sdk_error_code carries Meta's own
+// documented Graph API error number (190 for an invalid token, and so on) and
+// is present only when the failure came back from a Graph request.
 [global]
-class `[[FacebookCallbackResult]]` prototype Object
+class `[[FacebookResult]]` prototype Object
 {
     [field] property success : bool { get; set; }
     [field, type_hint=`FacebookOperationStatus`] property status : gmval { get; set; }
-    [field] property request_id : int32 { get; set; }
-    [field] property error_message : string { get; set; }
+    [field, type_hint=`string?`] property error_message : gmval { get; set; }
+    [field, type_hint=`int32?`] property sdk_error_code : gmval { get; set; }
+}
+
+// Mirrors AccessToken: the session as the SDK currently reports it. The two
+// permission arrays are the full granted/declined sets rather than whatever a
+// single login dialog happened to change, so they mean the same thing whether
+// a login or a token refresh produced them.
+[global]
+class `[[FacebookLoginInfo]]` prototype Object
+{
     [field] property access_token : string { get; set; }
     [field] property user_id : string { get; set; }
-    [field] property response_text : string { get; set; }
-    [field] property post_id : string { get; set; }
-    [field,type_hint = `string[]`] property granted_permissions : gmval { get; set; }
-    [field,type_hint = `string[]`] property declined_permissions : gmval { get; set; }
+    [field, type_hint=`string[]`] property permissions : gmval { get; set; }
+    [field, type_hint=`string[]`] property declined_permissions : gmval { get; set; }
 }
 
 // -----------------------------------------------------------------------------
 // Initialization and state
 // -----------------------------------------------------------------------------
 
-[global, bind = typed_gml]
-function fb_initialize(callback: func): unit;
+/// callback(result: FacebookResult) once initialization completes or fails.
+[global, bind = typed_gml, type_hint=`FacebookError`]
+function fb_initialize(callback: func): gmval;
 
 [global, bind = typed_gml]
 function fb_ready(): bool;
@@ -128,6 +155,13 @@ function fb_access_token(): string;
 [global, bind = typed_gml]
 function fb_logout(): unit;
 
+// Abandons a login or share the SDK never came back from - an activity
+// recreated while the Facebook app was foreground, or a killed process. Each
+// callback still being held fires exactly once with status Cancelled, and a
+// late delivery for the abandoned request is dropped rather than fired twice.
+[global, bind = typed_gml]
+function fb_reset_pending(): unit;
+
 // -----------------------------------------------------------------------------
 // Privacy / App Events settings
 // -----------------------------------------------------------------------------
@@ -144,8 +178,11 @@ function fb_set_advertiser_id_collection_enabled(enabled: bool): unit;
 [global, bind = typed_gml]
 function fb_advertiser_id_collection_enabled(): bool;
 
-[global, bind = typed_gml]
-function fb_set_event_data_usage_limited(enabled: bool): unit;
+// The only privacy setter with a real failure mode: Android needs the SDK
+// initialized before it can reach the application context. iOS applies it
+// through Settings.shared whatever the app is doing and always returns Ok.
+[global, bind = typed_gml, type_hint=`FacebookError`]
+function fb_set_event_data_usage_limited(enabled: bool): gmval;
 
 [global, bind = typed_gml]
 function fb_event_data_usage_limited(): bool;
@@ -169,43 +206,39 @@ function fb_set_data_processing_options(
 [global, bind = typed_gml]
 function fb_check_permission(permission: string): bool;
 
-[global, bind = typed_gml]
+/// callback(result: FacebookResult, login_info: FacebookLoginInfo?) - login_info
+/// present only on success. Also the way to ask for additional read permissions
+/// on an existing session; the SDK handles both cases identically.
+[global, bind = typed_gml, type_hint=`FacebookError`]
 function fb_login(
     [type_hint=`string[]`] permissions: gmval,
     callback: func
-): unit;
+): gmval;
 
-[global, bind = typed_gml]
-function fb_request_read_permissions(
-    [type_hint=`string[]`] permissions: gmval,
-    callback: func
-): unit;
-
-// Retained for source compatibility. Current Facebook platform apps should not
-// request removed publish permissions; the callback receives Error.
-[global, bind = typed_gml]
-function fb_request_publish_permissions(
-    [type_hint=`string[]`] permissions: gmval,
-    callback: func
-): unit;
-
-[global, bind = typed_gml]
-function fb_refresh_access_token(callback: func): unit;
+/// callback(result: FacebookResult, login_info: FacebookLoginInfo?) - login_info
+/// present only on success.
+[global, bind = typed_gml, type_hint=`FacebookError`]
+function fb_refresh_access_token(callback: func): gmval;
 
 // -----------------------------------------------------------------------------
 // Graph API and sharing
 // -----------------------------------------------------------------------------
 
-[global, bind = typed_gml]
+/// callback(result: FacebookResult, response_text: string?) - the raw response
+/// body, present only on success.
+[global, bind = typed_gml, type_hint=`FacebookError`]
 function fb_graph_request(
     graph_path: string,
     [type_hint=`FacebookHttpMethod`]method: gmval,
     [type_hint=`FacebookNamedValue[]`] parameters: gmval,
     callback: func
-): unit;
+): gmval;
 
-[global, bind = typed_gml]
-function fb_dialog(link_url: string, callback: func): unit;
+/// callback(result: FacebookResult, post_id: string?) - Meta only returns a post
+/// id when the app holds publish permissions, so it is absent on most successful
+/// shares as well as on every failure.
+[global, bind = typed_gml, type_hint=`FacebookError`]
+function fb_dialog(link_url: string, callback: func): gmval;
 
 // -----------------------------------------------------------------------------
 // App Events

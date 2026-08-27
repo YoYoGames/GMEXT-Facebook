@@ -20,11 +20,11 @@ if (!fb_is_logged_in())
 
 // A successful DELETE /me/permissions request invalidates the current token.
 // The user must log in again afterward.
-fb_graph_request(
+var _error = fb_graph_request(
     "me/permissions",
     FacebookHttpMethod.Delete,
     [],
-    function(result)
+    function(result, response_text)
     {
         if (result.success)
         {
@@ -35,8 +35,17 @@ fb_graph_request(
         {
             show_message_async(
                 "Could not delete Facebook permissions:\n"
-                + result.error_message
+                + (result.error_message ?? "Unknown Facebook error.")
             );
         }
     }
 );
+
+if (_error != FacebookError.Ok)
+{
+    show_message_async(
+        "Facebook permission delete could not be started (error "
+        + string(_error)
+        + ")."
+    );
+}
