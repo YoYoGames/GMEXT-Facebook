@@ -1,18 +1,7 @@
 event_inherited();
 
-if (os_type != os_android && os_type != os_ios)
-{
-    show_message_async(
-        "The GMFacebook native extension supports Android and iOS."
-    );
-    exit;
-}
-
-if (!fb_ready())
-{
-    show_message_async("Facebook SDK is not initialized yet.");
-    exit;
-}
+// obj_facebook_control locks every button until the SDK is usable.
+if (locked) exit;
 
 if (fb_status() == FacebookLoginStatus.Processing)
 {
