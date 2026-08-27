@@ -101,24 +101,99 @@ private final class GMFacebookShareDelegate: NSObject, SharingDelegate {
  Social Async DS-map events were replaced by per-function GMFunction callbacks.
  */
 public final class GMFacebookSwift: GMFacebookInternalSwift {
-    private var ready = false
-    private var loginStatus = FacebookLoginStatus.Idle
-    private var nextRequestId: Int32 = 1
-    private var applicationDelegateInitialized = false
+    private struct ShareSession {
+        let dialog: ShareDialog
+        let delegate: GMFacebookShareDelegate
+    }
+
+    // Everything below is written from the main queue and from SDK completion
+    // handlers, and read from the game thread. Android marks the equivalent
+    // fields volatile and guards its counter with synchronized; this lock is
+    // that. Never hold it across a callback.call(...).
+    private let stateLock = NSLock()
+
+    private var _ready = false
+    private var _loginStatus = FacebookLoginStatus.Idle
+    private var _nextRequestId: Int32 = 1
+    private var _shareSessions: [Int32: ShareSession] = [:]
 
     private let loginManager = LoginManager()
-
-    private var shareDelegate: GMFacebookShareDelegate?
-    private var shareDialog: ShareDialog?
 
     public override init() {
         super.init()
     }
 
+    private var ready: Bool {
+        get {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            return _ready
+        }
+        set {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            _ready = newValue
+        }
+    }
+
+    private var loginStatus: FacebookLoginStatus {
+        get {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            return _loginStatus
+        }
+        set {
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            _loginStatus = newValue
+        }
+    }
+
     private func newRequestId() -> Int32 {
-        let value = nextRequestId
-        nextRequestId += 1
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        let value = _nextRequestId
+        _nextRequestId += 1
         return value
+    }
+
+    // Claims the login slot only when nothing is running. Reading loginStatus
+    // and then assigning Processing takes the lock twice, so a second caller
+    // can pass the check before the first has written its state.
+    private func beginLoginIfIdle() -> Bool {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+
+        guard _loginStatus != .Processing else {
+            return false
+        }
+
+        _loginStatus = .Processing
+        return true
+    }
+
+    // Share sessions are keyed by request id. ShareDialog holds its delegate
+    // weakly, so this dictionary is the only strong reference keeping a
+    // pending share alive; a single field would let a second fb_dialog drop
+    // the first one's callback.
+    private func addShareSession(
+        _ requestId: Int32,
+        dialog: ShareDialog,
+        delegate: GMFacebookShareDelegate
+    ) {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        _shareSessions[requestId] = ShareSession(
+            dialog: dialog,
+            delegate: delegate
+        )
+    }
+
+    private func removeShareSession(_ requestId: Int32) {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        _shareSessions.removeValue(forKey: requestId)
     }
 
     private var activeAccessToken: AccessToken? {
@@ -129,24 +204,6 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
         }
 
         return token
-    }
-
-    private func initializeApplicationDelegateIfNeeded(
-        launchOptions: [
-            UIApplication.LaunchOptionsKey: Any
-        ]? = nil
-    ) {
-        guard !applicationDelegateInitialized else {
-            return
-        }
-
-        _ = ApplicationDelegate.shared.application(
-            UIApplication.shared,
-            didFinishLaunchingWithOptions: launchOptions
-        )
-
-        applicationDelegateInitialized = true
-        Profile.isUpdatedWithAccessTokenChange = true
     }
 
     private func result(
@@ -245,7 +302,30 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 return
             }
 
-            self.initializeApplicationDelegateIfNeeded()
+            GMFacebookLifecycle.initializeApplicationDelegateIfNeeded()
+
+            // Info.plist carries these through the extension's YYIosPlist
+            // injection, so an unset appId/clientToken option reaches the SDK
+            // as an empty string. Android names the same failure rather than
+            // reporting a successful init and failing at first login.
+            let appId = (Settings.shared.appID ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !appId.isEmpty else {
+                callback.call(self.failure(0, "FacebookAppID is empty."))
+                return
+            }
+
+            let clientToken = (Settings.shared.clientToken ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !clientToken.isEmpty else {
+                callback.call(
+                    self.failure(0, "FacebookClientToken is empty.")
+                )
+                return
+            }
+
             self.ready = true
             self.loginStatus =
                 self.activeAccessToken != nil
@@ -382,7 +462,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             return
         }
 
-        guard loginStatus != .Processing else {
+        guard beginLoginIfIdle() else {
             callback.call(
                 failure(
                     requestId,
@@ -396,8 +476,6 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
             permissions.isEmpty
                 ? ["public_profile"]
                 : permissions
-
-        loginStatus = .Processing
 
         DispatchQueue.main.async {
             self.loginManager.logIn(
@@ -642,8 +720,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 requestId: requestId,
                 callback: callback
             ) { [weak self] in
-                self?.shareDialog = nil
-                self?.shareDelegate = nil
+                self?.removeShareSession(requestId)
             }
 
             let dialog = ShareDialog(
@@ -652,8 +729,11 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                 delegate: delegate
             )
 
-            self.shareDelegate = delegate
-            self.shareDialog = dialog
+            self.addShareSession(
+                requestId,
+                dialog: dialog,
+                delegate: delegate
+            )
 
             if !dialog.show() {
                 callback.call(
@@ -663,8 +743,7 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
                     )
                 )
 
-                self.shareDialog = nil
-                self.shareDelegate = nil
+                self.removeShareSession(requestId)
             }
         }
     }
@@ -938,41 +1017,70 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 
         return string
     }
+}
 
-    // GameMaker iOS lifecycle bridge hooks.
+/**
+ GameMaker iOS lifecycle bridge.
 
-    @objc public func onLaunch(
-        launchOptions: NSDictionary
+ The runner instantiates the class named by the extension's `classname`
+ (GMFacebook) and sends it onLaunch:, onResume and
+ onOpenURL:sourceApplication:annotation:. That object cannot reach this
+ extension's Swift implementation - the generated bridge keeps its
+ GMFacebookSwift instance in a private ivar - so GMFacebook_ios.mm forwards the
+ hooks here instead.
+
+ Nothing below needs instance state; all three go straight to an FBSDK
+ singleton. The runner sends them on the main thread, which is also where
+ fb_initialize runs, so the latch needs no lock.
+ */
+@objc(GMFacebookLifecycle)
+public final class GMFacebookLifecycle: NSObject {
+    private static var applicationDelegateInitialized = false
+
+    @objc(onLaunch:)
+    public static func onLaunch(
+        launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) {
-        initializeApplicationDelegateIfNeeded(
-            launchOptions:
-                launchOptions as? [
-                    UIApplication.LaunchOptionsKey: Any
-                ]
-        )
+        initializeApplicationDelegateIfNeeded(launchOptions: launchOptions)
     }
 
-    @objc public func onResume() {
+    @objc(onResume)
+    public static func onResume() {
         AppEvents.shared.activateApp()
     }
 
-    @objc public func onOpenURL(
-        url: NSURL,
-        sourceApplication: String,
-        annotation: Any
-    ) -> Bool {
-        var options: [
-            UIApplication.OpenURLOptionsKey: Any
-        ] = [
-            .sourceApplication: sourceApplication
-        ]
-
+    @objc(onOpenURL:sourceApplication:annotation:)
+    public static func onOpenURL(
+        url: URL,
+        sourceApplication: String?,
+        annotation: Any?
+    ) {
+        var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+        options[.sourceApplication] = sourceApplication
         options[.annotation] = annotation
 
-        return ApplicationDelegate.shared.application(
+        _ = ApplicationDelegate.shared.application(
             UIApplication.shared,
-            open: url as URL,
+            open: url,
             options: options
         )
+    }
+
+    static func initializeApplicationDelegateIfNeeded(
+        launchOptions: [
+            UIApplication.LaunchOptionsKey: Any
+        ]? = nil
+    ) {
+        guard !applicationDelegateInitialized else {
+            return
+        }
+
+        _ = ApplicationDelegate.shared.application(
+            UIApplication.shared,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+
+        applicationDelegateInitialized = true
+        Profile.isUpdatedWithAccessTokenChange = true
     }
 }
