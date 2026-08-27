@@ -1,5 +1,19 @@
 #import "GMFacebook_ios.h"
-#import "GMFacebook-Swift.h"
+
+// GMFacebook-Swift.h is deliberately not imported here. Its C++ interop half
+// emits `namespace GMFacebook`, named after the Swift module, which collides
+// with the GMFacebook ObjC class this file implements - clang reports it as
+// "redefinition of 'GMFacebook' as a different kind of symbol". The generated
+// GMFacebookInternal_ios.mm gets away with importing it because it never sees
+// the ObjC interface. Declaring the three class methods is enough to forward
+// to them; the linker resolves them against the real Swift class.
+@interface GMFacebookLifecycle : NSObject
++ (void)onLaunch:(NSDictionary *)launchOptions;
++ (void)onResume;
++ (void)onOpenURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation;
+@end
 
 @implementation GMFacebook
 

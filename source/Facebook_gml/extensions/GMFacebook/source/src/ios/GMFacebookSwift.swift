@@ -1048,11 +1048,32 @@ public final class GMFacebookSwift: GMFacebookInternalSwift {
 public final class GMFacebookLifecycle: NSObject {
     private static var applicationDelegateInitialized = false
 
+    // Takes [AnyHashable: Any] rather than the natural
+    // [UIApplication.LaunchOptionsKey: Any] on purpose. The generated
+    // GMFacebook-Swift.h would otherwise name UIApplicationLaunchOptionsKey in
+    // this selector, and the .mm files that include that header are compiled
+    // without -fmodules, so its own `@import UIKit` is skipped and the type is
+    // undeclared. Keeping UIKit out of the ObjC-visible signature is the only
+    // fix that also covers the generated .mm, which must not be edited.
     @objc(onLaunch:)
-    public static func onLaunch(
-        launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) {
-        initializeApplicationDelegateIfNeeded(launchOptions: launchOptions)
+    public static func onLaunch(launchOptions: [AnyHashable: Any]?) {
+        var mapped: [UIApplication.LaunchOptionsKey: Any]?
+
+        if let launchOptions {
+            var options: [UIApplication.LaunchOptionsKey: Any] = [:]
+
+            for (key, value) in launchOptions {
+                guard let name = key as? String else {
+                    continue
+                }
+
+                options[UIApplication.LaunchOptionsKey(rawValue: name)] = value
+            }
+
+            mapped = options
+        }
+
+        initializeApplicationDelegateIfNeeded(launchOptions: mapped)
     }
 
     @objc(onResume)
