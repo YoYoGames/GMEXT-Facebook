@@ -87,7 +87,6 @@
 <p>This is the Facebook extension, which contains various functionality for Facebook, including sign in.</p>
 <p>The sign-in functionality is supported on all platforms. Other functionality may not be available on all platforms.</p>
 <blockquote>
-<p>Important</p>
 <p>Some functions of this extension take a parameter of type <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a>. However, extension functions currently cannot accept DS list references. To fix this you can wrap the list in a function call to <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Variable_Functions/real.htm">real</a>.</p>
 </blockquote>
 <h2 id="guides">Guides</h2>
@@ -114,12 +113,17 @@
 <li><a href="home.html#fb_init">fb_init</a></li>
 <li><a href="home.html#fb_refresh_accesstoken">fb_refresh_accesstoken</a></li>
 <li><a href="home.html#fb_send_event">fb_send_event</a></li>
+<li><a href="home.html#fb_send_event_string">fb_send_event_string</a></li>
+<li><a href="home.html#fb_set_auto_log_app_events_enabled">fb_set_auto_log_app_events_enabled</a></li>
+<li><a href="home.html#fb_set_advertiser_id_collection_enabled">fb_set_advertiser_id_collection_enabled</a></li>
 </ul>
 <h2 id="constants">Constants</h2>
 <p>These are the constants used by the Facebook extension.</p>
 <ul>
 <li><a href="home.html#facebookextension2_param">FacebookExtension2_PARAM</a></li>
 <li><a href="home.html#facebookextension2_event">FacebookExtension2_EVENT</a></li>
+<li><a href="home.html#facebook_event_name">FACEBOOK_EVENT_NAME</a></li>
+<li><a href="home.html#facebook_event_param">FACEBOOK_EVENT_PARAM</a></li>
 </ul>
 <p><br></p>
 <hr />
@@ -141,7 +145,8 @@
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_login(permissions)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_login(permissions)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -159,8 +164,6 @@
 </tr>
 </tbody>
 </table>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -209,39 +212,40 @@
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">permissions = ds_list_create();
-ds_list_add(permissions, "public_profile");
-fb_login(real(permissions));</code></pre>
+<p><div class="highlight"><pre><span></span><code>permissions = ds_list_create();
+ds_list_add(permissions, &quot;public_profile&quot;);
+fb_login(real(permissions));
+</code></pre></div>
 The code above logs in using <a href="home.html#fb_login">fb_login</a>, requesting the default <code>"public_profile"</code> permission.</p>
 <p>If the login succeeds, a <a href="https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Async_Events/Social.htm">Social Async Event</a> will be triggered:
-<pre class="highlight"><code class="language-gml">if(async_load[?"type"] == "facebook_login_result")
+<div class="highlight"><pre><span></span><code>if(async_load[?&quot;type&quot;] == &quot;facebook_login_result&quot;)
 {
-    var _status = async_load[?"status"];
-    if(_status == "success")
+    var _status = async_load[?&quot;status&quot;];
+    if(_status == &quot;success&quot;)
     {
-        show_debug_message("Facebook Token: " + fb_accesstoken());
+        show_debug_message(&quot;Facebook Token: &quot; + fb_accesstoken());
 
-        show_debug_message("Permissions:");
+        show_debug_message(&quot;Permissions:&quot;);
         for(var i = 0;i &lt; ds_list_size(permissions);i++)
         {
             var _permission = permissions[|i];
-            show_debug_message($"{_permission}: {async_load[? _permission]}");
+            show_debug_message($&quot;{_permission}: {async_load[? _permission]}&quot;);
         };
 
         ds_list_destroy(permissions);
     }
-    else if(_status == "cancelled")
+    else if(_status == &quot;cancelled&quot;)
     {
 
     }
-    else if(_status == "error")
+    else if(_status == &quot;error&quot;)
     {
-        var _exception = ds_map_find_value(async_load, "exception");
+        var _exception = ds_map_find_value(async_load, &quot;exception&quot;);
         show_message_async(_exception);
     }
-}</code></pre>
+}
+</code></pre></div>
 If the status equals <code>"success"</code>, the access token as well as the permissions are shown in a debug message.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -253,7 +257,8 @@ If the status equals <code>"success"</code>, the access token as well as the per
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_login_oauth(state)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_login_oauth(state)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -272,8 +277,6 @@ If the status equals <code>"success"</code>, the access token as well as the per
 </tbody>
 </table>
 <p><br></p>
-<p><br></p>
-<p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
 <p>N/A</p>
@@ -281,7 +284,6 @@ If the status equals <code>"success"</code>, the access token as well as the per
 <p><br></p>
 <p><strong>Example:</strong></p>
 <p>See the OAuth section of the <a href="guide_login.html">Login Guide</a> page for a detailed code example.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -291,16 +293,14 @@ If the status equals <code>"success"</code>, the access token as well as the per
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_logout()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_logout()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
 <p>N/A</p>
 </blockquote>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -317,10 +317,9 @@ If the status equals <code>"success"</code>, the access token as well as the per
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_status()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_status()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -328,10 +327,10 @@ If the status equals <code>"success"</code>, the access token as well as the per
 </blockquote>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">var _status = fb_status();
-show_debug_message(_status);</code></pre>
+<p><div class="highlight"><pre><span></span><code>var _status = fb_status();
+show_debug_message(_status);
+</code></pre></div>
 The above code requests the login status and outputs it in a debug message.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -344,7 +343,8 @@ The above code requests the login status and outputs it in a debug message.</p>
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_graph_request(graph_path, http_method, params)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_graph_request(graph_path, http_method, params)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -372,8 +372,6 @@ The above code requests the login status and outputs it in a debug message.</p>
 </tr>
 </tbody>
 </table>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -422,9 +420,9 @@ The above code requests the login status and outputs it in a debug message.</p>
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">fb_graph_request("me/friends", "GET", -1);</code></pre>
+<p><div class="highlight"><pre><span></span><code>fb_graph_request(&quot;me/friends&quot;, &quot;GET&quot;, -1);
+</code></pre></div>
 The code above gets the current user's friends.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -436,7 +434,8 @@ The code above gets the current user's friends.</p>
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_dialog(link)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_dialog(link)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -454,8 +453,6 @@ The code above gets the current user's friends.</p>
 </tr>
 </tbody>
 </table>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -504,9 +501,9 @@ The code above gets the current user's friends.</p>
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">fb_dialog("www.gamemaker.io");</code></pre>
+<p><div class="highlight"><pre><span></span><code>fb_dialog(&quot;www.gamemaker.io&quot;);
+</code></pre></div>
 The code above brings up a share dialog to share the given URL.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -516,7 +513,8 @@ The code above brings up a share dialog to share the given URL.</p>
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_check_permission(permission)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_check_permission(permission)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -535,19 +533,17 @@ The code above brings up a share dialog to share the given URL.</p>
 </tbody>
 </table>
 <p><br></p>
-<p><br></p>
-<p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
 <p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
 </blockquote>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<pre class="highlight"><code class="language-gml">if(!fb_check_permission("user_likes"))
+<div class="highlight"><pre><span></span><code>if(!fb_check_permission(&quot;user_likes&quot;))
 {
-    show_debug_message("Permission user_likes not granted.");
-}</code></pre>
-<p><br></p>
+    show_debug_message(&quot;Permission user_likes not granted.&quot;);
+}
+</code></pre></div>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -558,16 +554,14 @@ The code above brings up a share dialog to share the given URL.</p>
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_accesstoken()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_accesstoken()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
 <p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></p>
 </blockquote>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -582,7 +576,8 @@ The code above brings up a share dialog to share the given URL.</p>
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_request_read_permissions(permissions)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_request_read_permissions(permissions)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -600,8 +595,6 @@ The code above brings up a share dialog to share the given URL.</p>
 </tr>
 </tbody>
 </table>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -645,16 +638,16 @@ The code above brings up a share dialog to share the given URL.</p>
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">var _permissions = ds_list_create();
+<p><div class="highlight"><pre><span></span><code>var _permissions = ds_list_create();
 ds_list_add(_permissions,
-    "user_age_range",
-    "user_birthday",
-    "user_location"
+    &quot;user_age_range&quot;,
+    &quot;user_birthday&quot;,
+    &quot;user_location&quot;
 );
 fb_request_read_permissions(real(_permissions));
-ds_list_destroy(_permissions);</code></pre>
+ds_list_destroy(_permissions);
+</code></pre></div>
 The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a> and adds a few permissions (scopes) to it. It then requests read permissions on this list of items. Finally, the list is destroyed.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -669,7 +662,8 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_request_publish_permissions(permissions)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_request_publish_permissions(permissions)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -687,8 +681,6 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 </tr>
 </tbody>
 </table>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -732,12 +724,12 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">var _permissions = ds_list_create();
-ds_list_add(_permissions, "publish_actions");
+<p><div class="highlight"><pre><span></span><code>var _permissions = ds_list_create();
+ds_list_add(_permissions, &quot;publish_actions&quot;);
 fb_request_publish_permissions(real(_permissions));
-ds_list_destroy(_permissions);</code></pre>
+ds_list_destroy(_permissions);
+</code></pre></div>
 The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a> and adds a permission (scope) to it. It then requests publish permissions on this list of items. Finally, the list is destroyed.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -749,16 +741,14 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_user_id()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_user_id()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
 <p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></p>
 </blockquote>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -768,10 +758,9 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_ready()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_ready()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -779,13 +768,13 @@ The code above creates a <a href="https://manual.gamemaker.io/monthly/en/GameMak
 </blockquote>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">if (!fb_ready()) { exit; }
+<p><div class="highlight"><pre><span></span><code>if (!fb_ready()) { exit; }
 
 // Call fb_* functions here
-// ...</code></pre>
+// ...
+</code></pre></div>
 The code above checks if the Facebook extension has been initialised and exits the current block of code if not.
 If code execution reaches the next line, calls to the <code>fb_*</code> functions can be made here.</p>
-<p><br></p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -799,10 +788,9 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_init()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_init()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -810,8 +798,8 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 </blockquote>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<pre class="highlight"><code class="language-gml">fb_init();</code></pre>
-<p><br></p>
+<div class="highlight"><pre><span></span><code>fb_init();
+</code></pre></div>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -822,10 +810,9 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_refresh_accesstoken()</code></pre>
+<div class="highlight"><pre><span></span><code>fb_refresh_accesstoken()
+</code></pre></div>
 </blockquote>
-<p><br></p>
-<p><br></p>
 <p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
@@ -869,8 +856,8 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 </table>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<pre class="highlight"><code class="language-gml">fb_refresh_accesstoken();</code></pre>
-<p><br></p>
+<div class="highlight"><pre><span></span><code>fb_refresh_accesstoken();
+</code></pre></div>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -882,7 +869,8 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 <p><br></p>
 <p><strong>Syntax:</strong></p>
 <blockquote>
-<pre class="highlight"><code class="language-gml">fb_send_event(event_name, value_to_sum=undefined, event_params=undefined)</code></pre>
+<div class="highlight"><pre><span></span><code>fb_send_event(event_name, value_to_sum=undefined, event_params=undefined)
+</code></pre></div>
 </blockquote>
 <table>
 <thead>
@@ -911,24 +899,157 @@ If code execution reaches the next line, calls to the <code>fb_*</code> function
 </tbody>
 </table>
 <p><br></p>
-<p><br></p>
-<p><br></p>
 <p><strong>Returns:</strong></p>
 <blockquote>
-<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
+<p>N/A</p>
 </blockquote>
 <p><br></p>
 <p><strong>Example:</strong></p>
-<p><pre class="highlight"><code class="language-gml">var _params = ds_list_create();
+<p><div class="highlight"><pre><span></span><code>var _params = ds_list_create();
 ds_list_add(_params,
-    FacebookExtension2_PARAM_CONTENT_ID, "ContentIdTest",
-    FacebookExtension2_PARAM_CURRENCY, "GBP",
+    FacebookExtension2_PARAM_CONTENT_ID, &quot;ContentIdTest&quot;,
+    FacebookExtension2_PARAM_CURRENCY, &quot;GBP&quot;,
     FacebookExtension2_PARAM_NUM_ITEMS, 3
 );
 fb_send_event(FacebookExtension2_EVENT_ADDED_TO_WISHLIST, 10, real(_params));
-ds_list_destroy(_params);</code></pre>
+ds_list_destroy(_params);
+</code></pre></div>
 The code above first creates a <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a> and adds the key-value pairs to be used as the parameters to it. It then logs an "Added To Wishlist" event with these parameters, adding 10 to the value to sum for this event.</p>
 <p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_send_event_string">fb_send_event_string</h1>
+<p>This function logs a custom app event.</p>
+<p>See: <a href="https://developers.facebook.com/docs/app-events/overview/">App Events</a></p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_send_event_string(event_name, value_to_sum, event_params)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>event_name</td>
+<td><a href="home.html#facebook_event_name">FACEBOOK_EVENT_NAME</a></td>
+<td>The name of the event to log</td>
+</tr>
+<tr>
+<td>value_to_sum</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
+<td>The value to add to the sum for this event</td>
+</tr>
+<tr>
+<td>event_params</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a></td>
+<td>A <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a> of <a href="home.html#facebook_event_param">FACEBOOK_EVENT_PARAM</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<p><div class="highlight"><pre><span></span><code>var _params = ds_list_create();
+ds_list_add(_params,
+    FACEBOOK_EVENT_PARAM.CONTENT_ID, &quot;ContentIdTest&quot;,
+    FACEBOOK_EVENT_PARAM.CURRENCY, &quot;GBP&quot;,
+    FACEBOOK_EVENT_PARAM.NUM_ITEMS, 3);
+
+fb_send_event_string(FACEBOOK_EVENT_NAME.ADDED_TO_WISHLIST, 123, real(_params));
+
+ds_list_destroy(_params);
+</code></pre></div>
+The code example above logs an app event. The parameters are added to a temporary <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Data_Structures/DS_Lists/DS_Lists.htm">DSList</a>, which is destroyed after the call to the function.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_auto_log_app_events_enabled">fb_set_auto_log_app_events_enabled</h1>
+<p>This function sets whether to enable automatic logging of app events.</p>
+<p>See: <a href="https://developers.facebook.com/docs/app-events/automatic-event-collection-detail/">Automatic App Event Logging</a>, <a href="https://developers.facebook.com/docs/app-events/overview/">App Events</a></p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_auto_log_app_events_enabled(on)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>on</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></td>
+<td>Whether to enable automatic logging of app events</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<p><div class="highlight"><pre><span></span><code>fb_set_auto_log_app_events_enabled(false);
+</code></pre></div>
+The code example above disables automatic logging of app events.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_advertiser_id_collection_enabled">fb_set_advertiser_id_collection_enabled</h1>
+<p>This function sets whether to enable or disable the collection of advertiser IDs.</p>
+<p>See: <a href="https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id">Disable Collection of Advertiser IDs</a></p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_advertiser_id_collection_enabled(on)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>on</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></td>
+<td>Whether to enable the collection of advertiser IDs</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<p><div class="highlight"><pre><span></span><code>fb_set_advertiser_id_collection_enabled(false);
+</code></pre></div>
+The code example above disables the collection of advertiser IDs.</p>
 <p><br></p>
 <hr />
 <p align="right"><a href="#top">Back To Top</a></p>
@@ -1066,6 +1187,347 @@ The code above first creates a <a href="https://manual.gamemaker.io/monthly/en/G
 </tbody>
 </table>
 <p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="facebook_event_name">FACEBOOK_EVENT_NAME</h1>
+<blockquote>
+<p><strong>Facebook Object</strong>: <a href="https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt">AppEventsConstants</a></p>
+</blockquote>
+<p>This set of constants represents the possible built-in event names.</p>
+<p>These constants are referenced by the following functions:</p>
+<ul>
+<li><a href="home.html#fb_send_event_string">fb_send_event_string</a></li>
+</ul>
+<p><br></p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ACTIVATED_APP</code></td>
+<td>The launch of your app. Takes no event parameters.</td>
+</tr>
+<tr>
+<td><code>DEACTIVATED_APP</code></td>
+<td>The app is deactivated.</td>
+</tr>
+<tr>
+<td><code>SESSION_INTERRUPTIONS</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TIME_BETWEEN_SESSIONS</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>COMPLETED_REGISTRATION</code></td>
+<td>Log this event when the user has completed registration with the app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.REGISTRATION_METHOD</code>.</td>
+</tr>
+<tr>
+<td><code>VIEWED_CONTENT</code></td>
+<td>Log this event when the user has viewed a form of content in the app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT</code>, <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>SEARCHED</code></td>
+<td>A search performed on your website, app or other property, such as product searches, travel searches, etc. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.SEARCH_STRING</code>, <code>FACEBOOK_EVENT_PARAM.SUCCESS</code>.</td>
+</tr>
+<tr>
+<td><code>RATED</code></td>
+<td>Log this event when the user has rated an item in the app. The <code>value_to_sum</code> passed to <a href="home.html#fb_send_event">fb_send_event</a> should be the numeric rating. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> or <code>FACEBOOK_EVENT_PARAM.CONTENT</code>, <code>FACEBOOK_EVENT_PARAM.MAX_RATING_VALUE</code>.</td>
+</tr>
+<tr>
+<td><code>COMPLETED_TUTORIAL</code></td>
+<td>Log this event when the user has completed a tutorial in the app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.SUCCESS</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> or <code>FACEBOOK_EVENT_PARAM.CONTENT</code>.</td>
+</tr>
+<tr>
+<td><code>ADDED_TO_CART</code></td>
+<td>Log this event when the user has added an item to their cart. The <code>value_to_sum</code> passed to <a href="home.html#fb_send_event">fb_send_event</a> should be the item's price. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> or <code>FACEBOOK_EVENT_PARAM.CONTENT</code> and <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>ADDED_TO_WISHLIST</code></td>
+<td>Log this event when the user has added an item to their wishlist. The <code>value_to_sum</code> passed to <a href="home.html#fb_send_event">fb_send_event</a> should be the item's price. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> or <code>FACEBOOK_EVENT_PARAM.CONTENT</code> and <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>INITIATED_CHECKOUT</code></td>
+<td>Log this event when the user has entered the checkout process. The <code>value_to_sum</code> passed to <a href="home.html#fb_send_event">fb_send_event</a> should be the total price in the cart. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> OR <code>FACEBOOK_EVENT_PARAM.CONTENT</code>, <code>FACEBOOK_EVENT_PARAM.NUM_ITEMS</code>, <code>FACEBOOK_EVENT_PARAM.PAYMENT_INFO_AVAILABLE</code>, <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>ADDED_PAYMENT_INFO</code></td>
+<td>Log this event when the user has entered their payment info. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.SUCCESS</code>.</td>
+</tr>
+<tr>
+<td><code>PURCHASED</code></td>
+<td>[Deprecated] The completion of a purchase, usually signified by receiving order or purchase confirmation or a transaction receipt. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.NUM_ITEMS</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT</code>, <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>ACHIEVED_LEVEL</code></td>
+<td>Log this event when the user has achieved a level in the app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.LEVEL</code>.</td>
+</tr>
+<tr>
+<td><code>UNLOCKED_ACHIEVEMENT</code></td>
+<td>Log this event when the user has unlocked an achievement in the app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.DESCRIPTION</code>.</td>
+</tr>
+<tr>
+<td><code>SPENT_CREDITS</code></td>
+<td>The completion of a transaction where people spend credits specific to your business or application, such as in-app currency. Log this event when the user has spent app credits. The <code>value_to_sum</code> passed to <a href="home.html#fb_send_event">fb_send_event</a> should be the number of credits spent. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.CONTENT_TYPE</code>, <code>FACEBOOK_EVENT_PARAM.CONTENT_ID</code> or <code>FACEBOOK_EVENT_PARAM.CONTENT</code>.</td>
+</tr>
+<tr>
+<td><code>CONTACT</code></td>
+<td>A telephone or SMS, email, chat or other type of contact between a customer and your business.</td>
+</tr>
+<tr>
+<td><code>CUSTOMIZE_PRODUCT</code></td>
+<td>The customization of products through a configuration tool or other application your business owns.</td>
+</tr>
+<tr>
+<td><code>DONATE</code></td>
+<td>The donation of funds to your organization or cause.</td>
+</tr>
+<tr>
+<td><code>FIND_LOCATION</code></td>
+<td>When a person finds one of your locations via web or app, with an intention to visit. For example, searching for a product and finding it at one of your local stores.</td>
+</tr>
+<tr>
+<td><code>SCHEDULE</code></td>
+<td>The booking of an appointment to visit one of your locations.</td>
+</tr>
+<tr>
+<td><code>START_TRIAL</code></td>
+<td>The start of a free trial of a product or service you offer, such as a trial subscription. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.SUBSCRIPTION_ID</code>, <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>SUBMIT_APPLICATION</code></td>
+<td>The submission of an application for a product, service or program you offer (example: credit card, educational program or job)</td>
+</tr>
+<tr>
+<td><code>SUBSCRIBE</code></td>
+<td>The start of a paid subscription for a product or service you offer. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.SUBSCRIPTION_ID</code>, <code>FACEBOOK_EVENT_PARAM.CURRENCY</code>.</td>
+</tr>
+<tr>
+<td><code>AD_IMPRESSION</code></td>
+<td>An ad from a third-party platform appears on-screen within your app. If <code>value_to_sum</code> is provided, the event can be used for in-app ads optimization. The <code>value_to_sum</code> value represents the in-app ads revenue generated from a user viewing an ad in your app. Refer to the <a href="https://developers.facebook.com/docs/app-events/guides/maximize-in-app-ad-revenue">documentation here</a> to learn about maximizing the value of in-app ad impressions. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.AD_TYPE</code>.</td>
+</tr>
+<tr>
+<td><code>AD_CLICK</code></td>
+<td>An ad from a third-party platform is clicked within your app. Takes event parameters: <code>FACEBOOK_EVENT_PARAM.AD_TYPE</code>.</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_START</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_STOP</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_PAUSE</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_RESUME</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_ERROR</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_UPDATE_STATUS</code></td>
+<td>Live streaming event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CATALOG_UPDATE</code></td>
+<td>Update of a product catalog item</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="facebook_event_param">FACEBOOK_EVENT_PARAM</h1>
+<blockquote>
+<p><strong>Facebook Object</strong>: <a href="https://github.com/facebook/facebook-android-sdk/blob/ade6cec4c97be018302f1ba3da5a8ccae1118c3c/facebook-core/src/main/java/com/facebook/appevents/AppEventsConstants.kt">AppEventsConstants</a></p>
+</blockquote>
+<p>This set of constants represents the possible built-in event parameter types.</p>
+<p><br></p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CURRENCY</code></td>
+<td>Parameter key used to specify currency used with logged event.  E.g. <code>"USD"</code>, <code>"EUR"</code>, <code>"GBP"</code>. See <a href="http://en.wikipedia.org/wiki/ISO_4217">ISO-4217</a> for specific values.</td>
+</tr>
+<tr>
+<td><code>REGISTRATION_METHOD</code></td>
+<td>Parameter key used to specify the method the user has used to register for the app, e.g., <code>"Facebook"</code>, <code>"email"</code>, <code>"Twitter"</code>, etc.</td>
+</tr>
+<tr>
+<td><code>CONTENT_TYPE</code></td>
+<td>Parameter key used to specify a generic content type/family for the logged event, e.g. <code>"music"</code>, <code>"photo"</code>, <code>"video"</code>.  Options to use will vary depending on the nature of the app.</td>
+</tr>
+<tr>
+<td><code>CONTENT_ID</code></td>
+<td>Parameter key used to specify an ID for the specific piece of content being logged about. This could be an EAN, article identifier, etc., depending on the nature of the app.</td>
+</tr>
+<tr>
+<td><code>SEARCH_STRING</code></td>
+<td>Parameter key used to specify the string provided by the user for a search operation.</td>
+</tr>
+<tr>
+<td><code>SUCCESS</code></td>
+<td>Parameter key used to specify whether the activity being logged about was successful or not. <code>FACEBOOK_EVENT_PARAM.VALUE_YES</code> and <code>FACEBOOK_EVENT_PARAM.VALUE_NO</code> are good canonical values to use for this parameter.</td>
+</tr>
+<tr>
+<td><code>MAX_RATING_VALUE</code></td>
+<td>Parameter key used to specify the maximum rating available for the <code>FACEBOOK_EVENT_NAME.RATED</code> event. E.g., <code>"5"</code> or <code>"10"</code>.</td>
+</tr>
+<tr>
+<td><code>PAYMENT_INFO_AVAILABLE</code></td>
+<td>Parameter key used to specify whether payment info is available for the <code>FACEBOOK_EVENT_NAME.INITIATED_CHECKOUT</code> event. <code>FACEBOOK_EVENT_PARAM.VALUE_YES</code> and <code>FACEBOOK_EVENT_PARAM.VALUE_NO</code> are good canonical values to use for this parameter.</td>
+</tr>
+<tr>
+<td><code>NUM_ITEMS</code></td>
+<td>Parameter key used to specify how many items are being processed for a <code>FACEBOOK_EVENT_NAME.INITIATED_CHECKOUT</code> or <code>FACEBOOK_EVENT_NAME.PURCHASED</code> event.</td>
+</tr>
+<tr>
+<td><code>LEVEL</code></td>
+<td>Parameter key used to specify the level achieved in a <code>FACEBOOK_EVENT_NAME.LEVEL_ACHIEVED</code> event.</td>
+</tr>
+<tr>
+<td><code>DESCRIPTION</code></td>
+<td>Parameter key used to specify a description appropriate to the event being logged. E.g., the name of the achievement unlocked in the <code>FACEBOOK_EVENT_NAME.ACHIEVEMENT_UNLOCKED</code> event.</td>
+</tr>
+<tr>
+<td><code>SOURCE_APPLICATION</code></td>
+<td>Parameter key used to specify source application package.</td>
+</tr>
+<tr>
+<td><code>VALUE_YES</code></td>
+<td>Yes-valued parameter value to be used with parameter keys that need a Yes/No value</td>
+</tr>
+<tr>
+<td><code>VALUE_NO</code></td>
+<td>No-valued parameter value to be used with parameter keys that need a Yes/No value</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_PREV_STATUS</code></td>
+<td>Live streaming event parameter</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_STATUS</code></td>
+<td>Live streaming event parameter</td>
+</tr>
+<tr>
+<td><code>LIVE_STREAMING_ERROR</code></td>
+<td>Live streaming event parameter</td>
+</tr>
+<tr>
+<td><code>AD_TYPE</code></td>
+<td>Type of ad: banner, interstitial, rewarded_video, native</td>
+</tr>
+<tr>
+<td><code>ORDER_ID</code></td>
+<td>The unique ID for all events within a subscription</td>
+</tr>
+<tr>
+<td><code>VALUE_TO_SUM</code></td>
+<td>The value to sum for the event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CUSTOM_LABEL_0</code></td>
+<td>Parameter key used to specify additional information about item for <code>EVENT_NAME.PRODUCT_CATALOG_UPDATE</code> event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CUSTOM_LABEL_1</code></td>
+<td>Parameter key used to specify additional information about item for <code>EVENT_NAME.PRODUCT_CATALOG_UPDATE</code> event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CUSTOM_LABEL_2</code></td>
+<td>Parameter key used to specify additional information about item for <code>EVENT_NAME.PRODUCT_CATALOG_UPDATE</code> event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CUSTOM_LABEL_3</code></td>
+<td>Parameter key used to specify additional information about item for <code>EVENT_NAME.PRODUCT_CATALOG_UPDATE</code> event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CUSTOM_LABEL_4</code></td>
+<td>Parameter key used to specify additional information about item for <code>EVENT_NAME.PRODUCT_CATALOG_UPDATE</code> event</td>
+</tr>
+<tr>
+<td><code>PRODUCT_CATEGORY</code></td>
+<td>Product category</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IOS_URL</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IOS_APP_STORE_ID</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IOS_APP_NAME</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IPHONE_URL</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IPHONE_APP_STORE_ID</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IPHONE_APP_NAME</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IPAD_APP_STORE_ID</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_IPAD_APP_NAME</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_ANDROID_URL</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_ANDROID_PACKAGE</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_ANDROID_APP_NAME</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_WINDOWS_PHONE_URL</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_WINDOWS_PHONE_APP_ID</code></td>
+<td>App Link event parameter</td>
+</tr>
+<tr>
+<td><code>PRODUCT_APPLINK_WINDOWS_PHONE_APP_NAME</code></td>
+<td>App Link event parameter</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<hr />
               
             </div>
           </div><footer>
@@ -1077,7 +1539,7 @@ The code above first creates a <a href="https://manual.gamemaker.io/monthly/en/G
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-      <p>YoYoGames 2025</p>
+      <p>YoYoGames 2026</p>
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
