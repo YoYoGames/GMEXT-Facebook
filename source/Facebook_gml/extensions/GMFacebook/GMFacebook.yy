@@ -14,7 +14,7 @@
   "copyToTargets": 12,
   "description": "",
   "exportToGame": true,
-  "extensionVersion": "2.1.2",
+  "extensionVersion": "3.0.0",
   "files": [
     {
       "$GMExtensionFile": "v1",
