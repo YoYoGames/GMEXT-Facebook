@@ -1,6 +1,7 @@
-
-source/Facebook_gml/options/extensions/
+source/Facebook_gml/options/
 
 .env
 
 output/
+.DS_Store
+*.user

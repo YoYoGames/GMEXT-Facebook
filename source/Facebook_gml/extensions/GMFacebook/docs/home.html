@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Home - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "home.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/home.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a id="top"></a></p>
+<h1 id="facebook"><strong>Facebook</strong></h1>
+<h2 id="extensions-features">Extension's Features</h2>
+<ul>
+<li>Initialize Meta's Facebook SDK from the extension's own options</li>
+<li>Log the player in with Facebook and request permissions</li>
+<li>Read the session's user ID, access token and granted permissions</li>
+<li>Call Meta's Graph API directly and read the raw response</li>
+<li>Open Meta's share dialog on a link</li>
+<li>Report standard, custom and purchase App Events to the Events Manager</li>
+<li>Honour player consent through Meta's privacy and Limited Data Use settings</li>
+</ul>
+<h2 id="introduction">Introduction</h2>
+<p>This extension wraps Meta's <a href="https://developers.facebook.com/docs">Facebook SDK</a> for <strong>Android and
+iOS</strong>. There is no HTML5, Windows, macOS or Linux support - every function returns a default value
+on those targets, so guard your calls with an <code>os_type</code> check if your game also builds for them.</p>
+<p>Call <a href="general.html#fb_initialize">fb_initialize</a> once, before anything else; the only functions that make sense
+earlier are the privacy switches in <a href="settings.html">Privacy Settings</a>, which you may want in place before the SDK
+logs its first automatic event. Everything else fails with <a href="general.html#facebookerror">FacebookError</a>.NotInitialized
+until initialization has completed.</p>
+<p>Every function that talks to Meta follows the same two-part shape. It <strong>returns</strong>
+a <a href="general.html#facebookerror">FacebookError</a> synchronously for anything that can be rejected before Meta's SDK is
+reached - and when that value is not <code>Ok</code>, the callback never fires, so it is the only place such a
+failure is reported. Otherwise the callback fires with a <a href="general.html#facebookresult">FacebookResult</a> as its first
+argument and, where the call has one, an optional payload as its second. Check <code>result.success</code>
+before trusting the payload.</p>
+<h2 id="guides">Guides</h2>
+<p>Guides for the Facebook extension.</p>
+<ul>
+<li><a href="setup.html">Setup</a></li>
+<li><a href="dashboard.html">Meta App Dashboard</a></li>
+<li><a href="getting_started.html">Getting Started</a></li>
+<li><a href="extension_options.html">Extension Options</a></li>
+</ul>
+<h2 id="modules">Modules</h2>
+<p>The following are the available modules for the Facebook extension:</p>
+<ul>
+<li><a href="general.html">General</a></li>
+<li><a href="login.html">Login and Permissions</a></li>
+<li><a href="graph.html">Graph API and Sharing</a></li>
+<li><a href="app_events.html">App Events</a></li>
+<li><a href="settings.html">Privacy Settings</a></li>
+</ul>
+<p><br></p>
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

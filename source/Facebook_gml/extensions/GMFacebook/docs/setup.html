@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Setup - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Setup";
+        var mkdocs_page_input_path = "setup.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Setup</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-create-an-app-on-the-meta-dashboard">1. Create an app on the Meta dashboard</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-add-your-platforms">2. Add your platforms</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ios">iOS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#android">Android</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-install-the-extension-in-gamemaker">3. Install the extension in GameMaker</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-fill-in-the-extension-options">4. Fill in the extension options</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-build-and-test">5. Build and test</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="settings.html">Privacy Settings</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Guides</li>
+      <li class="breadcrumb-item active">Setup</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/setup.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="setup">Setup</h1>
+<p>This guide covers everything you have to do outside your game's code before the Facebook extension
+will work: creating an app on Meta's developer dashboard, registering your Android and iOS builds
+against it, and installing and configuring the extension in GameMaker.</p>
+<p>Once this is done, see <a href="getting_started.html">Getting Started</a> for the call order in GML, and
+<a href="extension_options.html">Extension Options</a> for what each of the extension's options is for.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This extension supports <strong>Android and iOS only</strong>. There is no HTML5, Windows, macOS or
+Linux implementation - on those targets every function returns a default value and nothing reaches
+Meta.</p>
+</div>
+<h2 id="1-create-an-app-on-the-meta-dashboard">1. Create an app on the Meta dashboard</h2>
+<p>Everything starts with an app on Meta's developer dashboard, and with three values from it that
+GameMaker needs later: the <strong>App ID</strong>, the <strong>Display Name</strong> and the <strong>Client Token</strong>.</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/create-an-app">Create an App</a></p>
+</blockquote>
+<p>Meta documents its own dashboard, so this guide does not restate it. <a href="dashboard.html">Meta App Dashboard</a> is the map - it
+walks Meta's documentation in the order a GameMaker project needs it, and says exactly where each of
+the three values lives.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <strong>App Secret</strong> on the Basic settings page is a server-side credential. It is not one of
+the three, this extension never asks for it, and it must never be shipped inside a game.</p>
+</div>
+<h2 id="2-add-your-platforms">2. Add your platforms</h2>
+<p>Meta will not accept traffic from a build it does not recognise, so each platform you ship on has to be
+registered against the app.</p>
+<blockquote>
+<p><a href="https://developers.facebook.com/docs/development/create-an-app/app-dashboard/platform-settings">Platform Settings</a></p>
+</blockquote>
+<p>The fields Meta asks for there are filled in with values that come out of GameMaker rather than out of
+Meta's documentation, so those are below.</p>
+<h3 id="ios">iOS</h3>
+<p>Add the <strong>iOS</strong> platform and fill in your <strong>Bundle ID</strong>. It must match the bundle identifier in your
+game's <a href="https://manual.gamemaker.io/monthly/en/Settings/Game_Options/iOS.htm">iOS Game Options</a>
+exactly - a mismatch is the single most common reason login silently fails on a device.</p>
+<h3 id="android">Android</h3>
+<p>Add the <strong>Android</strong> platform and fill in three fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Where it comes from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Package Name</strong></td>
+<td>The reverse-domain identifier from your game's <a href="https://manual.gamemaker.io/monthly/en/Settings/Game_Options/Android.htm">Android Game Options</a>.</td>
+</tr>
+<tr>
+<td><strong>Class Name</strong></td>
+<td>Your package name followed by <code>.RunnerActivity</code>, e.g. <code>com.company.game.RunnerActivity</code>.</td>
+</tr>
+<tr>
+<td><strong>Key Hash</strong></td>
+<td>The keystore hash, from the <strong>Keystore</strong> section of the <a href="https://manual.gamemaker.io/monthly/en/Setting_Up_And_Version_Information/Platform_Preferences/Android.htm">Android Platform Preferences</a>.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The key hash is per keystore, not per app. A build signed with your debug keystore and a
+build signed with your release keystore produce different hashes, and Meta rejects a login from a hash
+it has not been given - so add <strong>both</strong>.</p>
+</blockquote>
+<p>Save your changes on the dashboard before moving on.</p>
+<h2 id="3-install-the-extension-in-gamemaker">3. Install the extension in GameMaker</h2>
+<p>Add the extension to your account on the
+<a href="https://marketplace.gamemaker.io/assets/2011/facebook/">Marketplace</a>, then in GameMaker go to
+<strong>Marketplace</strong> -&gt; <strong>My Library</strong>, find it with the search box, and download and install it into your
+project:</p>
+<p><img alt="FB_Library.png" src="assets/FB_Library.png" /></p>
+<blockquote>
+<p>Make sure every one of the extension's files is added when you import it.</p>
+</blockquote>
+<h2 id="4-fill-in-the-extension-options">4. Fill in the extension options</h2>
+<p>Open the <strong>GMFacebook</strong> extension from the Asset Browser and fill in the three values you noted down in
+step 1 - <strong>App ID</strong>, <strong>Display Name</strong> and <strong>Client Token</strong>. All three are required, and
+<a href="general.html#fb_initialize">fb_initialize</a> fails if the App ID or the Client Token is left empty.</p>
+<p>See <a href="extension_options.html">Extension Options</a> for the full list, and for the Android and iOS project settings the
+extension needs.</p>
+<p>The extension writes everything else Meta requires - the Android manifest entries and string
+resources, the iOS plist keys and URL scheme, the Gradle dependency and the CocoaPods pods - on your
+behalf when the project is built. There is nothing to paste into the injection boxes by hand.</p>
+<h2 id="5-build-and-test">5. Build and test</h2>
+<p>Facebook logins cannot be tested in the IDE - the SDK is native, so you need a real Android or iOS
+build on a device or emulator.</p>
+<ul>
+<li><strong>Before App Review</strong>, only people with a role on the app can log in, and only <code>public_profile</code>,
+<code>email</code> and <code>user_friends</code> are available. Everyone else sees a login failure. <a href="dashboard.html">Meta App Dashboard</a> covers
+roles, test users and App Review.</li>
+<li><strong>App Events</strong> are batched by the SDK, so a freshly sent event will not appear in the Events Manager
+straight away. Call <a href="app_events.html#fb_flush_events">fb_flush_events</a> to push them immediately while testing.</li>
+<li>Anything beyond the three basic permissions has to go through App Review before it works for the
+public.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="dashboard.html" class="btn btn-neutral float-right" title="Meta App Dashboard">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="dashboard.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

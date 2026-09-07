@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Privacy Settings - GMEXT-Facebook</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+        <link href="assets/css/gmext_style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Privacy Settings";
+        var mkdocs_page_input_path = "settings.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/gml.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> GMEXT-Facebook
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="dashboard.html">Meta App Dashboard</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="extension_options.html">Extension Options</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Modules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="general.html">General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="login.html">Login and Permissions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="graph.html">Graph API and Sharing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="app_events.html">App Events</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Privacy Settings</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">GMEXT-Facebook</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Modules</li>
+      <li class="breadcrumb-item active">Privacy Settings</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook/edit/master/docs/settings.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p><a id="top"></a></p>
+<h1 id="privacy-settings"><strong>Privacy Settings</strong></h1>
+<p>The switches that control what Meta's SDK collects and how Meta may use it. Everything here
+is about consent and regional privacy law rather than about gameplay, and several of these are
+worth setting <strong>before</strong> <a href="general.html#fb_initialize">fb_initialize</a>.</p>
+<h2 id="functions">Functions</h2>
+<p>Privacy and data-usage settings.</p>
+<ul>
+<li><a href="settings.html#fb_set_auto_log_app_events_enabled">fb_set_auto_log_app_events_enabled</a></li>
+<li><a href="settings.html#fb_auto_log_app_events_enabled">fb_auto_log_app_events_enabled</a></li>
+<li><a href="settings.html#fb_set_advertiser_id_collection_enabled">fb_set_advertiser_id_collection_enabled</a></li>
+<li><a href="settings.html#fb_advertiser_id_collection_enabled">fb_advertiser_id_collection_enabled</a></li>
+<li><a href="settings.html#fb_set_event_data_usage_limited">fb_set_event_data_usage_limited</a></li>
+<li><a href="settings.html#fb_event_data_usage_limited">fb_event_data_usage_limited</a></li>
+<li><a href="settings.html#fb_set_data_processing_options">fb_set_data_processing_options</a></li>
+</ul>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_auto_log_app_events_enabled">fb_set_auto_log_app_events_enabled</h1>
+<p>Turns Meta's automatic App Event logging on or off. When it is on - which is the SDK's
+default - the SDK reports app installs, app launches and in-app purchases by itself, without you
+calling anything.</p>
+<p>Turn it off if your privacy policy or your consent flow requires the player to opt in first, then
+turn it back on once they have. It has no effect on the events you send yourself with
+<a href="app_events.html#fb_send_event">fb_send_event</a> and friends.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This can be called before <a href="general.html#fb_initialize">fb_initialize</a>, and should be if you need logging off
+from the very first launch - the SDK logs the activation event as soon as it starts up.</p>
+</div>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_auto_log_app_events_enabled(enabled)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enabled</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></td>
+<td><code>true</code> to let the SDK log automatically, <code>false</code> to stop it.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_auto_log_app_events_enabled">fb_auto_log_app_events_enabled</h1>
+<p>Returns whether Meta's automatic App Event logging is currently on. See
+<a href="settings.html#fb_set_auto_log_app_events_enabled">fb_set_auto_log_app_events_enabled</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_auto_log_app_events_enabled()
+</code></pre></div>
+</blockquote>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
+</blockquote>
+<p><code>true</code> if the SDK is logging automatically, <code>false</code> otherwise.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_advertiser_id_collection_enabled">fb_set_advertiser_id_collection_enabled</h1>
+<p>Controls whether the SDK collects the device's advertising identifier (the Google
+Advertising ID on Android, the IDFA on iOS) and attaches it to the events it sends. With it off,
+events are still reported but cannot be tied to an advertising profile, which costs you attribution
+accuracy.</p>
+<p>Turn it off until the player has consented to advertising tracking, and back on once they have.</p>
+<blockquote>
+<p>On iOS this is not the whole story. Apple's App Tracking Transparency prompt governs
+whether the IDFA is available at all - enabling collection here does nothing if the player has not
+granted tracking permission through ATT.</p>
+</blockquote>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_advertiser_id_collection_enabled(enabled)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enabled</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></td>
+<td><code>true</code> to allow collection, <code>false</code> to prevent it.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_advertiser_id_collection_enabled">fb_advertiser_id_collection_enabled</h1>
+<p>Returns whether advertising identifier collection is currently allowed. See
+<a href="settings.html#fb_set_advertiser_id_collection_enabled">fb_set_advertiser_id_collection_enabled</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_advertiser_id_collection_enabled()
+</code></pre></div>
+</blockquote>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
+</blockquote>
+<p><code>true</code> if collection is allowed, <code>false</code> otherwise.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_event_data_usage_limited">fb_set_event_data_usage_limited</h1>
+<p>Marks every App Event sent from this point on as limited-use, which tells Meta it may use the
+data for measurement and analytics but not for ad targeting or audience building.</p>
+<p>This is the coarse switch. For the finer-grained per-region control that
+<a href="https://developers.facebook.com/docs/marketing-apis/data-processing-options">Limited Data Use</a>
+defines, use <a href="settings.html#fb_set_data_processing_options">fb_set_data_processing_options</a> instead.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_event_data_usage_limited(enabled)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>enabled</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></td>
+<td><code>true</code> to limit how Meta may use the event data, <code>false</code> for the default.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a></p>
+</blockquote>
+<p><a href="general.html#facebookerror">FacebookError</a>.Ok on success, or
+<a href="general.html#facebookerror">FacebookError</a>.NotInitialized on Android if <a href="general.html#fb_initialize">fb_initialize</a> has not completed
+yet. On iOS the setting applies whatever the SDK's state, so Ok is always returned.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_event_data_usage_limited">fb_event_data_usage_limited</h1>
+<p>Returns whether App Event data is currently marked as limited-use. See
+<a href="settings.html#fb_set_event_data_usage_limited">fb_set_event_data_usage_limited</a>.</p>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_event_data_usage_limited()
+</code></pre></div>
+</blockquote>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Boolean</a></p>
+</blockquote>
+<p><code>true</code> if event data usage is limited, <code>false</code> otherwise. Returns <code>false</code> on
+Android when the SDK is not initialized yet.</p>
+<p><br></p>
+<hr />
+<p align="right"><a href="#top">Back To Top</a></p>
+
+<h1 id="fb_set_data_processing_options">fb_set_data_processing_options</h1>
+<p>Sets Meta's
+<a href="https://developers.facebook.com/docs/marketing-apis/data-processing-options">Data Processing Options</a>,
+the mechanism used to comply with the CCPA and similar regional privacy laws. Passing <code>["LDU"]</code>
+puts the player into Limited Data Use, where Meta processes their data as a service provider
+instead of using it for its own advertising purposes.</p>
+<p><code>country</code> and <code>state</code> are Meta's own numeric geography codes. Pass <code>0</code> for both to have Meta infer
+the location from the request's IP address, which is the usual choice. Passing an <strong>empty</strong> options
+array turns Limited Data Use back off.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Call this before <a href="general.html#fb_initialize">fb_initialize</a> if the player is already known to require
+Limited Data Use, so it applies to the SDK's own automatic events too.</p>
+</div>
+<p><br></p>
+<p><strong>Syntax:</strong></p>
+<blockquote>
+<div class="highlight"><pre><span></span><code>fb_set_data_processing_options(options, country, state)
+</code></pre></div>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>options</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Arrays.htm">Array</a> of <a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Reference/Strings/Strings.htm">String</a></td>
+<td>The data processing options, e.g. <code>["LDU"]</code>. An empty array clears<br>them.</td>
+</tr>
+<tr>
+<td>country</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
+<td>Meta's country code, or <code>0</code> to let Meta infer it. <code>1</code> is the United States.</td>
+</tr>
+<tr>
+<td>state</td>
+<td><a href="https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Data_Types.htm">Real</a></td>
+<td>Meta's state code, or <code>0</code> to let Meta infer it. <code>1000</code> is California.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p><strong>Returns:</strong></p>
+<blockquote>
+<p>N/A</p>
+</blockquote>
+<p><br></p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>// Enable Limited Data Use, letting Meta infer the geography.
+fb_set_data_processing_options([&quot;LDU&quot;], 0, 0);
+
+// Enable it explicitly for California, USA.
+fb_set_data_processing_options([&quot;LDU&quot;], 1, 1000);
+
+// Turn it back off.
+fb_set_data_processing_options([], 0, 0);
+</code></pre></div>
+<p><br></p>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="app_events.html" class="btn btn-neutral float-left" title="App Events"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><p align="center">GameMaker 2026</p></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/YoYoGames/GMEXT-Facebook" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="app_events.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/gml.min.js"></script>
+      <script src="assets/js/gmext_script.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
