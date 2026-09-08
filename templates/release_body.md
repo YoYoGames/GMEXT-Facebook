@@ -1,6 +1,6 @@
 ## IMPORTANT
 
-- This extension is to be used with GM 2024.11 and future releases (compatible with LTSr3)
+- This extension is to be used with GameMaker **2026.0 LTS** or newer
 - Requires CocoaPods when used on iOS platforms (is not required on newer versions of IDE)
 - Works with **Android** and **iOS**.
 - **Version 3.0.0 is a breaking change**: the extension has been fully rewritten with a new
