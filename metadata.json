@@ -15,7 +15,9 @@
             "excludeFolders": null,
             "excludeResources": null,
             "postRemovals": [
-                "**/.env"
+                "**/.env",
+                "**/extensions/**/source/out/",
+                "/Build/"
             ]
         }
     ],

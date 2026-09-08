@@ -1,5 +1,8 @@
 source/Facebook_gml/options/
 
+# GMRT build directory
+source/Facebook_gml/Build/
+
 .env
 
 output/
