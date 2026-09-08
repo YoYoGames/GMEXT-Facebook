@@ -5,6 +5,15 @@ This repository was created with the intent of presenting users with the latest 
 
 This extension works on Android and iOS, wrapping Meta's Facebook SDK (`facebook-android-sdk:18.2.3` on Android, the `FBSDKCoreKit` / `FBSDKLoginKit` / `FBSDKShareKit` pods `~> 18.1` on iOS).
 
+> [!IMPORTANT]
+> **Version 3.0.0 is a breaking change.** The extension has been fully rewritten with a new
+> callback-based API (`fb_*` functions that take a GML callback function directly, replacing the
+> `async_load`-based Social Async Events). Function names and signatures differ from 2.x, and the
+> OAuth login path that covered HTML5 and desktop has been removed. Projects upgrading from an
+> earlier (2.x) version will need to adjust their code, and projects that need the old API or OAuth
+> login should stay on the final 2.1.3 release. Check [the documentation](../../wiki) for the
+> current API.
+
 The API surface is declared in a single GMIDL spec and the platform bindings are generated from it,
 so the layout is by role rather than by IDE project:
 
