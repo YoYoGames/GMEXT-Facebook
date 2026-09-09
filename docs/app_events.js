@@ -1,13 +1,14 @@
 /**
  * @struct FacebookEventParameterValue
- * @desc A single parameter attached to a standard App Event sent with ${function.fb_send_event}. It
- * is the same shape as ${struct.FacebookNamedValue} except that the name is not free text - it is a
- * ${constant.FacebookAppEventParameter} value, so the parameter lands on one of Meta's own recognised
- * parameter names and is usable in the Events Manager's breakdowns.
+ * @desc A single parameter attached to a standard App Event that is sent with
+ * ${function.fb_send_event}. It has the same shape as ${struct.FacebookNamedValue}, except that the
+ * name is not free text but a ${constant.FacebookAppEventParameter} value, so that the parameter
+ * lands on one of Meta's own recognised parameter names and can be used in the breakdowns of the
+ * Events Manager.
  *
- * The struct carries both a string and a number slot, and `use_number` selects which one is actually
- * sent. This is a generated extension record, so it is created with an empty constructor and every
- * field is assigned afterwards.
+ * The struct has both a string slot and a number slot, and `use_number` decides which of the two is
+ * actually sent. This is a generated extension record, so it is created with an empty constructor
+ * and every field is assigned afterwards.
  * @member {Enum.FacebookAppEventParameter} key Which standard parameter this value is for.
  * @member {String} string_value The value to send when `use_number` is `false`.
  * @member {Real} number_value The value to send when `use_number` is `true`.
@@ -17,18 +18,19 @@
 
 /**
  * @function fb_send_event
- * @desc Logs one of Meta's [standard App Events](https://developers.facebook.com/docs/app-events),
- * which is what makes it show up in the Events Manager's built-in reports and become usable for ad
- * optimisation and audience building. For anything Meta has no standard name for, use
+ * @desc This function logs one of Meta's
+ * [standard App Events](https://developers.facebook.com/docs/app-events), which is what makes it
+ * show up in the built-in reports of the Events Manager and become usable for ad optimisation and
+ * audience building. For anything that Meta has no standard name for you should use
  * ${function.fb_send_custom_event} instead.
  *
- * Events are batched by the SDK and uploaded on its own schedule - see ${function.fb_flush_events} if
- * you need one sent immediately. Nothing is returned: Meta's own logging API has no result, and an
- * invalid request (an unrecognised event, or a non-finite `value`) is dropped with a warning in the
- * native log rather than reported back.
+ * Events are batched by the SDK and uploaded on its own schedule, so see ${function.fb_flush_events}
+ * if you need one sent immediately. Nothing is returned, as Meta's own logging API has no result,
+ * and an invalid request (an unrecognised event, or a `value` that is not finite) is dropped with a
+ * warning in the native log rather than being reported back to you.
  * @param {Enum.FacebookAppEvent} event Which standard event to log.
- * @param {Real} value The numeric value to associate with the event - typically a currency amount, or
- * `0` where the event has no natural value.
+ * @param {Real} value The numeric value to associate with the event. This is typically a currency
+ * amount, or `0` where the event has no natural value.
  * @param {Array[Struct.FacebookEventParameterValue]} parameters The standard parameters to attach.
  * Pass an empty array for none.
  * @example
@@ -52,17 +54,19 @@
 
 /**
  * @function fb_send_custom_event
- * @desc Logs an App Event under a name of your own, for the things Meta has no standard event for -
- * a level restart, a tutorial skip, a shop screen opened. Custom events still appear in the Events
- * Manager and can still be used to build audiences; they just do not feed Meta's built-in
- * optimisation the way the standard events in ${function.fb_send_event} do.
+ * @desc This function logs an App Event under a name of your own, for those things that Meta has no
+ * standard event for, such as a level restart, a tutorial skip, or a shop screen being opened.
+ * Custom events still appear in the Events Manager and can still be used to build audiences, but
+ * they do not feed Meta's built-in optimisation the way that the standard events in
+ * ${function.fb_send_event} do.
  *
- * As with the standard events, nothing is returned and an invalid request (an empty name, a
- * non-finite `value`) is dropped with a warning in the native log.
- * [[Note: Keep the set of event names small and stable. Meta caps how many distinct custom event
- * names an app can report, and a name built from a variable will burn through that cap - put the
- * variable part in a parameter instead.]]
- * @param {String} event_name The event name. Trimmed of surrounding whitespace before it is sent.
+ * As with the standard events, nothing is returned, and an invalid request (an empty name, or a
+ * `value` that is not finite) is dropped with a warning in the native log.
+ * [[Note: You should keep the set of event names small and stable. Meta caps how many distinct
+ * custom event names an app can report, and a name that is built from a variable will burn through
+ * that cap very quickly, so the variable part should go in a parameter instead.]]
+ * @param {String} event_name The event name. Any surrounding whitespace is trimmed before it is
+ * sent.
  * @param {Real} value The numeric value to associate with the event, or `0` if it has none.
  * @param {Array[Struct.FacebookNamedValue]} parameters The parameters to attach, with names of your
  * own choosing. Pass an empty array for none.
@@ -81,17 +85,18 @@
 
 /**
  * @function fb_send_purchase
- * @desc Logs a purchase. This is the event Meta's purchase reporting and value-optimised ad campaigns
- * are built on, so it goes through Meta's dedicated purchase API rather than being a standard event
- * you would send with ${function.fb_send_event}.
+ * @desc This function logs a purchase. It is the event that Meta's purchase reporting and
+ * value-optimised ad campaigns are built on, which is why it goes through Meta's dedicated purchase
+ * API rather than being a standard event that you would send with ${function.fb_send_event}.
  *
- * Nothing is returned. A negative or non-finite `amount`, or a currency that is not exactly three
- * letters, is dropped with a warning in the native log.
- * [[Warning: This only *reports* a purchase - it does not verify one. Call it after your store of
- * record (Google Play Billing, StoreKit) has confirmed the transaction, never before.]]
- * @param {Real} amount The amount paid, in the units of `currency` (so `4.99`, not `499`).
- * @param {String} currency The ISO 4217 currency code, e.g. `"USD"`. Case is not significant.
- * @param {Array[Struct.FacebookNamedValue]} parameters Extra parameters to attach, such as the
+ * Nothing is returned. An `amount` that is negative or not finite, or a currency that is not exactly
+ * three letters, is dropped with a warning in the native log.
+ * [[Warning: This only *reports* a purchase and it does not verify one. It should be called after
+ * your store of record (Google Play Billing, StoreKit) has confirmed the transaction, and never
+ * before.]]
+ * @param {Real} amount The amount paid, in the units of `currency` (so `4.99`, and not `499`).
+ * @param {String} currency The ISO 4217 currency code, for example `"USD"`. Case is not significant.
+ * @param {Array[Struct.FacebookNamedValue]} parameters Any extra parameters to attach, such as the
  * product identifier. Pass an empty array for none.
  * @example
  * ```gml
@@ -108,48 +113,53 @@
 
 /**
  * @function fb_flush_events
- * @desc Sends every queued App Event to Meta right now, instead of waiting for the SDK's own upload
- * schedule.
+ * @desc This function sends every queued App Event to Meta right now, instead of waiting for the
+ * SDK's own upload schedule.
  *
- * You normally should not call this. The SDK batches deliberately, to save the player's battery and
- * data, and flushing after every event throws that away. It is useful while testing (so an event
- * shows up in the Events Manager within seconds rather than minutes) and just before a point where
- * the app may be killed.
+ * You normally should not need to call this. The SDK batches events deliberately, to save the
+ * player's battery and data, and flushing after every event throws that away. It is useful while you
+ * are testing, so that an event shows up in the Events Manager within seconds rather than minutes,
+ * and just before a point where the app may be killed.
  * @function_end
  */
 
 /**
  * @function fb_set_event_user_id
- * @desc Attaches your own user identifier to every App Event logged from this point on, so events
- * from the same player can be tied together across devices and reinstalls. The value persists across
- * app launches until it is changed or cleared with ${function.fb_clear_event_user_id}.
+ * @desc This function attaches an identifier of your own to every App Event that is logged from this
+ * point on, so that events from the same player can be tied together across devices and reinstalls.
+ * The value persists across app launches until it is changed, or until it is cleared with
+ * ${function.fb_clear_event_user_id}.
  *
- * Passing an empty string clears the identifier, exactly as ${function.fb_clear_event_user_id} does.
- * [[Warning: Use an opaque identifier of your own. Never pass an email address, a phone number, a
- * name, or anything else that identifies a real person - Meta's terms forbid it.]]
+ * Passing in an empty string clears the identifier, exactly as ${function.fb_clear_event_user_id}
+ * does.
+ * [[Warning: You should use an opaque identifier of your own. Never pass in an email address, a
+ * phone number, a name, or anything else that identifies a real person, as Meta's terms forbid
+ * it.]]
  * @param {String} user_id Your own identifier for the current player.
  * @function_end
  */
 
 /**
  * @function fb_get_event_user_id
- * @desc Returns the identifier previously set with ${function.fb_set_event_user_id}.
+ * @desc This function returns the identifier that was previously set with
+ * ${function.fb_set_event_user_id}.
  * @returns {String} The current App Events user ID, or an empty string if none is set.
  * @function_end
  */
 
 /**
  * @function fb_clear_event_user_id
- * @desc Clears the identifier set with ${function.fb_set_event_user_id}, so subsequent App Events
- * carry no user ID. Call this when the player signs out of your own account system.
+ * @desc This function clears the identifier that was set with ${function.fb_set_event_user_id}, so
+ * that subsequent App Events carry no user ID. You should call this when the player signs out of
+ * your own account system.
  * @function_end
  */
 
 /**
  * @const FacebookAppEvent
  * @desc Meta's standard App Events, as accepted by ${function.fb_send_event}. Using a standard event
- * rather than a custom one is what lets Meta's built-in reporting and ad optimisation understand what
- * happened. Full definitions are in Meta's
+ * rather than a custom one is what lets Meta's built-in reporting and ad optimisation understand
+ * what happened. The full definitions can be found in Meta's
  * [App Events reference](https://developers.facebook.com/docs/app-events).
  * @member AchievedLevel The player reached a new level.
  * @member AddedPaymentInfo The player entered payment details.
@@ -158,8 +168,8 @@
  * @member CompletedRegistration The player finished creating an account.
  * @member CompletedTutorial The player finished the tutorial.
  * @member InitiatedCheckout The player started a checkout flow.
- * @member Rated The player rated something. Pair with MaxRatingValue.
- * @member Searched The player ran a search. Pair with SearchString.
+ * @member Rated The player rated something. This should be paired with MaxRatingValue.
+ * @member Searched The player ran a search. This should be paired with SearchString.
  * @member SpentCredits The player spent in-game currency.
  * @member UnlockedAchievement The player unlocked an achievement.
  * @member ViewedContent The player viewed a piece of content.
@@ -179,22 +189,23 @@
 /**
  * @const FacebookAppEventParameter
  * @desc Meta's standard App Event parameter names, used as the `key` of a
- * ${struct.FacebookEventParameterValue}. A parameter sent under one of these names is understood by
- * the Events Manager's breakdowns; anything else needs a custom event
+ * ${struct.FacebookEventParameterValue}. A parameter that is sent under one of these names is
+ * understood by the breakdowns of the Events Manager, and anything else needs a custom event
  * (${function.fb_send_custom_event}) with a free-text name.
  * @member Content A description of the content involved, often a JSON string.
  * @member AdType The type of ad, for the AdImpression and AdClick events.
  * @member ContentId The identifier of the content or product involved.
  * @member ContentType The category of the content or product involved.
- * @member Currency The ISO 4217 currency code the event's value is expressed in.
+ * @member Currency The ISO 4217 currency code that the event's value is expressed in.
  * @member Description A free-text description of the event.
- * @member Level The level the player reached, for the AchievedLevel event.
- * @member MaxRatingValue The top of the rating scale, for the Rated event. Numeric.
- * @member NumItems How many items the event covers. Numeric.
- * @member PaymentInfoAvailable Whether payment details are already on file. Numeric, `1` or `0`.
- * @member RegistrationMethod How the player registered, e.g. `"Facebook"` or `"Email"`.
+ * @member Level The level that the player reached, for the AchievedLevel event.
+ * @member MaxRatingValue The top of the rating scale, for the Rated event. This is numeric.
+ * @member NumItems How many items the event covers. This is numeric.
+ * @member PaymentInfoAvailable Whether payment details are already on file. This is numeric, either
+ * `1` or `0`.
+ * @member RegistrationMethod How the player registered, for example `"Facebook"` or `"Email"`.
  * @member SearchString What the player searched for, for the Searched event.
- * @member Success Whether the action succeeded. Numeric, `1` or `0`.
+ * @member Success Whether the action succeeded. This is numeric, either `1` or `0`.
  * @member OrderId The order identifier for a transaction.
  * @const_end
  */
@@ -202,7 +213,7 @@
 /**
  * @module app_events
  * @title App Events
- * @desc Reporting what players do back to Meta, for analytics in the Events Manager and for ad
+ * @desc Reporting what your players do back to Meta, for analytics in the Events Manager and for ad
  * optimisation.
  *
  * @section_func
@@ -222,7 +233,7 @@
  * @section_end
  *
  * @section_const
- * @desc The standard event and parameter names Meta recognises.
+ * @desc The standard event and parameter names that Meta recognises.
  * @ref FacebookAppEvent
  * @ref FacebookAppEventParameter
  * @section_end
